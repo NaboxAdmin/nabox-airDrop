@@ -1,7 +1,7 @@
 <template>
   <div class="home" v-loading="isPass && transferLoading">
     <HeaderBar :address="fromAddress" @quit="quit" />
-    <div class="home-content" v-loading="loading">
+    <div class="home-content" :class="{'p-15': supportListShow || showSign}" v-loading="loading">
       <div class="support-list" v-if="supportListShow">
         <span class="title">
           Connect wallet
@@ -15,13 +15,13 @@
       </div>
       <div class="show-sign-button" v-else-if="showSign">
         <el-button type="primary" @click="derivedAddress">{{
-          $t("home.home1")
+            $t('airdrop.airdrop6')
         }}</el-button>
       </div>
       <div v-else>
 <!--        <div class="banner-cont"></div>-->
         <div class="airdrop-cont">
-          <template  v-if="airdropList.length > 0">
+          <template v-if="airdropList.length > 0">
             <div class="airdrop-list" v-for="item in airdropList" :key="item.dropId">
               <div class="airdrop-item d-flex align-items-center">
                 <div class="airdrop-icon">
@@ -32,13 +32,13 @@
               </div>
               <div class="airdrop-info d-flex">
                 <div>
-                  <div class="text-51 size-12">空投数量</div>
+                  <div class="text-51 size-12">{{ $t("airdrop.airdrop1") }}</div>
                   <div>
-                    <span class="size-15">{{ item.receiveAmount }}</span>
+                    <span class="size-15 font-500">{{ item.receiveAmount }}</span>
                     <span class="size-12 text-99">≈${{ item.usdPrice }}</span>
                   </div>
                 </div>
-                <div class="receive_btn size-13 cursor-pointer" @click="receiveAirdrop(item)">领取</div>
+                <div class="receive_btn size-13 cursor-pointer" @click="receiveAirdrop(item)">{{ $t("airdrop.airdrop2") }}</div>
               </div>
             </div>
           </template>
@@ -47,14 +47,14 @@
       </div>
       <pop-up :show.sync="showPop" :loading="transferLoading">
         <div class="pop-cont">
-          <div class="text-51 font-bold size-16">请输入验证码</div>
+          <div class="text-51 font-bold size-16">{{ $t("airdrop.airdrop3") }}</div>
           <div class="input-cont">
-            <input type="text" v-model="verificationCode" placeholder="请输入验证码">
+            <input type="text" @input="codeInput" v-model="verificationCode" :placeholder="$t('airdrop.airdrop3')">
             <span class="text-red size-12" v-if="errMsg">{{ errMsg }}</span>
           </div>
           <div class="btn_cont">
-            <div class="btn_item cursor-pointer" @click="showPop=false; errMsg=''">取消</div>
-            <div class="btn_item active_btn cursor-pointer" @click="confirmReceive">确认</div>
+            <div class="btn_item cursor-pointer" @click="showPop=false; errMsg=''; verificationCode=''">{{ $t('airdrop.airdrop4') }}</div>
+            <div class="btn_item active_btn cursor-pointer" @click="confirmReceive">{{ $t('airdrop.airdrop5') }}</div>
           </div>
         </div>
       </pop-up>
@@ -64,7 +64,7 @@
 
 <script>
 import HeaderBar from "@/components/HeaderBar";
-import { MAIN_INFO, ETHNET} from "@/config";
+import { MAIN_INFO, ETHNET, NULS_INFO} from "@/config";
 import nerve from "nerve-sdk-js";
 import { supportChainList, getCurrentAccount, superLong } from "../../api/util";
 import { NTransfer } from "../../api/api";
@@ -85,10 +85,6 @@ const MetaMaskProvider = "ethereum"
 const NaboxProvider = "NaboxWallet"
 const OKExProvider = "okexchain"
 const BSCProvider = "BinanceChain";
-const transfer = new NTransfer({
-  chain: "NERVE",
-  type: 2
-});
 
 export default {
   data() {
@@ -111,7 +107,7 @@ export default {
       swapType: "nerve",
       provider: null,
       fromChainId: "",
-      walletType: isMobile ? MetaMaskProvider : sessionStorage.getItem("walletType"), // 连接钱包类型 metamask walletConnect
+      walletType: isMobile ? MetaMaskProvider : localStorage.getItem("walletType"), // 连接钱包类型 metamask walletConnect
       showPop: false,
       nerveAddress: '',
       errMsg: '',
@@ -135,9 +131,6 @@ export default {
         console.log(val, 'val address');
         if (!val) return;
         const currentAccount = getCurrentAccount(val);
-        // const config = JSON.parse(sessionStorage.getItem("config"));
-        // const addressListLength = currentAccount ? Object.keys(currentAccount.address).length : 0
-        // this.showSign = currentAccount ? false : true;
         this.showSign = !currentAccount
       },
     },
@@ -149,12 +142,13 @@ export default {
         if (chain) {
           this.$store.commit("changeNetwork", 'NERVE');
         } else {
-          const tempAddress = this.address.toUpperCase();
-          if (tempAddress.startsWith('TNULS') || tempAddress.startsWith('NULS')) {
-            this.$store.commit("changeNetwork", 'NULS');
-          } else {
-            this.$store.commit("changeNetwork", 'NERVE');
-          }
+          this.$store.commit("changeNetwork", 'NERVE');
+          // const tempAddress = this.address.toUpperCase();
+          // if (tempAddress.startsWith('TNULS') || tempAddress.startsWith('NULS')) {
+          //   this.$store.commit("changeNetwork", 'NULS');
+          // } else {
+          //   this.$store.commit("changeNetwork", 'NERVE');
+          // }
         }
       }
     },
@@ -178,47 +172,58 @@ export default {
       const currentAccount = getCurrentAccount(this.address);
       return currentAccount && !this.showSign ? currentAccount.address['NERVE'] : "";
     },
+    isMobile() {
+      return /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
+    }
   },
 
   created() {
     if (typeof this.$route.query.loginOut === 'boolean' && this.$route.query.loginOut === true) {
       this.setConfig(null);
     }
-    if (isMobile) {
-      sessionStorage.setItem("walletType", this.walletType);
+    console.log(this.isMobile, 'isMobile')
+    if (this.isMobile) {
+      localStorage.setItem("walletType", this.walletType);
     }
-    this.initConnect();
+    setTimeout(() => {
+      this.initConnect();
+    }, 0);
     // setTimeout(() => {
     //   this.fromAddress && this.getAirDropList();
     // }, 0);
   },
   methods: {
     async getAirDropList(address, reload=false) {
-      const tempList = JSON.parse(localStorage.getItem('airdropList'));
-      const data = {
-        address: address || this.fromAddress
-      };
-      const res = await this.$request({
-        url: '/air/drop/list',
-        data
-      });
-      if (res.code === 1000 && res.data) {
-        if (tempList && tempList.length > 0 && !reload) {
-          const tempDropList = this.formatData(res.data);
-          this.airdropList = tempDropList.map((item, index) => {
-            if (tempList[index] && tempList[index].isPass && tempList[index].code) {
-              return tempList[index];
-            } else {
-              return item;
-            }
-          });
-          // console.log(this.airdropList, 'tempList');
+      try {
+        const tempList = JSON.parse(localStorage.getItem('airdropList'));
+        const currentAccount = getCurrentAccount(address || this.address);
+        const data = {
+          pubKey: currentAccount && currentAccount.pub || ""
+        };
+        const res = await this.$request({
+          url: '/air/drop/list',
+          data
+        });
+        if (res.code === 1000 && res.data) {
+          if (tempList && tempList.length > 0 && !reload) {
+            const tempDropList = this.formatData(res.data);
+            this.airdropList = tempDropList.map((item, index) => {
+              if (tempList[index] && tempList[index].isPass && tempList[index].code) {
+                return tempList[index];
+              } else {
+                return item;
+              }
+            });
+          } else {
+            this.airdropList = this.formatData(res.data);
+            localStorage.setItem('airdropList', JSON.stringify(this.airdropList));
+          }
         } else {
-          this.airdropList = this.formatData(res.data);
-          localStorage.setItem('airdropList', JSON.stringify(this.airdropList));
+          localStorage.setItem('airdropList', JSON.stringify([]));
+          this.$message.warning(res.msg);
         }
-      } else {
-        this.$message.warning(res.msg);
+      } catch (e) {
+        localStorage.setItem('airdropList', JSON.stringify([]));
       }
     },
     formatData(data) {
@@ -231,11 +236,14 @@ export default {
     // 确认领取
     async confirmReceive() {
       try {
-        if (!this.verificationCode) return;
+        if (!this.verificationCode) {
+         this.errMsg = this.$t("tips.tips1");
+         return false;
+        }
         this.transferLoading = true;
         const data = {
-          address: this.fromAddress,
-          dropId: this.currentAirdrop.dropId,
+          // address: this.fromAddress,
+          id: this.currentAirdrop.id,
           code: this.verificationCode
         };
         const res = await this.$request({
@@ -258,26 +266,28 @@ export default {
           localStorage.setItem('airdropList', JSON.stringify(tempList));
           await this.sendTransaction();
         } else {
-          this.errMsg = '验证码错误'
+          this.errMsg = this.$t("tips.tips2");
           throw res.msg
         }
       } catch (e) {
-        console.log(e);
+        console.log('error:' + e);
         this.transferLoading = false;
-        this.verificationCode = '';
-        this.$message.warning(e);
+        // this.verificationCode = '';
+        // this.$message.warning(e);
       }
     },
-
     // 发送交易
     async sendTransaction(isPass=false) {
       try {
+        const transfer = new NTransfer({
+          chain: "NERVE",
+          type: 2
+        });
         const currentAccount = getCurrentAccount(this.address);
         const crossAddress = await this.getCrossAddress();
         if (!crossAddress) {
           throw 'crossAddress error'
         }
-        console.log(crossAddress, 'crossAddress crossAddress')
         const { chainId, assetId } = MAIN_INFO;
         const transferInfo = {
           from: this.fromAddress,
@@ -288,6 +298,7 @@ export default {
           assetsId: assetId
         };
         const { inputs, outputs } = await transfer.transferTransaction(transferInfo);
+        console.log(inputs, outputs, 'inputs, outputs')
         const txHex = await transfer.getTxHex({
           inputs,
           outputs,
@@ -298,10 +309,10 @@ export default {
         if (txHex) {
           await this.broadcastHex(txHex);
         } else {
-          throw '交易失败'
+          throw this.$t("tips.tips3");
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         this.$message.warning(e);
         this.transferLoading = false;
       }
@@ -315,29 +326,31 @@ export default {
         await this.broadcastHash(res.result.hash)
       } else {
         this.transferLoading = false;
-        this.$message({ message: this.$t("交易失败"), type: "warning", duration: 2000 })
+        this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 })
       }
     },
     // 发送hash到后台
     async broadcastHash(hash) {
       const data = {
-        address: this.fromAddress,
         txHash: hash,
-        code: this.verificationCode,
-        dropId: this.currentAirdrop.dropId
+        code: this.verificationCode || this.currentAirdrop.code,
+        id: this.currentAirdrop.id
       }
       const res = await this.$request({
         url: '/air/drop/receive',
         data
       });
       if (res.code === 1000) {
-        this.$message({ message: this.$t("广播交易成功，请等待区块确认"), type: "success", duration: 2000 })
+        this.$message({ message: this.$t("tips.tips5"), type: "success", duration: 2000 })
       } else {
-        this.$message({ message: this.$t("广播交易失败"), type: "warning", duration: 2000 })
+        this.$message({ message: this.$t(res.msg), type: "warning", duration: 2000 })
       }
       this.transferLoading = false;
       this.reset();
       await this.getAirDropList('', true);
+    },
+    codeInput() {
+      if (this.errMsg) this.errMsg = '';
     },
     // 获取转账地址
     async getCrossAddress() {
@@ -379,9 +392,9 @@ export default {
     },
 
     async initConnect() {
-      // console.log(this.walletType, 123, window[this.walletType])
+      console.log(this.walletType, 123, window[this.walletType])
       if (!this.walletType || !window[this.walletType]) {
-        sessionStorage.removeItem("walletType")
+        localStorage.removeItem("walletType")
         this.loading = false;
         return;
       }
@@ -396,9 +409,7 @@ export default {
       this.supportListShow = false;
       this.listenAccountChange();
       this.listenNetworkChange();
-
       this.loading = false;
-
     },
     parseChainId(chainId) {
       chainId = chainId + ""
@@ -433,10 +444,10 @@ export default {
     setConfig(provider) {
       if (provider) {
         this.walletType = provider;
-        sessionStorage.setItem("walletType", provider);
+        localStorage.setItem("walletType", provider);
       } else {
         this.walletType = "";
-        sessionStorage.setItem("walletType", "");
+        localStorage.setItem("walletType", "");
         this.address = "";
         this.supportListShow = true
       }
@@ -479,10 +490,10 @@ export default {
           if (!window.nabox) {
             throw "Nabox not found"
           }
-          const address = ethers.utils.computeAddress(ethers.utils.hexZeroPad(ethers.utils.hexStripZeros('0x' + pub), 33));
           pub = await window.nabox.getPub({
             address: this.address
           });
+          const address = ethers.utils.computeAddress(ethers.utils.hexZeroPad(ethers.utils.hexStripZeros('0x' + pub), 33));
           account = {
             address: {
               pluginAddress: address
@@ -515,12 +526,23 @@ export default {
         }
         account.pub = pub;
         const { chainId, assetId, prefix } = MAIN_INFO;
+        const {
+          chainId: NULSChainId,
+          assetId: NULSAssetId,
+          prefix: NULSPrefix,
+        } = NULS_INFO;
         // console.log(NULSChainId, NULSAssetId, NULSPrefix, 55)
         account.address.NERVE = nerve.getAddressByPub(
           chainId,
           assetId,
           pub,
           prefix
+        );
+        account.address.NULS = nerve.getAddressByPub(
+            NULSChainId,
+            NULSAssetId,
+            pub,
+            NULSPrefix
         );
         console.log(account, 'account');
         const accountList = JSON.parse(localStorage.getItem("accountList")) || [];
@@ -534,7 +556,7 @@ export default {
         localStorage.setItem("accountList", JSON.stringify(accountList));
         // 重新计算fromAddress
         const address = this.address;
-        this.switchNetwork(address);
+        // this.switchNetwork(address);
         this.address = "";
         setTimeout(()=> {
           this.address = address;
@@ -549,7 +571,7 @@ export default {
         //   });
         // }
       } catch (e) {
-        // console.log(e, 556)
+        console.log(e, 556)
         this.setConfig(null)
         this.address = "";
         this.$message({ message: this.$t("tips.tips5"), type: "warning" });
@@ -600,7 +622,7 @@ export default {
   .home-content {
     background-color: #fff;
     margin: 15px;
-    padding: 15px;
+    //padding: 15px;
     min-height: calc(100vh - 94px);
     border-radius: 10px;
   }
@@ -907,7 +929,8 @@ export default {
     }
   }
   .airdrop-cont {
-    min-height: calc(780px - 250px) !important;
+    min-height: calc(780px - 100px) !important;
+    max-height: calc(780px - 100px) !important;
   }
 }
 .banner-cont {
@@ -919,13 +942,15 @@ export default {
 .airdrop-cont {
   background-color: #fff;
   border-radius: 10px;
-  min-height: calc(100vh - 250px);
+  min-height: calc(100vh - 100px);
+  max-height:  calc(100vh - 100px);
+  overflow: auto;
   .airdrop-list {
     padding: 15px;
     border-bottom: 1px solid #E9EBF3;
-    &:last-child {
-      border: none;
-    }
+    //&:last-child {
+    //  border: none;
+    //}
     .airdrop-item {
       .airdrop-icon {
         height: 30px;

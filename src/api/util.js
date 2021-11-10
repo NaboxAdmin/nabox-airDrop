@@ -15,6 +15,7 @@ import HTLogo_active from "@/assets/img/mainAsset/Heco-active.png";
 import OKTLogo_active from "@/assets/img/mainAsset/OEC-active.png";
 import NULSLogo_active from "@/assets/img/mainAsset/NULS-active.png";
 import NVTLogo_active from "@/assets/img/mainAsset/Nerve-active.png";
+import {Log} from "ethers/providers";
 
 /**
  * 10的N 次方
@@ -693,7 +694,7 @@ export function getCurrentAccount(address) {
   if (!address) return null
   const accountList = JSON.parse(localStorage.getItem("accountList")) || [];
   return accountList.find((item) => {
-    return item.address['pluginAddress'].toLowerCase() === address.toLowerCase()
+    return item.address['pluginAddress'].toLowerCase() === address.toLowerCase() || item.address['NERVE'] && item.address['NERVE'].toLowerCase() === address.toLowerCase() || item.address['NULS'] && item.address['NULS'].toLowerCase() === address.toLowerCase()
   });
 }
 

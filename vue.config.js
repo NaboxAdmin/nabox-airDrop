@@ -42,16 +42,10 @@ module.exports = {
     https: false,
     open: true,
     proxy: {
-      "/bridge-api": {
-        target: "http://192.168.1.204:8083",
-        // target: "http://beta.bridge.nerve.network",
-        // target: "https://bridge.nerve.network",
-        changeOrigin: true,  // 是否跨域
-      },
       "/nabox-api": {
         target: "http://192.168.1.204:8083",
         // target: "http://beta.bridge.nerve.network",
-        // target: "https://bridge.nerve.network",
+        // target: "http://nabox_api.zhoulijun.top", // 测试环境
         changeOrigin: true,  // 是否跨域
       },
     }

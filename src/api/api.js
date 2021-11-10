@@ -1,10 +1,10 @@
 import nuls from "nuls-sdk-js";
 import nerve from "nerve-sdk-js";
 import {ethers} from "ethers";
-import { MAIN_INFO } from "../config";
-import {Plus, htmlEncode, timesDecimals, Minus} from "./util";
+import {MAIN_INFO} from "../config";
+import {htmlEncode, Minus, Plus, timesDecimals} from "./util";
 import {request} from "./https";
-import { ETHNET } from "@/config";
+import {ETHNET} from "@/config";
 import BufferReader from "nerve-sdk-js/lib/utils/bufferreader";
 import txs from "nerve-sdk-js/lib/model/txs";
 
@@ -25,13 +25,12 @@ export class NTransfer {
     this.chain = props.chain; //链网络
     this.type = props.type; //交易类型
     this.sdk = nSdk[this.chain] || nerve; // nerve nuls sdk
-    const provider = sessionStorage.getItem("walletType");
+    const provider = localStorage.getItem("walletType");
     this.walletType = provider; 
   }
 
   async getTxHex(data) {
     const {inputs, outputs, txData, remarks = "", pub, signAddress} = data;
-    console.log(this.sdk, 'this.sdk')
     // 组装交易
     const tAssemble = this.sdk.transactionAssemble(inputs, outputs, htmlEncode(remarks), this.type, txData);
     // 调用metamask签名hash，然后拼接公钥完成交易签名
@@ -425,8 +424,7 @@ const erc20TransferAbiFragment = [{
 export class ETransfer {
 
   constructor(props = {}) {
-    const provider = sessionStorage.getItem("walletType");
-    this.walletType = provider;
+    this.walletType = localStorage.getItem("walletType") || "";
     this.getProvider(props.chain)
   }
 
