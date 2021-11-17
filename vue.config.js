@@ -25,7 +25,6 @@ module.exports = {
         threshold: 10240,
         minRatio: 0.8
       }));
-
     }
     config.externals = {
       'vue': 'Vue',
@@ -43,9 +42,9 @@ module.exports = {
     open: true,
     proxy: {
       "/nabox-api": {
-        target: "http://192.168.1.204:8083",
+        // target: "http://192.168.1.204:8083",
         // target: "http://beta.bridge.nerve.network",
-        // target: "http://nabox_api.zhoulijun.top", // 测试环境
+        target: "http://nabox_api.zhoulijun.top", // 测试环境
         changeOrigin: true,  // 是否跨域
       },
     }

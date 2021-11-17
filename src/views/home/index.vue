@@ -1,7 +1,7 @@
 <template>
   <div class="home" v-loading="isPass && transferLoading">
     <HeaderBar :address="fromAddress" @quit="quit" />
-    <div class="home-content" :class="{'p-15': supportListShow || showSign}" v-loading="loading">
+    <div class="home-content" :class="{'p-15': supportListShow || showSign}" v-loading="loading" v-if="supportListShow || showSign">
       <div class="support-list" v-if="supportListShow">
         <span class="title">
           Connect wallet
@@ -18,47 +18,58 @@
             $t('airdrop.airdrop6')
         }}</el-button>
       </div>
-      <div v-else>
-<!--        <div class="banner-cont"></div>-->
-        <div class="airdrop-cont">
-          <template v-if="airdropList.length > 0">
-            <div class="airdrop-list" v-for="item in airdropList" :key="item.dropId">
-              <div class="airdrop-item d-flex align-items-center">
-                <div class="airdrop-icon">
-                  <img :src="getPicture(item.symbol)" @error="pictureError" alt="">
+    </div>
+    <div class="m-15" v-else>
+      <div class="banner-cont">
+        <img src="@/assets/img/banner.png" alt="">
+      </div>
+      <div class="airdrop-cont">
+        <template v-if="airdropList.length > 0">
+          <div class="airdrop-list" v-for="item in airdropList" :key="item.dropId">
+            <div class="d-flex align-items-center space-between">
+              <div class="d-flex direction-column">
+                <div class="airdrop-item d-flex align-items-center">
+                  <div class="airdrop-icon">
+                    <img :src="getPicture(item.symbol)" @error="pictureError" alt="">
+                  </div>
+                  <span class="font-bold size-16 text-51 ml-5">{{ item.airDropName || item.symbol }}</span>
+                  <span class="size-13 text-99 ml-5">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
                 </div>
-                <span class="font-bold size-16 text-51 ml-5">{{ item.symbol }}</span>
-                <span class="size-13 text-99 ml-5">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
-              </div>
-              <div class="airdrop-info d-flex">
-                <div>
-                  <div class="text-51 size-12">{{ $t("airdrop.airdrop1") }}</div>
+                <div class="airdrop-info d-flex">
                   <div>
-                    <span class="size-15 font-500">{{ item.receiveAmount }}</span>
-                    <span class="size-12 text-99">≈${{ item.usdPrice }}</span>
+                    <div class="text-51 size-12">{{ $t("airdrop.airdrop1") }}</div>
+                    <div>
+                      <span class="size-15 font-500">{{ item.receiveAmount }}</span>
+                      <span class="size-12 text-99">≈${{ item.usdPrice }}</span>
+                    </div>
                   </div>
                 </div>
-                <div class="receive_btn size-13 cursor-pointer" @click="receiveAirdrop(item)">{{ $t("airdrop.airdrop2") }}</div>
               </div>
+              <div class="receive_btn size-13 cursor-pointer" @click="receiveAirdrop(item)">{{ $t("airdrop.airdrop2") }}</div>
             </div>
-          </template>
-          <div class="text-center pt-4 size-12" v-else>No data</div>
+          </div>
+        </template>
+        <div class="d-flex align-items-center direction-column justify-content-center" v-else>
+          <span class="empty-img">
+            <img src="@/assets/img/empoty_airdrop.svg" alt="">
+          </span>
+          <span class="text-center pt-4 size-16">{{ $t("tips.tips6") }}</span>
         </div>
       </div>
-      <pop-up :show.sync="showPop" :loading="transferLoading">
-        <div class="pop-cont">
-          <div class="text-51 font-bold size-16">{{ $t("airdrop.airdrop3") }}</div>
-          <div class="input-cont">
-            <input type="text" @input="codeInput" v-model="verificationCode" :placeholder="$t('airdrop.airdrop3')">
-            <span class="text-red size-12" v-if="errMsg">{{ errMsg }}</span>
-          </div>
-          <div class="btn_cont">
-            <div class="btn_item cursor-pointer" @click="showPop=false; errMsg=''; verificationCode=''">{{ $t('airdrop.airdrop4') }}</div>
-            <div class="btn_item active_btn cursor-pointer" @click="confirmReceive">{{ $t('airdrop.airdrop5') }}</div>
-          </div>
-        </div>
-      </pop-up>
     </div>
+    <pop-up :show.sync="showPop" :loading="transferLoading">
+      <div class="pop-cont">
+        <div class="text-51 font-bold size-16">{{ $t("airdrop.airdrop3") }}</div>
+        <div class="input-cont">
+          <input type="text" @input="codeInput" v-model="verificationCode">
+          <span class="text-red size-12" v-if="errMsg">{{ errMsg }}</span>
+        </div>
+        <div class="btn_cont">
+          <div class="btn_item cursor-pointer" @click="showPop=false; errMsg=''; verificationCode=''">{{ $t('airdrop.airdrop4') }}</div>
+          <div class="btn_item active_btn cursor-pointer" @click="confirmReceive">{{ $t('airdrop.airdrop5') }}</div>
+        </div>
+      </div>
+    </pop-up>
   </div>
 </template>
 
@@ -143,12 +154,6 @@ export default {
           this.$store.commit("changeNetwork", 'NERVE');
         } else {
           this.$store.commit("changeNetwork", 'NERVE');
-          // const tempAddress = this.address.toUpperCase();
-          // if (tempAddress.startsWith('TNULS') || tempAddress.startsWith('NULS')) {
-          //   this.$store.commit("changeNetwork", 'NULS');
-          // } else {
-          //   this.$store.commit("changeNetwork", 'NERVE');
-          // }
         }
       }
     },
@@ -188,9 +193,6 @@ export default {
     setTimeout(() => {
       this.initConnect();
     }, 0);
-    // setTimeout(() => {
-    //   this.fromAddress && this.getAirDropList();
-    // }, 0);
   },
   methods: {
     async getAirDropList(address, reload=false) {
@@ -227,7 +229,7 @@ export default {
       }
     },
     formatData(data) {
-      if (!data || !data.constructor === Array) return [];
+      if (!data || !Array.isArray(data)) return [];
       return data.filter(item => item.status == 0).map(item => ({
         ...item,
         isPass: false
@@ -319,21 +321,26 @@ export default {
     },
     // 广播nerve链上交易
     async broadcastHex(txHex) {
-      const url = MAIN_INFO.rpc;
-      const chainId = MAIN_INFO.chainId;
-      const res = await this.$post(url, 'broadcastTx', [chainId, txHex]);
-      if (res.result && res.result.hash) {
-        await this.broadcastHash(res.result.hash)
-      } else {
+      try {
+        const url = MAIN_INFO.rpc;
+        const chainId = MAIN_INFO.chainId;
+        const res = await this.$post(url, 'broadcastTx', [chainId, txHex]);
+        if (res.result && res.result.hash) {
+          await this.broadcastHash(res.result.hash)
+        } else {
+          this.transferLoading = false;
+          this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 })
+        }
+      } catch (e) {
         this.transferLoading = false;
-        this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 })
+        this.$message({ message: 'Network Error', type: "warning", duration: 2000 });
       }
     },
     // 发送hash到后台
     async broadcastHash(hash) {
       const data = {
         txHash: hash,
-        code: this.verificationCode || this.currentAirdrop.code,
+        code: this.verificationCode || this.currentAirdrop.code || '',
         id: this.currentAirdrop.id
       }
       const res = await this.$request({
@@ -366,13 +373,19 @@ export default {
     },
     async receiveAirdrop(airdrop) {
       this.currentAirdrop = airdrop;
-      if (airdrop.isPass && airdrop.code) {
+      if (!airdrop.codeFlag) {
         this.isPass = true;
         this.transferLoading = true;
         await this.sendTransaction(true);
       } else {
-        this.showPop = true;
-        this.isPass = false;
+        if (airdrop.isPass && airdrop.code) {
+          this.isPass = true;
+          this.transferLoading = true;
+          await this.sendTransaction(true);
+        } else {
+          this.showPop = true;
+          this.isPass = false;
+        }
       }
     },
     reset() {
@@ -392,7 +405,6 @@ export default {
     },
 
     async initConnect() {
-      console.log(this.walletType, 123, window[this.walletType])
       if (!this.walletType || !window[this.walletType]) {
         localStorage.removeItem("walletType")
         this.loading = false;
@@ -574,7 +586,7 @@ export default {
         console.log(e, 556)
         this.setConfig(null)
         this.address = "";
-        this.$message({ message: this.$t("tips.tips5"), type: "warning" });
+        this.$message({ message: this.$t("tips.tips9"), type: "warning" });
       }
       this.loading = false;
       // this.showSign = false;
@@ -616,7 +628,7 @@ export default {
 @BColor: #ebeef8;
 @labelColor: #99a3c4;
 .home {
-  background-color: #f0f2f7;
+  background-color: #fff;
   height: 100%;
   position: relative;
   .home-content {
@@ -660,7 +672,7 @@ export default {
       border: 1px solid transparent;
       &:hover {
         //opacity: 0.65;
-        border-color: #5bcaf9;
+        border-color: #6eb6a9;
         color: #333;
       }
       img {
@@ -929,21 +941,29 @@ export default {
     }
   }
   .airdrop-cont {
-    min-height: calc(780px - 100px) !important;
-    max-height: calc(780px - 100px) !important;
+    min-height: calc(780px - 240px) !important;
+    max-height: calc(780px - 240px) !important;
   }
 }
 .banner-cont {
   height: 130px;
-  background-color: purple;
+  //background-color: purple;
   border-radius: 10px;
   margin-bottom: 15px;
+  overflow: hidden;
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
+.direction-column {
+  flex-direction: column;
 }
 .airdrop-cont {
   background-color: #fff;
   border-radius: 10px;
-  min-height: calc(100vh - 100px);
-  max-height:  calc(100vh - 100px);
+  min-height: calc(100vh - 240px);
+  max-height:  calc(100vh - 240px);
   overflow: auto;
   .airdrop-list {
     padding: 15px;
@@ -965,19 +985,17 @@ export default {
     }
     .airdrop-info {
       margin-top: 6px;
-      align-items: center;
-      justify-content: space-between;
-      .receive_btn {
-        height: 34px;
-        width: 60px;
-        line-height: 34px;
-        text-align: center;
-        color: #fff;
-        background-color: #5BCAF9;
-        border-radius: 10px;
-      }
     }
   }
+}
+.receive_btn {
+  height: 34px;
+  width: 60px;
+  line-height: 34px;
+  text-align: center;
+  color: #fff;
+  background-color: #6eb6a9;
+  border-radius: 10px;
 }
 .pop-cont {
   width: 340px;
@@ -990,9 +1008,9 @@ export default {
     input {
       width: 100%;
       height: 40px;
-      border: 1px solid #5BCAF9;
+      padding-left: 20px;
+      border: 1px solid #6eb6a9;
       outline: none;
-      text-align: center;
       border-radius: 5px;
       font-size: 16px;
       &::placeholder {
@@ -1011,14 +1029,26 @@ export default {
       width: 140px;
       line-height: 40px;
       text-align: center;
-      color: #5BCAF9;
+      color: #6eb6a9;
       border-radius: 10px;
       border: 1px solid #EBEEF8;
       &.active_btn {
-        background-color: #5BCAF9;
+        background-color: #6eb6a9;
         color: #FFFFFF;
       }
     }
+  }
+}
+.m-15 {
+  margin: 15px;
+}
+.empty-img {
+  margin-top: 100px;
+  height: 100px;
+  width: 100px;
+  img {
+    height: 100%;
+    width: 100%;
   }
 }
 </style>

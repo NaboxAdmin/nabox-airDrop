@@ -1,18 +1,11 @@
 <template>
   <div id="app" class="app shadow">
-    <!-- <HeaderBar/> -->
-    <router-view>
-    </router-view>
-    <!-- <BottomBar>
-    </BottomBar> -->
+    <router-view/>
   </div>
 </template>
 
 <script>
-  /* import HeaderBar from './components/HeaderBar'
-  import BottomBar from './components/BottomBar' */
-
-  export default {
+export default {
     data() {
       return {
         isPc: true,
@@ -32,7 +25,9 @@
 
 <style lang="less">
   @import "assets/css/base.less";
-
+  body, div, dl, dt, dd, ul, ol, li, p, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea {
+    font-family: poppins,inter,PingFangSC-Regular,microsoft yahei,sans-serif !important;
+  }
   .app {
     background-color: #ffffff;
     width: 100%;

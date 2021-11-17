@@ -1,13 +1,16 @@
 <template>
   <div class="header">
     <div class="left cursor_pointer" @click="$router.replace('/')">
-      <img src="../assets/img/nervelogo.svg" alt="">
+      <img src="../assets/img/Nabox_logo.svg" alt="">
       <!-- NerveBridge -->
     </div>
     <div class="right" v-if="address">
       <div class="address">
         <span class="network">
-           {{ $store.state.network }}
+<!--           {{ $store.state.network }}-->
+          <span class="network_img">
+            <img :src="getPicture($store.state.network)" @error="pictureError" alt="">
+          </span>
 <!--           <i class="el-icon-caret-bottom" style="margin-left: -5px"></i>-->
         </span>
         <span @click="showAccountDialog=true">{{ superLong(address, 5) }}</span>
@@ -23,7 +26,7 @@
 <!--          <div class="pop-arrow"></div>-->
 <!--        </ul>-->
       </div>
-      <span @click="showMenu=true" class="iconfont icon-menu"></span>
+      <span @click="showMenu=!showMenu" class="iconfont icon-menu"></span>
     </div>
     <transition name="drawer-fade">
       <div class="nav-menu" v-show="showMenu">
@@ -32,34 +35,20 @@
         </transition>
         <div class="header_content" :class="showMenu ? 'show' : 'hide'">
           <div class="account">
-<!--            <ul class="menu-wrap">-->
-<!--              <li @click="toUrl('txList')">-->
-<!--                <i class="iconfont icon-jiaoyijilu"></i>-->
-<!--                <span>{{ $t("header.header1") }}</span>-->
-<!--              </li>-->
-<!--              <li @click="toUrl('accounts')">-->
-<!--                <i class="iconfont icon-wangluozhanghu"></i>-->
-<!--                <span>{{ $t("header.header2") }}</span>-->
-<!--              </li>-->
-<!--              <li>-->
-<!--                <a :href="walletAddress" :target="isMobile && '_self' || '_blank'">-->
-<!--                  <i class="iconfont icon-qianbao"></i>-->
-<!--                  <span>{{ $t("header.header9") }}</span>-->
-<!--                </a>-->
-<!--              </li>-->
-<!--              <li>-->
-<!--                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdPXX4EDtzxqBg3OBMIq7EtoiBxnxcqokIeVzAqyXQFYbmf4w/viewform" :target="isMobile && '_self' || '_blank'">-->
-<!--                  <i class="iconfont icon-zichanshangjia"></i>-->
-<!--                  <span>{{ $t("header.header3") }}</span>-->
-<!--                </a>-->
-<!--              </li>-->
-<!--              <li>-->
-<!--               <a href="https://drive.google.com/drive/folders/13gk5XzfJmCUyRCmoleWH47REUOyGc4yo" :target="isMobile && '_self' || '_blank'">-->
-<!--                  <i class="iconfont icon-shenjibaogao"></i>-->
-<!--                  <span>{{ $t("header.header4") }}</span>-->
-<!--               </a>-->
-<!--              </li>-->
-<!--            </ul>-->
+            <ul class="menu-wrap">
+              <li>
+                <a href="https://nabox.io" :target="isMobile && '_self' || '_blank'">
+                  <i class="iconfont icon-zichanshangjia"></i>
+                  <span>{{ $t("header.header1") }}</span>
+                </a>
+              </li>
+              <li>
+               <a href="https://swap.nabox.io/" :target="isMobile && '_self' || '_blank'">
+                 <i class="iconfont icon-swapbox"></i>
+                  <span>{{ $t("header.header2") }}</span>
+               </a>
+              </li>
+            </ul>
           </div>
           <!-- <div class="network">
             <p class="label">{{ $t("header.header5") }}</p>
@@ -73,17 +62,17 @@
               </el-radio-button>
             </el-radio-group>
           </div> -->
-          <div class="network-list">
-            <div class="size-12 text-99">你的网络</div>
-            <div class="network-cont">
-              <div class="network-item"
-                   @click="currentIndex = index"
-                   :class="{ 'active_item': currentIndex===index }"
-                   v-for="(item, index) in 5" :key="item">
-                {{ item }}
-              </div>
-            </div>
-          </div>
+<!--          <div class="network-list">-->
+<!--            <div class="size-12 text-99">你的网络</div>-->
+<!--            <div class="network-cont">-->
+<!--              <div class="network-item"-->
+<!--                   @click="currentIndex = index"-->
+<!--                   :class="{ 'active_item': currentIndex===index }"-->
+<!--                   v-for="(item, index) in 5" :key="item">-->
+<!--                {{ item }}-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
           <div class="bottom-wrap">
             <div class="community">
               <a href="https://t.me/NerveNetwork" :target="isMobile && '_self' || '_blank'">
@@ -103,7 +92,7 @@
       </div>
     </transition>
     <el-dialog
-      title="账户"
+      :title="$t('tips.tips7')"
       :visible.sync="showAccountDialog"
       :modal-append-to-body="false"
       class="account-dialog"
@@ -114,7 +103,7 @@
           <i class="iconfont icon-lianjie" @click="openUrl"></i>
           <i class="iconfont icon-fuzhi1" @click="copy(address)"></i>
         </div>
-        <el-button @click="quit">{{ $t("header.header8") }}</el-button>
+        <el-button @click="quit">{{ $t("header.header3") }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -200,6 +189,13 @@
       toggleMenu() {
         this.showMenu = !this.showMenu
       },
+      getPicture(suffix) {
+        let baseUrl = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/';
+        return `${baseUrl}${suffix}.png`
+      },
+      pictureError(e) {
+        e.target.src = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/NULL.png';
+      },
 
       /**
        * 连接跳转
@@ -224,7 +220,7 @@
       },
       copy(str) {
         copys(str)
-        this.$message({message: this.$t('public.copySuccess'), type: 'success', duration: 1000});
+        this.$message({message: this.$t('tips.tips8'), type: 'success', duration: 1000});
         this.showAccountDialog = false
       },
       quit() {
@@ -296,16 +292,18 @@
       .address {
         // width: 170px;
         // width: 150px;
+        display: flex;
+        align-items: center;
         height: 32px;
         line-height: 32px;
         padding: 0 10px;
         background-color: #EBEEF8;
-        color: #5BCAF9;
+        color: #6eb6a9;
         font-weight: bold;
         font-size: 14px;
         border-radius: 18px;
         text-align: center;
-        margin-right: 8px;
+        margin-right: 16px;
         cursor: pointer;
         position: relative;
         @media screen and (max-width: 400px){
@@ -315,22 +313,9 @@
         .network {
           font-size: 15px;
           color: #99A3C4;
-          // margin-right: 10px;
-          padding: 0 10px 0 5px;
-          &:hover {
-            // background: 
-            opacity: 0.65;
-          }
-          &::before {
-            content: " ";
-            display: inline-block;
-            vertical-align: middle;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            // margin: 0 2px;
-            background-color: #5BCAF9;
-          }
+          display: flex;
+          align-items: center;
+          padding: 0 5px 0 0;
         }
         .support-network-list {
           position: absolute;
@@ -388,15 +373,16 @@
       width: 100%;
       height: 100%;
       left: 0;
-      top: 0;
+      top: 64px;
       overflow: hidden;
       z-index: 9;
       .model {
         width: 100%;
-        height: 100%;
+        height: calc(100% - 64px);
         position: absolute;
         left: 0;
         top: 0;
+        bottom: 0;
         opacity: 0.46;
         background-color: rgb(33, 33, 33);
       }
@@ -408,7 +394,7 @@
         background-color: #fff;
         position: absolute;
         width: 210px;
-        height: 100%;
+        height: calc(100% - 64px);
         right: 0;
         top: 0;
         padding-top: 15px;
@@ -418,6 +404,10 @@
             padding: 15px 20px;
             cursor: pointer;
             line-height: 1;
+            display: flex;
+            a {
+              display: flex;
+            }
             .iconfont {
               margin-right: 10px;
               font-size: 18px;
@@ -467,6 +457,8 @@
       }
       .bottom-wrap {
         display: flex;
+        position: absolute;
+        bottom: 70px;
         align-items: center;
         margin-top: 40px;
         padding: 0 20px;
@@ -508,7 +500,7 @@
     .account-dialog {
 
       .address {
-        color: #5BCAF9;
+        color: #6eb6a9;
         font-size: 20px;
         display: flex;
         align-items: center;
@@ -525,8 +517,8 @@
         // width: 80px;
         // height: 34px;
         padding: 12px 30px;
-        border-color: #5BCAF9;
-        color: #5BCAF9;
+        border-color: #6eb6a9;
+        color: #6eb6a9;
         border-radius: 10px;
       }
     }
@@ -593,5 +585,32 @@
       }
     }
   }
+  .network_img {
+    height: 24px;
+    width: 24px;
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .link-icon {
+    height: 18px;
+    width: 18px;
+    margin-right: 12px;
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  //@media screen and (min-width: 1200px) {
+  //  .account {
+  //    height: calc(780px - 94px);
+  //  }
+  //}
+  //.account {
+  //  height: calc(100vh - 94px);
+  //}
 
 </style>
