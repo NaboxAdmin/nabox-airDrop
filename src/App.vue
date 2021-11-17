@@ -1,48 +1,34 @@
 <template>
-  <div id="app" class="app shadow">
-    <router-view/>
-  </div>
+<!--  <keep-alive>-->
+    <router-view />
+<!--  </keep-alive>-->
 </template>
-
 <script>
-export default {
-    data() {
-      return {
-        isPc: true,
-      };
-    },
-    components: {
-     /*  HeaderBar,
-      BottomBar */
-    },
-    async created() {
-    },
-    mounted() {
-    },
-    methods: {}
-  }
+    export default {
+        data() {
+            return {}
+        },
+        created() {},
+        methods: {},
+    }
 </script>
+<style lang="scss">
+@import "stylus/public.css"; // 公共的样式
+body, div, dl, dt, dd, ul, ol, li, p, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea {
+  font-family: poppins,inter,PingFangSC-Regular,microsoft yahei,sans-serif !important;
+}
+body {
+  //max-width: 1000px;
+  //margin: 0 auto !important;
+  /* 适配齐刘海*/
+  padding-top: constant(safe-area-inset-top);
+  /* 适配底部黑条*/
+  padding-bottom: constant(safe-area-inset-bottom);
+}
 
-<style lang="less">
-  @import "assets/css/base.less";
-  body, div, dl, dt, dd, ul, ol, li, p, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea {
-    font-family: poppins,inter,PingFangSC-Regular,microsoft yahei,sans-serif !important;
+@supports (bottom: constant(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: constant(safe-area-inset-bottom);
   }
-  .app {
-    background-color: #ffffff;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    @media screen and (min-width: 1200px) {
-      width: 450px;
-      height: 780px;
-      margin: 0 auto;
-    }
-  }
-  @media screen and (max-width: 1200px) {
-    html, body {
-      height: 100%;
-    }
-  }
-
+}
 </style>

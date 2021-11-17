@@ -1,52 +1,25 @@
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
-const productionGzipExtensions = ['js', 'css'];
+const path = require("path");
 const shell = require("shelljs");
-shell.cp(process.cwd() + "/config/" + process.env.NULS_ENV + ".js",process.cwd() + "/src/config.js");
-const isProduction = process.env.NODE_ENV === 'production';
-console.log("use config file : " + process.cwd() + "/config/" + process.env.NULS_ENV + ".js");
+shell.cp(process.cwd() + "/config/" + process.env.BUILD_ENV + ".js",process.cwd() + "/src/config.js");
+console.log("use config file : " + process.cwd() + "/config/" + process.env.BUILD_ENV + ".js");
 module.exports = {
-
-  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
-
-  pluginOptions: {
-    i18n: {
-      locale: 'en',
-      fallbackLocale: 'en',
-      localeDir: 'locales',
-      enableInSFC: false
+    chainWebpack: config => {
+        config.resolve.alias
+            .set('@', path.resolve(__dirname, 'src'));
     },
-  },
-
-  configureWebpack: config => {
-    if (isProduction) {
-      config.plugins.push(new CompressionWebpackPlugin({
-        algorithm: 'gzip',
-        test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
-        threshold: 10240,
-        minRatio: 0.8
-      }));
+    devServer: {
+        port: 8008,
+        host: '0.0.0.0',
+        compress: true,
+        disableHostCheck: true, //webpack4.0 开启热更新
+        https: false, // https:{type:Boolean}
+        open: true, // 配置自动启动浏览器
+        proxy: { // 配置跨域处理
+            "/nabox-api": {
+                // target: "http://192.168.1.204:8083", // 周维
+                target: "http://nabox_api.zhoulijun.top", // 测试环境
+                changeOrigin: true,  // 是否跨域
+            },
+        }
     }
-    config.externals = {
-      'vue': 'Vue',
-      'vue-router': 'VueRouter',
-      'vuex': 'Vuex',
-      'moment': 'moment',
-      'element-ui': 'ELEMENT',
-    }
-  },
-
-  devServer: {
-    port: 8088,
-    host: '0.0.0.0',
-    https: false,
-    open: true,
-    proxy: {
-      "/nabox-api": {
-        // target: "http://192.168.1.204:8083",
-        // target: "http://beta.bridge.nerve.network",
-        target: "http://nabox_api.zhoulijun.top", // 测试环境
-        changeOrigin: true,  // 是否跨域
-      },
-    }
-  }
 };

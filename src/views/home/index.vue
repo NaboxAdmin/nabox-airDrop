@@ -1,27 +1,9 @@
 <template>
   <div class="home" v-loading="isPass && transferLoading">
-    <HeaderBar :address="fromAddress" @quit="quit" />
-    <div class="home-content" :class="{'p-15': supportListShow || showSign}" v-loading="loading" v-if="supportListShow || showSign">
-      <div class="support-list" v-if="supportListShow">
-        <span class="title">
-          Connect wallet
-        </span>
-        <div class="providers-wrap">
-          <p v-for="item in providerList" :key="item.name" @click="connectProvider(item.provider)">
-            <img :src="item.src" alt="">
-            {{item.name}}
-          </p>
-        </div>
-      </div>
-      <div class="show-sign-button" v-else-if="showSign">
-        <el-button type="primary" @click="derivedAddress">{{
-            $t('airdrop.airdrop6')
-        }}</el-button>
-      </div>
-    </div>
-    <div class="m-15" v-else>
-      <div class="banner-cont">
-        <img src="@/assets/img/banner.png" alt="">
+    <div class="m-15">
+      <div class="banner-cont" @click="toUrl">
+        <img v-if="lang==='cn'" src="../../assets/image/banner.png" alt="">
+        <img v-if="lang==='en'" src="../../assets/image/banner_1.jpg" alt="">
       </div>
       <div class="airdrop-cont">
         <template v-if="airdropList.length > 0">
@@ -32,15 +14,15 @@
                   <div class="airdrop-icon">
                     <img :src="getPicture(item.symbol)" @error="pictureError" alt="">
                   </div>
-                  <span class="font-bold size-16 text-51 ml-5">{{ item.airDropName || item.symbol }}</span>
-                  <span class="size-13 text-99 ml-5">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
+                  <span class="font-bold size-30 text-51 ml-2">{{ item.airDropName || item.symbol }}</span>
+                  <span class="size-13 text-99 ml-2">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
                 </div>
                 <div class="airdrop-info d-flex">
                   <div>
-                    <div class="text-51 size-12">{{ $t("airdrop.airdrop1") }}</div>
-                    <div>
-                      <span class="size-15 font-500">{{ item.receiveAmount }}</span>
-                      <span class="size-12 text-99">≈${{ item.usdPrice }}</span>
+                    <div class="text-51 size-24">{{ $t("airdrop.airdrop1") }}</div>
+                    <div class="mt-1">
+                      <span class="size-30 font-500">{{ item.receiveAmount }}</span>
+                      <span class="size-24 text-99">≈${{ item.usdPrice }}</span>
                     </div>
                   </div>
                 </div>
@@ -51,15 +33,15 @@
         </template>
         <div class="d-flex align-items-center direction-column justify-content-center" v-else>
           <span class="empty-img">
-            <img src="@/assets/img/empoty_airdrop.svg" alt="">
+            <img src="@/assets/image/empoty_airdrop.svg" alt="">
           </span>
-          <span class="text-center pt-4 size-16">{{ $t("tips.tips6") }}</span>
+          <span class="text-center pt-4 mt-2 size-32">{{ $t("tips.tips6") }}</span>
         </div>
       </div>
     </div>
     <pop-up :show.sync="showPop" :loading="transferLoading">
       <div class="pop-cont">
-        <div class="text-51 font-bold size-16">{{ $t("airdrop.airdrop3") }}</div>
+        <div class="text-51 font-bold size-32">{{ $t("airdrop.airdrop3") }}</div>
         <div class="input-cont">
           <input type="text" @input="codeInput" v-model="verificationCode">
           <span class="text-red size-12" v-if="errMsg">{{ errMsg }}</span>
@@ -74,21 +56,11 @@
 </template>
 
 <script>
-import HeaderBar from "@/components/HeaderBar";
 import { MAIN_INFO, ETHNET, NULS_INFO} from "@/config";
 import nerve from "nerve-sdk-js";
 import { supportChainList, getCurrentAccount, superLong } from "../../api/util";
 import { NTransfer } from "../../api/api";
-import PopUp from "../../components/PopUp";
-import MetaMask from "../../assets/img/metamask.svg";
-import Nabox from "../../assets/img/nabox.svg";
-import TrustWallet from "../../assets/img/trustwallet.svg"
-import Tokenpocket from "../../assets/img/Tokenpocket.svg"
-import Mathwallet from "../../assets/img/mathwallet.svg"
-import binancechain from "../../assets/img/binancechain.svg"
-import OKEx from "../../assets/img/okexchain.png";
-import safepal from "../../assets/img/safepal.svg";
-import coin98 from "../../assets/img/coin98.svg";
+import PopUp from "../../components/PopUp/PopUp";
 
 const ethers = require("ethers");
 const isMobile = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
@@ -96,74 +68,52 @@ const MetaMaskProvider = "ethereum"
 const NaboxProvider = "NaboxWallet"
 const OKExProvider = "okexchain"
 const BSCProvider = "BinanceChain";
+const banner = require("../../assets/image/banner.png");
+const banner_1 = require("../../assets/image/banner_1.jpg");
 
 export default {
   data() {
-    this.providerList = [
-      { name: "MetaMask", src: MetaMask, provider: MetaMaskProvider },
-      { name: "Nabox", src: Nabox, provider: NaboxProvider },
-      { name: "Trust Wallet", src: TrustWallet, provider: MetaMaskProvider },
-      { name: "TokenPocket", src: Tokenpocket, provider: MetaMaskProvider },
-      { name: "MathWallet", src: Mathwallet, provider: MetaMaskProvider },
-      { name: "Binance Chain", src: binancechain, provider: BSCProvider },
-      { name: "OKEx Wallet", src: OKEx, provider: OKExProvider },
-      { name: "SafePal", src: safepal, provider: MetaMaskProvider },
-      { name: "Coin98", src: coin98, provider: MetaMaskProvider },
-    ]
     return {
       loading: true,
       supportListShow: true, //显示可连接钱包列表
-      showSign: true, //显示派生地址
       address: "", //metamask当前选中地址
       swapType: "nerve",
       provider: null,
       fromChainId: "",
       walletType: isMobile ? MetaMaskProvider : localStorage.getItem("walletType"), // 连接钱包类型 metamask walletConnect
       showPop: false,
-      nerveAddress: '',
       errMsg: '',
       airdropList: [], // 当前可领取空投List
       currentAirdrop: null, // 当前选择领取的空投
       verificationCode: '', // 202024
       transferLoading: false,
-      isPass: false
+      isPass: false,
+      lang: ''
     };
   },
 
   components: {
-    HeaderBar,
     PopUp
   },
 
   watch: {
-    address: {
+    "$store.state.fromAddress": {
       immediate: true,
+      deep: true,
       handler(val) {
-        console.log(val, 'val address');
-        if (!val) return;
-        const currentAccount = getCurrentAccount(val);
-        this.showSign = !currentAccount
-      },
-    },
-    fromChainId: {
-      immediate: true,
-      handler(val) {
-        if (!val) return;
-        const chain = supportChainList.find(v => v[ETHNET] === val);
-        if (chain) {
-          this.$store.commit("changeNetwork", 'NERVE');
-        } else {
-          this.$store.commit("changeNetwork", 'NERVE');
+        // console.log(val, 'fromAddress')
+        if (val) {
+          this.getAirDropList(val);
+          // this.fromAddress = val;
         }
       }
     },
-    fromAddress: {
+    "$store.state.lang": {
       immediate: true,
       deep: true,
       handler(val) {
         if (val) {
-          this.getAirDropList(val);
-          this.fromAddress = val;
+          this.lang = val;
         }
       }
     }
@@ -173,32 +123,25 @@ export default {
     fromNetwork() {
       return this.$store.state.network;
     },
-    fromAddress() {
-      const currentAccount = getCurrentAccount(this.address);
-      return currentAccount && !this.showSign ? currentAccount.address['NERVE'] : "";
-    },
+    // fromAddress() {
+    //   const currentAccount = getCurrentAccount(this.address);
+    //   return currentAccount && !this.showSign ? currentAccount.address['NERVE'] : "";
+    // },
     isMobile() {
       return /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
     }
   },
 
   created() {
-    if (typeof this.$route.query.loginOut === 'boolean' && this.$route.query.loginOut === true) {
-      this.setConfig(null);
-    }
-    console.log(this.isMobile, 'isMobile')
     if (this.isMobile) {
       localStorage.setItem("walletType", this.walletType);
     }
-    setTimeout(() => {
-      this.initConnect();
-    }, 0);
   },
   methods: {
     async getAirDropList(address, reload=false) {
       try {
         const tempList = JSON.parse(localStorage.getItem('airdropList'));
-        const currentAccount = getCurrentAccount(address || this.address);
+        const currentAccount = getCurrentAccount(address || this.fromAddress);
         const data = {
           pubKey: currentAccount && currentAccount.pub || ""
         };
@@ -285,14 +228,14 @@ export default {
           chain: "NERVE",
           type: 2
         });
-        const currentAccount = getCurrentAccount(this.address);
+        const currentAccount = getCurrentAccount(this.fromAddress);
         const crossAddress = await this.getCrossAddress();
         if (!crossAddress) {
           throw 'crossAddress error'
         }
         const { chainId, assetId } = MAIN_INFO;
         const transferInfo = {
-          from: this.fromAddress,
+          from: this.nerveAddress || currentAccount && currentAccount.address['NERVE'] || '',
           to: crossAddress,
           amount: 0,
           fee: 0,
@@ -300,7 +243,6 @@ export default {
           assetsId: assetId
         };
         const { inputs, outputs } = await transfer.transferTransaction(transferInfo);
-        console.log(inputs, outputs, 'inputs, outputs')
         const txHex = await transfer.getTxHex({
           inputs,
           outputs,
@@ -393,6 +335,9 @@ export default {
       this.showPop = false;
       this.errMsg = "";
     },
+    toUrl() {
+      this.isMobile ? window.location.href = 'https://nabox.io/' : window.open('https://nabox.io/');
+    },
     getPicture(suffix) {
       let baseUrl = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/';
       return `${baseUrl}${suffix}.png`
@@ -403,55 +348,10 @@ export default {
     superLong(str, len = 5) {
       return superLong(str, len)
     },
-
-    async initConnect() {
-      if (!this.walletType || !window[this.walletType]) {
-        localStorage.removeItem("walletType")
-        this.loading = false;
-        return;
-      }
-      this.wallet = window[this.walletType];
-      this.address = this.wallet.selectedAddress;
-      console.log(this.wallet.selectedAddress, 'this.wallet.selectedAddress')
-      if (!this.address) {
-        await this.requestAccounts();
-      }
-      this.fromChainId = this.parseChainId(this.wallet.chainId);
-      this.provider = new ethers.providers.Web3Provider(this.wallet);
-      this.supportListShow = false;
-      this.listenAccountChange();
-      this.listenNetworkChange();
-      this.loading = false;
-    },
     parseChainId(chainId) {
       chainId = chainId + ""
       // 兼容Binggo
       return chainId.startsWith("0x") ? chainId : "0x" + Number(chainId).toString(16);
-    },
-    async requestAccounts() {
-      const res = await this.wallet.request({ method: "eth_requestAccounts" });
-      if (res.length) {
-        this.address = res[0];
-        this.$store.commit("changeSelectAddress", this.address);
-      }
-    },
-    // 连接provider
-    async connectProvider(provider) {
-      if (!window[provider]) {
-        this.$message({ message: "No provider was found", type: "warning"});
-        return
-      }
-      if (isMobile) {
-        provider = MetaMaskProvider
-      }
-      try {
-        this.setConfig(provider)
-        await this.initConnect();
-      } catch (e) {
-        // console.log(e, 222)
-        this.setConfig(null)
-        this.$message({ message: e.message, type: "warning"});
-      }
     },
     setConfig(provider) {
       if (provider) {
@@ -475,12 +375,9 @@ export default {
             this.switchNetwork(this.address)
           }
           // this.getBalance();
-        } else {
-          this.setConfig(null)
         }
       });
     },
-
     //监听网络改变
     listenNetworkChange() {
       this.wallet.on("chainChanged", (chainId) => {
@@ -489,107 +386,6 @@ export default {
           this.fromChainId = this.parseChainId(chainId);
         }
       });
-    },
-    //通过调用metamask签名，派生多链地址
-    async derivedAddress() {
-      this.loading = true;
-      try {
-        if (!this.address) {
-          await this.requestAccounts();
-        }
-        let account, pub;
-        if (!this.address.startsWith("0x")) {
-          if (!window.nabox) {
-            throw "Nabox not found"
-          }
-          pub = await window.nabox.getPub({
-            address: this.address
-          });
-          const address = ethers.utils.computeAddress(ethers.utils.hexZeroPad(ethers.utils.hexStripZeros('0x' + pub), 33));
-          account = {
-            address: {
-              pluginAddress: address
-            }
-          }
-        } else {
-          const jsonRpcSigner = this.provider.getSigner();
-          let message = "Derive Address";
-          const signature = await jsonRpcSigner.signMessage(message);
-          const msgHash = ethers.utils.hashMessage(message);
-          const msgHashBytes = ethers.utils.arrayify(msgHash);
-          const recoveredPubKey = ethers.utils.recoverPublicKey(
-            msgHashBytes,
-            signature
-          );
-          account = {
-            address: {
-              pluginAddress: this.address
-            }
-          }
-          if (recoveredPubKey.startsWith("0x04")) {
-            const compressPub = ethers.utils.computePublicKey(
-              recoveredPubKey,
-              true
-            );
-            pub = compressPub.slice(2);
-          } else {
-            throw "sign error"
-          }
-        }
-        account.pub = pub;
-        const { chainId, assetId, prefix } = MAIN_INFO;
-        const {
-          chainId: NULSChainId,
-          assetId: NULSAssetId,
-          prefix: NULSPrefix,
-        } = NULS_INFO;
-        // console.log(NULSChainId, NULSAssetId, NULSPrefix, 55)
-        account.address.NERVE = nerve.getAddressByPub(
-          chainId,
-          assetId,
-          pub,
-          prefix
-        );
-        account.address.NULS = nerve.getAddressByPub(
-            NULSChainId,
-            NULSAssetId,
-            pub,
-            NULSPrefix
-        );
-        console.log(account, 'account');
-        const accountList = JSON.parse(localStorage.getItem("accountList")) || [];
-        const existIndex = accountList.findIndex(v => v.pub === account.pub);
-        // 原来存在就替换，找不到就push
-        if (existIndex > -1) {
-          accountList[existIndex] = account
-        } else {
-          accountList.push(account);
-        }
-        localStorage.setItem("accountList", JSON.stringify(accountList));
-        // 重新计算fromAddress
-        const address = this.address;
-        // this.switchNetwork(address);
-        this.address = "";
-        setTimeout(()=> {
-          this.address = address;
-        }, 16);
-        // const syncRes = await this.syncAccount(pub, account.address);
-        // if (syncRes) {
-        //
-        // } else {
-        //   this.$message({
-        //     type: "warning",
-        //     message: this.$t("tips.tips4"),
-        //   });
-        // }
-      } catch (e) {
-        console.log(e, 556)
-        this.setConfig(null)
-        this.address = "";
-        this.$message({ message: this.$t("tips.tips9"), type: "warning" });
-      }
-      this.loading = false;
-      // this.showSign = false;
     },
     async syncAccount(pub, accounts) {
       const addressList = [];
@@ -604,10 +400,6 @@ export default {
         data: { pubKey: pub, addressList },
       });
       return res.code === 1000;
-    },
-
-    quit() {
-      this.setConfig(null);
     },
     switchNetwork(address) {
       // 连接插件时如果是nuls、nerve设置network为nuls/nerve
@@ -624,13 +416,12 @@ export default {
   },
 };
 </script>
-<style lang="less">
-@BColor: #ebeef8;
-@labelColor: #99a3c4;
+<style lang="scss">
+$BColor: #ebeef8;
+$labelColor: #99a3c4;
 .home {
   background-color: #fff;
-  height: 100%;
-  position: relative;
+  //position: relative;
   .home-content {
     background-color: #fff;
     margin: 15px;
@@ -738,11 +529,11 @@ export default {
       height: 54px;
       font-size: 14px;
       border-radius: 10px;
-      background-color: @BColor;
+      background-color: $BColor;
       padding: 15px;
       display: flex;
       align-items: center;
-      color: @labelColor;
+      color: $labelColor;
     }
 
     .network {
@@ -785,7 +576,7 @@ export default {
   .fee {
     .label {
       font-size: 12px;
-      color: @labelColor;
+      color: $labelColor;
       margin-right: 5px;
       margin-bottom: 6px;
       line-height: 1;
@@ -797,13 +588,13 @@ export default {
       justify-content: space-between;
       align-items: center;
       span {
-        color: @labelColor;
+        color: $labelColor;
         font-size: 12px;
       }
     }
     .amount-inner {
       height: 74px;
-      background-color: @BColor;
+      background-color: $BColor;
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -816,29 +607,9 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      // min-width: 130px;
       &:hover {
         background-color: rgb(224, 217, 235);
       }
-      /* img {
-        width: 30px;
-        height: 30px;
-        margin-right: 5px;
-      }
-      
-      .origin-chain {
-        display: inline-block;
-        border: 1px solid #5BCAF9;
-        border-radius: 2px;
-        padding: 1px 5px;
-        font-size: 12px;
-        font-weight: normal;
-        margin-left: -6px;
-        color: #5BCAF9;
-        transform: scale(0.8);
-        min-width: 50px;
-        text-align: center;
-      } */
     }
     .el-input-group__prepend {
       .el-select .el-input {
@@ -848,7 +619,7 @@ export default {
     }
     .el-input-group__prepend,
     .el-input-group__append {
-      background-color: @BColor;
+      background-color: $BColor;
       padding: 0 10px;
       border: none;
       width: auto;
@@ -865,7 +636,7 @@ export default {
       color: #99a3c4;
     }
     .el-input__inner {
-      background-color: @BColor !important;
+      background-color: $BColor !important;
       border: none !important;
       /* font-weight: bold;
       color: #99a3c4 !important; */
@@ -934,22 +705,11 @@ export default {
     text-align: center;
   }
 }
-@media screen and (min-width: 1200px) {
-  .home {
-    .home-content {
-      min-height: calc(780px - 94px);
-    }
-  }
-  .airdrop-cont {
-    min-height: calc(780px - 240px) !important;
-    max-height: calc(780px - 240px) !important;
-  }
-}
 .banner-cont {
-  height: 130px;
+  height: 260px;
   //background-color: purple;
   border-radius: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
   overflow: hidden;
   img {
     height: 100%;
@@ -962,19 +722,18 @@ export default {
 .airdrop-cont {
   background-color: #fff;
   border-radius: 10px;
-  min-height: calc(100vh - 240px);
-  max-height:  calc(100vh - 240px);
-  overflow: auto;
+  //min-height: calc(100vh - 240px);
+  //max-height:  calc(100vh - 240px);
   .airdrop-list {
-    padding: 15px;
+    padding: 30px;
     border-bottom: 1px solid #E9EBF3;
     //&:last-child {
     //  border: none;
     //}
     .airdrop-item {
       .airdrop-icon {
-        height: 30px;
-        width: 30px;
+        height: 60px;
+        width: 60px;
         border-radius: 50%;
         overflow: hidden;
         img {
@@ -984,38 +743,39 @@ export default {
       }
     }
     .airdrop-info {
-      margin-top: 6px;
+      margin-top: 12px;
     }
   }
 }
 .receive_btn {
-  height: 34px;
-  width: 60px;
-  line-height: 34px;
+  height: 68px;
+  width: 120px;
+  line-height: 68px;
   text-align: center;
   color: #fff;
   background-color: #6eb6a9;
   border-radius: 10px;
 }
 .pop-cont {
-  width: 340px;
-  padding: 15px;
+  width: 620px;
+  padding: 30px;
   background-color: #FFFFFF;
-  border-radius: 10px;
+  border-radius: 20px;
   .input-cont {
-    margin: 20px auto;
-    width: 100%;
+    margin: 40px auto;
+    display: flex;
+    //width: 100%;
     input {
-      width: 100%;
-      height: 40px;
+      flex: 1;
+      height: 70px;
       padding-left: 20px;
       border: 1px solid #6eb6a9;
       outline: none;
-      border-radius: 5px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 32px;
       &::placeholder {
         color: #ABB1BA;
-        font-size: 15px;
+        font-size: 30px;
       }
     }
   }
@@ -1024,10 +784,10 @@ export default {
     align-items: center;
     justify-content: space-between;
     .btn_item {
-      font-size: 13px;
-      height: 40px;
-      width: 140px;
-      line-height: 40px;
+      font-size: 26px;
+      height: 80px;
+      width: 280px;
+      line-height: 80px;
       text-align: center;
       color: #6eb6a9;
       border-radius: 10px;
@@ -1040,12 +800,12 @@ export default {
   }
 }
 .m-15 {
-  margin: 15px;
+  margin: 20px;
 }
 .empty-img {
-  margin-top: 100px;
-  height: 100px;
-  width: 100px;
+  margin-top: 200px;
+  height: 200px;
+  width: 200px;
   img {
     height: 100%;
     width: 100%;

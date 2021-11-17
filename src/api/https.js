@@ -1,7 +1,6 @@
 import axios from 'axios'
 import * as config from './../config.js'
 import {chainID} from './util'
-import {AIR_BOX_API_URL} from "../../config/prod";
 
 // axios.defaults.timeout = config.API_TIME;
 // axios.defaults.baseURL = config.API_URL;
@@ -33,11 +32,8 @@ export function post(url, methodName, data = []) {
 
 export async function request(params) {
   const { url, method = "post", data } = params;
-  let baseUrl = config.AIR_BOX_API_URL
-  // if (url === "/tx/cross/bridge/transfer") {
-  //   baseUrl = "/nabox-api"
-  // }
-  const language = localStorage.getItem("lang") === "cn" ? "CHS" : "EN";
+  const baseUrl = config.BRIDGE_API_URL
+  const language = localStorage.getItem("locale") === "cn" ? "CHS" : "EN";
   const newData = method === "post" ? {data: {language, ...data}} : {params: {language, ...data}};
   return new Promise((resolve, reject) => {
     //console.log(newData);

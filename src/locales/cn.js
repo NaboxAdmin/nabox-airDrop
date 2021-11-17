@@ -10,7 +10,9 @@ const cn = {
     tips6: "暂无可以领取的空投",
     tips7: "账户",
     tips8: "复制成功",
-    tips9: "生成地址失败"
+    tips9: "生成地址失败",
+    tips10: "连接钱包",
+    tips11: "生成地址"
   },
   airdrop: {
     airdrop1: "空投数量",

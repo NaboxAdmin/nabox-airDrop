@@ -10,7 +10,9 @@ const cn = {
     tips6: "There is no airdrop to claim yet",
     tips7: "Account",
     tips8: "Copy success",
-    tips9: "Failed to generate address"
+    tips9: "Failed to generate address",
+    tips10: "Connect Wallet",
+    tips11: "Generate Address"
   },
   airdrop: {
     airdrop1: "Amount",
@@ -21,7 +23,7 @@ const cn = {
     airdrop6: "Generate Address"
   },
   header: {
-    header1: "Official Website",
+    header1: "Website",
     header2: "SwapBox",
     header3: "Quit"
   },

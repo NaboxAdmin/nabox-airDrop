@@ -1,7 +1,6 @@
+.DS_Store
 node_modules
 /dist
-yarn.lock
-src/config.js
 
 # local env files
 .env.local
@@ -19,4 +18,12 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-*.sw*
+*.sw?
+
+# Vue Browser Extension Output
+*.pem
+*.pub
+*.zip
+/artifacts
+yarn.lock
+.bash_profile

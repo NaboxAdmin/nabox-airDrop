@@ -1,21 +1,8 @@
 import nerve from 'nerve-sdk-js'
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
-import {ETHNET, MAIN_INFO, NULS_INFO} from '@/config.js'
-import {post} from './https'
-import ETHLogo from "@/assets/img/mainAsset/eth.png";
-import BNBLogo from "@/assets/img/mainAsset/BSC.png";
-import HTLogo from "@/assets/img/mainAsset/Heco.png";
-import OKTLogo from "@/assets/img/mainAsset/OEC.png";
-import NULSLogo from "@/assets/img/mainAsset/NULS.png";
-import NVTLogo from "@/assets/img/mainAsset/Nerve.png";
-import ETHLogo_active from "@/assets/img/mainAsset/eth-active.png";
-import BNBLogo_active from "@/assets/img/mainAsset/BSC-active.png";
-import HTLogo_active from "@/assets/img/mainAsset/Heco-active.png";
-import OKTLogo_active from "@/assets/img/mainAsset/OEC-active.png";
-import NULSLogo_active from "@/assets/img/mainAsset/NULS-active.png";
-import NVTLogo_active from "@/assets/img/mainAsset/Nerve-active.png";
-import {Log} from "ethers/providers";
+import { MAIN_INFO, NULS_INFO, ETHNET} from '@/config.js'
+import { post, request } from './https'
 
 /**
  * 10的N 次方
@@ -104,18 +91,17 @@ export function divisionAndFix(nu, decimals = 8, fix) {
   const newFix = fix ? fix : decimals
   const str = new BigNumber(Division(nu, Power(decimals))).toFixed(newFix)
   const pointIndex = str.indexOf(".");
-  let lastStr = str.substr(str.length - 1);
+  let lastStr = str.substr(str.length-1);
   let lastIndex = str.length;
-  while (lastStr == 0 && lastIndex >= pointIndex) {
+  while(lastStr == 0 && lastIndex >= pointIndex) {
     lastStr = str.substr(lastIndex - 1, 1);
     if (lastStr == 0) {
-      lastIndex = lastIndex - 1
+      lastIndex = lastIndex -1
     }
   }
-  lastIndex = str.substr(lastIndex - 1, 1) === "." ? lastIndex - 1 : lastIndex
-  return str.substring(0, lastIndex)
+  lastIndex = str.substr(lastIndex - 1 , 1) === "." ? lastIndex -1 : lastIndex
+  return str.substring(0,lastIndex)
 }
-
 /**
  * @disc: 验证密码
  * @params:  accountInfo
@@ -183,7 +169,7 @@ export function addressInfo(type) {
     if (type === 0) {
       return addressList
     } else {
-      for (let item of addressList) {
+      for (let item  of addressList) {
         if (item.selection) {
           return item
         }
@@ -361,7 +347,7 @@ export function equalsObj(oldData, newData) {
     for (const key in oldData) {
       if (oldData.hasOwnProperty(key)) {
         if (!equalsObj(oldData[key], newData[key]))
-          //对象中具有不相同属性 返回false
+        //对象中具有不相同属性 返回false
           return false;
       }
     }
@@ -369,7 +355,7 @@ export function equalsObj(oldData, newData) {
     //类型为数组并且数组长度相同
     for (let i = 0, length = oldData.length; i < length; i++) {
       if (!equalsObj(oldData[i], newData[i]))
-        //如果数组元素中具有不相同元素,返回false
+      //如果数组元素中具有不相同元素,返回false
         return false;
     }
   } else {
@@ -465,7 +451,7 @@ export async function getSymbolInfo(chainId, assetId, refresh = false) {
   if (!assetId || !chainId) return;
   const symbol = chainId + '-' + assetId;
   let coinInfo = JSON.parse(sessionStorage.getItem("coinInfo")) || {};
-  if (coinInfo[symbol] && !refresh) {
+  if (coinInfo[symbol]&&!refresh) {
     return coinInfo[symbol]
   }
   try {
@@ -562,112 +548,145 @@ export const networkOrigin = {
   NULS: isBeta ? 'http://beta.nulscan.io' : 'https://nulscan.io',
   Ethereum: isBeta ? 'https://ropsten.etherscan.io' : 'https://etherscan.io',
   BSC: isBeta ? 'https://testnet.bscscan.com' : 'https://bscscan.com',
-  // HTOrigin: isBeta ? 'https://scan-testnet.hecochain.com' : 'https://scan.hecochain.com'
   Heco: isBeta ? 'https://testnet.hecoinfo.com' : 'https://hecoinfo.com',
-  OKExChain: isBeta ? "https://www.oklink.com/okexchain-test" : "https://www.oklink.com/okexchain"
+  OKExChain: isBeta ? "https://www.oklink.com/okexchain-test" : "https://www.oklink.com/okexchain",
+  Harmony: isBeta ?  "https://explorer.harmony.one/" : "https://explorer.pops.one/",
+  Polygon: isBeta ?  "https://mumbai.polygonscan.com/" : "https://explorer.matic.network/",
+  KCC:  isBeta ?  "https://scan-testnet.kcc.network" : "https://explorer.kcc.io/",
 }
 
-export function getLogoSrc(icon) {
-  return icon || "https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/NERVE_NULL.png"
-  // return "https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/" + symbol + ".png"
+export const hashLinkList = {
+  Ethereum: isBeta ? 'https://ropsten.etherscan.io/tx/' : 'https://etherscan.io/tx/',
+  BSC: isBeta ? 'https://testnet.bscscan.com/tx/' : 'https://bscscan.com/tx/',
+  Heco: isBeta ? 'https://testnet.hecoinfo.com/tx/' : 'https://hecoinfo.com/tx/',
+  OKExChain: isBeta ? "https://www.oklink.com/okexchain-test/tx/" : 'https://www.oklink.com/okexchain/tx/',
+  NULS: isBeta ? 'http://beta.nulscan.io/transaction/info?hash=' : 'https://nulscan.io/transaction/info?hash=',
+  NERVE: isBeta ? 'http://beta.scan.nerve.network/transaction/info?hash=' : 'https://scan.nerve.network/transaction/info?hash='
+}
+
+export const addressNetworkOrigin = {
+  NERVE: isBeta ? 'http://beta.scan.nerve.network/address/info?address=' : 'https://scan.nerve.network/address/info?address=',
+  NULS: isBeta ? 'http://beta.nulscan.io/address/info?address=' : 'https://nulscan.io/address/info?address=',
+  Ethereum: isBeta ? 'https://ropsten.etherscan.io/address/' : 'https://etherscan.io/address/',
+  BSC: isBeta ? 'https://testnet.bscscan.com/address/' : 'https://bscscan.com/address/',
+  Heco: isBeta ? 'https://testnet.hecoinfo.com/address/' : 'https://hecoinfo.com/address/',
+  OKExChain: isBeta ? "https://www.oklink.com/okexchain-test/address/" : "https://www.oklink.com/okexchaint/address/",
+  Harmony: isBeta ?  "https://explorer.harmony.one/address/" : "https://explorer.pops.one/address/",
+  Polygon: isBeta ?  "https://mumbai.polygonscan.com/address/" : "https://explorer.matic.network/address/",
+  KCC:  isBeta ?  "https://scan-testnet.kcc.network/address/" : "https://explorer.kcc.io/address/"
+}
+
+export const networkRpc = {
+  // Ethereum: isBeta ? 'https://ropsten.etherscan.io' : 'https://etherscan.io',
+  BSC: isBeta ? 'https://data-seed-prebsc-1-s1.binance.org:8545/' : 'https://bsc-dataseed.binance.org/',
+  Heco: isBeta ? 'https://http-testnet.hecochain.com' : 'https://http-mainnet.hecochain.com',
+  OKExChain: isBeta ? "https://exchaintestrpc.okex.org" : "https://exchainrpc.okex.org",
+  Harmony: isBeta ? "https://api.s0.b.hmny.io" : "https://api.harmony.one",
+  Polygon: isBeta ? "https://rpc-mumbai.maticvigil.com/" : "https://rpc-mainnet.maticvigil.com/",
+  KCC: isBeta ? "https://rpc-testnet.kcc.network" : "https://rpc-mainnet.kcc.network",
+}
+
+export function getLogoSrc(symbol) {
+  return "https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/" + symbol + ".png"
 }
 
 
-export const supportChainList = [
-  {
-    label: "Ethereum",
-    value: "Ethereum",
-    symbol: "ETH",
-    ropsten: "0x3",
-    SwftChain: "Ethereum",
-    homestead: "0x1",
-    chainId: 101,
-    assetId: 1,
-    logo: ETHLogo,
-    logoActive: ETHLogo_active,
-    origin: networkOrigin.Ethereum
-  },
-  {
-    label: "BSC",
-    value: "BSC",
-    symbol: "BNB",
-    ropsten: "0x61",
-    homestead: "0x38",
-    SwftChain: "BSC",
-    chainId: 102,
-    assetId: 1,
-    logo: BNBLogo,
-    logoActive: BNBLogo_active,
-    origin: networkOrigin.BSC,
-    decimals: 18,
-    rpcUrl: {
-      ropsten: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-      homestead: "https://bsc-dataseed.binance.org/"
-    }
-  },
-  {
-    label: "Heco",
-    value: "Heco",
-    symbol: "HT",
-    ropsten: "0x100",
-    homestead: "0x80",
-    SwftChain: "Heco",
-    chainId: 103,
-    assetId: 1,
-    logo: HTLogo,
-    logoActive: HTLogo_active,
-    origin: networkOrigin.Heco,
-    decimals: 18,
-    rpcUrl: {
-      ropsten: "https://http-testnet.hecochain.com",
-      homestead: "https://http-mainnet.hecochain.com"
-    }
-  },
-  {
-    label: "OKExChain",
-    value: "OKExChain",
-    symbol: "OKT",
-    ropsten: "0x41",
-    homestead: "0x42",
-    SwftChain: "OKExChain",
-    chainId: 104,
-    assetId: 1,
-    logo: OKTLogo,
-    logoActive: OKTLogo_active,
-    origin: networkOrigin.OKExChain,
-    decimals: 18,
-    rpcUrl: {
-      ropsten: "https://exchaintestrpc.okex.org",
-      homestead: "https://exchainrpc.okex.org"
-    }
-  },
-  {
-    label: "NULS",
-    value: "NULS",
-    symbol: "NULS",
-    SwftChain: "NULS",
-    chainId: NULS_INFO.chainId,
-    assetId: NULS_INFO.assetId,
-    logo: NULSLogo,
-    logoActive: NULSLogo_active,
-    origin: networkOrigin.NULS
-  },
-  {
-    label: "NERVE",
-    value: "NERVE",
-    symbol: "NVT",
-    SwftChain: "NERVE",
-    chainId: MAIN_INFO.chainId,
-    assetId: MAIN_INFO.assetId,
-    logo: NVTLogo,
-    logoActive: NVTLogo_active,
-    origin: networkOrigin.NERVE
-  }
-];
+// export const supportChainList = [
+//   { label: "NERVE", value: "NERVE", symbol: "NVT", SwftChain: "NERVE", chainId: MAIN_INFO.chainId, assetId: MAIN_INFO.assetId },
+//   { label: "NULS", value: "NULS", symbol:"NULS", SwftChain: "NULS", chainId: NULS_INFO.chainId, assetId: NULS_INFO.assetId },
+//   { label: "Ethereum", value: "Ethereum", symbol:"ETH", ropsten: "0x3", SwftChain: "Ethereum", homestead: "0x1", chainId: 101, assetId: 1 },
+//   { label: "BSC", value: "BSC", symbol:"BNB", ropsten: "0x61", homestead: "0x38", SwftChain: "BSC", chainId: 102, assetId: 1, origin: networkOrigin.BSC, rpcUrl: {ropsten: "https://data-seed-prebsc-1-s1.binance.org:8545/", homestead: "https://bsc-dataseed.binance.org/"}},
+//   { label: "Heco", value: "Heco", symbol:"HT", ropsten: "0x100", homestead: "0x80", SwftChain: "Heco", chainId: 103, assetId: 1, origin: networkOrigin.Heco, rpcUrl: {ropsten: "https://http-testnet.hecochain.com",homestead: "https://http-mainnet.hecochain.com"}},
+//   { label: "OKExChain", value: "OKExChain", symbol:"OKT", ropsten: "0x41", homestead: "0x42", SwftChain: "OKExChain", chainId: 104, origin: networkOrigin.OKExChain, assetId: 1, rpcUrl: {ropsten: "https://exchaintestrpc.okex.org",homestead: "https://exchainrpc.okex.org"}}
+// ];
+
+// TODO:多链
+export const supportChainList = sessionStorage.getItem('supportChainList') && JSON.parse(sessionStorage.getItem('supportChainList')) || [];
+// console.log(supportChainList, '==supportChainListTest==')
+
+// export const supportChainList = [
+//   {
+//     label: "Ethereum",
+//     value: "Ethereum",
+//     symbol: "ETH",
+//     ropsten: "0x3",
+//     SwftChain: "Ethereum",
+//     homestead: "0x1",
+//     chainId: 101,
+//     assetId: 1,
+//     origin: networkOrigin.Ethereum
+//   },
+//   {
+//     label: "BSC",
+//     value: "BSC",
+//     symbol: "BNB",
+//     ropsten: "0x61",
+//     homestead: "0x38",
+//     SwftChain: "BSC",
+//     chainId: 102,
+//     assetId: 1,
+//     origin: networkOrigin.BSC,
+//     decimals: 18,
+//     rpcUrl: {
+//       ropsten: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+//       homestead: "https://bsc-dataseed.binance.org/"
+//     }
+//   },
+//   {
+//     label: "Heco",
+//     value: "Heco",
+//     symbol: "HT",
+//     ropsten: "0x100",
+//     homestead: "0x80",
+//     SwftChain: "Heco",
+//     chainId: 103,
+//     assetId: 1,
+//     origin: networkOrigin.Heco,
+//     decimals: 18,
+//     rpcUrl: {
+//       ropsten: "https://http-testnet.hecochain.com",
+//       homestead: "https://http-mainnet.hecochain.com"
+//     }
+//   },
+//   {
+//     label: "OKExChain",
+//     value: "OKExChain",
+//     symbol: "OKT",
+//     ropsten: "0x41",
+//     homestead: "0x42",
+//     SwftChain: "OKExChain",
+//     chainId: 104,
+//     assetId: 1,
+//     origin: networkOrigin.OKExChain,
+//     decimals: 18,
+//     rpcUrl: {
+//       ropsten: "https://exchaintestrpc.okex.org",
+//       homestead: "https://exchainrpc.okex.org"
+//     }
+//   },
+//   {
+//     label: "NULS",
+//     value: "NULS",
+//     symbol: "NULS",
+//     SwftChain: "NULS",
+//     chainId: NULS_INFO.chainId,
+//     assetId: NULS_INFO.assetId,
+//     origin: networkOrigin.NULS
+//   },
+//   {
+//     label: "NERVE",
+//     value: "NERVE",
+//     symbol: "NVT",
+//     SwftChain: "NERVE",
+//     chainId: MAIN_INFO.chainId,
+//     assetId: MAIN_INFO.assetId,
+//     origin: networkOrigin.NERVE
+//   }
+// ];
 
 export function debounce(fn, delay) {
   let timer
-  return function () {
+  return function() {
     const args = arguments;
     if (timer) {
       clearTimeout(timer);
@@ -698,23 +717,30 @@ export function getCurrentAccount(address) {
   });
 }
 
-export const withdrawFeeRate = {
-  Ethereum: {
-    normal: 1.3,
-    speed: 1.56
-  },
-  BSC: {
-    normal: 2,
-    speed: 2.4
-  },
-  Heco: {
-    normal: 5,
-    speed: 6
-  },
-  OKExChain: {
-    normal: 5,
-    speed: 6
+/**
+ * data.network 当前网络 beta/main
+ * data.fromChain 来源链
+ * data.contractAddress  eth、bnb上token资产合约地址
+ * data.assetsChainId
+ * data.assetsId
+ */
+export async function getAssetNerveInfo(data) {
+  let result = null;
+  let params = {};
+  if (data.contractAddress) {
+    const config = JSON.parse(sessionStorage.getItem("config"));
+    const mainAsset = config[data.network]; //来源链(eth,bnb,heco)主资产信息
+    params = {chainId: mainAsset.chainId, contractAddress: data.contractAddress};
+  } else {
+    params = {chainId: data.assetsChainId, assetId: data.assetsId};
   }
+  try {
+    const res = await request({url: "/asset/nerve/chain/info", data: params});
+    if (res.code === 1000) {
+      result = res.data;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return result;
 }
-
-export const withdrawalToNulsFee = 3
