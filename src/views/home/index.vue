@@ -37,6 +37,7 @@
           </span>
           <span class="text-center pt-4 mt-2 size-32">{{ $t("tips.tips6") }}</span>
         </div>
+        <div class="size-28 text-primary text-center position-absolute_cont" @click="toTelegram">{{ $t("tips.tips12") }}</div>
       </div>
     </div>
     <pop-up :show.sync="showPop" :loading="transferLoading">
@@ -338,6 +339,9 @@ export default {
     toUrl() {
       this.isMobile ? window.location.href = 'https://nabox.io/' : window.open('https://nabox.io/');
     },
+    toTelegram() {
+      this.isMobile ? window.location.href = 'https://t.me/Nabox_Wallet' : window.open('https://t.me/Nabox_Wallet');
+    },
     getPicture(suffix) {
       let baseUrl = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/';
       return `${baseUrl}${suffix}.png`
@@ -352,17 +356,6 @@ export default {
       chainId = chainId + ""
       // 兼容Binggo
       return chainId.startsWith("0x") ? chainId : "0x" + Number(chainId).toString(16);
-    },
-    setConfig(provider) {
-      if (provider) {
-        this.walletType = provider;
-        localStorage.setItem("walletType", provider);
-      } else {
-        this.walletType = "";
-        localStorage.setItem("walletType", "");
-        this.address = "";
-        this.supportListShow = true
-      }
     },
     //监听账户改变
     listenAccountChange() {
@@ -425,7 +418,6 @@ $labelColor: #99a3c4;
   .home-content {
     background-color: #fff;
     margin: 15px;
-    //padding: 15px;
     min-height: calc(100vh - 94px);
     border-radius: 10px;
   }
@@ -720,10 +712,14 @@ $labelColor: #99a3c4;
   flex-direction: column;
 }
 .airdrop-cont {
-  background-color: #fff;
+  position: relative;
+  background-color: #FFFFFF;
   border-radius: 10px;
-  //min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 440px);
   //max-height:  calc(100vh - 240px);
+  @media screen and (min-width: 1000px){
+    min-height: calc(1560px - 440px);
+  }
   .airdrop-list {
     padding: 30px;
     border-bottom: 1px solid #E9EBF3;
@@ -745,6 +741,12 @@ $labelColor: #99a3c4;
     .airdrop-info {
       margin-top: 12px;
     }
+  }
+  .position-absolute_cont {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 .receive_btn {
