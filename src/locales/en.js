@@ -13,7 +13,8 @@ const cn = {
     tips9: "Failed to generate address",
     tips10: "Connect Wallet",
     tips11: "Generate Address",
-    tips12: "Free Airdrop"
+    tips12: "Free Airdrop",
+    tips13: "Failed to sync account"
   },
   airdrop: {
     airdrop1: "Amount",

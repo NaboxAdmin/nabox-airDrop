@@ -380,17 +380,10 @@ export default {
         }
       });
     },
-    async syncAccount(pub, accounts) {
-      const addressList = [];
-      Object.keys(accounts).map((v) => {
-        addressList.push({
-          chain: v,
-          address: accounts[v],
-        });
-      });
+    async syncAccount(pub) {
       const res = await this.$request({
         url: "/wallet/sync",
-        data: { pubKey: pub, addressList },
+        data: { pubKey: pub },
       });
       return res.code === 1000;
     },

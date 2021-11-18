@@ -258,17 +258,10 @@ export default {
         }
       }
     },
-    async syncAccount(pub, accounts) {
-      const addressList = [];
-      Object.keys(accounts).map((v) => {
-        addressList.push({
-          chain: v,
-          address: accounts[v],
-        });
-      });
+    async syncAccount(pub) {
       const res = await this.$request({
         url: "/wallet/sync",
-        data: { pubKey: pub, addressList },
+        data: { pubKey: pub },
       });
       return res.code === 1000;
     },
@@ -338,7 +331,6 @@ export default {
             pub,
             NULSPrefix
         );
-        console.log(account, 'account');
         const accountList = JSON.parse(localStorage.getItem("accountList")) || [];
         const existIndex = accountList.findIndex(v => v.pub === account.pub);
         // 原来存在就替换，找不到就push
@@ -347,17 +339,22 @@ export default {
         } else {
           accountList.push(account);
         }
-        localStorage.setItem("accountList", JSON.stringify(accountList));
-        // 重新计算fromAddress
-        const address = this.address;
-        // this.switchNetwork(address);
-        this.address = "";
-        setTimeout(()=> {
-          this.address = address;
-        }, 16);
+        const syncRes = await this.syncAccount(pub, account.address);
+        if (syncRes) {
+          localStorage.setItem("accountList", JSON.stringify(accountList));
+          // 重新计算fromAddress
+          const address = this.address;
+          // this.switchNetwork(address);
+          this.address = "";
+          setTimeout(()=> {
+            this.address = address;
+          }, 16);
+        } else {
+          throw this.$t("tips.tips13")
+        }
       } catch (e) {
         this.address = "";
-        this.$message({ message: this.$t("tips.tips5"), type: "warning" });
+        this.$message({ message: e, type: "warning" });
       }
       this.loading = false;
     },
