@@ -14,7 +14,9 @@ const cn = {
     tips10: "连接钱包",
     tips11: "生成地址",
     tips12: "免费发起空投",
-    tips13: "同步账户失败"
+    tips13: "同步账户失败",
+    tips14: "未检测到Nabox插件/App，点击安装",
+    tips15: "未检测到Nabox插件/App"
   },
   airdrop: {
     airdrop1: "空投数量",
@@ -22,7 +24,8 @@ const cn = {
     airdrop3: "请输入验证码",
     airdrop4: "取消",
     airdrop5: "确认",
-    airdrop6: "生成地址"
+    airdrop6: "生成地址",
+    airdrop7: "已领取"
   },
   header: {
     header1: "官网",

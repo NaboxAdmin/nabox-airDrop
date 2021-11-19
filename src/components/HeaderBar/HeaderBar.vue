@@ -41,7 +41,7 @@
     <div class="main-cont" :class="{'p-3': isSwap}">
       <slot/>
       <Pop :show="showPop"/>
-      <pop-up :prevent-boo="false" :show="showAccount">
+      <pop-up :prevent-boo="false" @maskClick="showAccount=false" :show="showAccount">
         <div class="address-detail_pop">
           <div class="customer-p">
             <div class="icon-cont d-flex justify-content-end">
@@ -167,7 +167,7 @@ export default {
     copy(val) {
       if (!val) return;
       copys(val);
-      this.$toast(this.$t("tips.tips13"))
+      this.$toast(this.$t("tips.tips8"))
     },
     showDropClick() {
       !this.isLiquidity && (this.showDropList = !this.showDropList);

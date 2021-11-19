@@ -1,7 +1,7 @@
 <template>
   <div class="mask-cont"
        @touchmove="touchmoveEvent"
-       @click.stop
+       @click.stop="$emit('maskClick')"
        v-loading="loading"
        :class="[show && 'show_pop', !customClass && 'defaultClass']">
     <div :class="[show && 'show-main', customClass && 'customClass']">

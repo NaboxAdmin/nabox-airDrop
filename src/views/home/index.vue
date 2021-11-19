@@ -6,8 +6,11 @@
         <img v-if="lang==='en'" src="../../assets/image/banner_1.jpg" alt="">
       </div>
       <div class="airdrop-cont">
-        <template v-if="airdropList.length > 0">
-          <div class="airdrop-list" v-for="item in airdropList" :key="item.dropId">
+        <template v-if="airdropListLoading">
+          <Loading />
+        </template>
+        <template v-else-if="airdropList.length > 0">
+          <div class="airdrop-list" v-for="item in airdropList" :key="item.id">
             <div class="d-flex align-items-center space-between">
               <div class="d-flex direction-column">
                 <div class="airdrop-item d-flex align-items-center">
@@ -21,13 +24,13 @@
                   <div>
                     <div class="text-51 size-24">{{ $t("airdrop.airdrop1") }}</div>
                     <div class="mt-1">
-                      <span class="size-30 font-500">{{ item.receiveAmount }}</span>
+                      <span class="size-30 font-500">{{ item.receiveAmount }}{{ item.symbol }}</span>
                       <span class="size-24 text-99">≈${{ item.usdPrice }}</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="receive_btn size-13 cursor-pointer" @click="receiveAirdrop(item)">{{ $t("airdrop.airdrop2") }}</div>
+              <div class="receive_btn size-13 cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">{{ item.status !== 0 && $t("airdrop.airdrop7") || $t("airdrop.airdrop2") }}</div>
             </div>
           </div>
         </template>
@@ -57,20 +60,16 @@
 </template>
 
 <script>
-import { MAIN_INFO, ETHNET, NULS_INFO} from "@/config";
+import { MAIN_INFO } from "@/config";
 import nerve from "nerve-sdk-js";
-import { supportChainList, getCurrentAccount, superLong } from "../../api/util";
+import { getCurrentAccount, superLong } from "../../api/util";
 import { NTransfer } from "../../api/api";
 import PopUp from "../../components/PopUp/PopUp";
+import Loading from "../../components/Loading/Loading";
 
 const ethers = require("ethers");
 const isMobile = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
-const MetaMaskProvider = "ethereum"
-const NaboxProvider = "NaboxWallet"
-const OKExProvider = "okexchain"
-const BSCProvider = "BinanceChain";
-const banner = require("../../assets/image/banner.png");
-const banner_1 = require("../../assets/image/banner_1.jpg");
+const MetaMaskProvider = "ethereum";
 
 export default {
   data() {
@@ -81,7 +80,6 @@ export default {
       swapType: "nerve",
       provider: null,
       fromChainId: "",
-      walletType: isMobile ? MetaMaskProvider : localStorage.getItem("walletType"), // 连接钱包类型 metamask walletConnect
       showPop: false,
       errMsg: '',
       airdropList: [], // 当前可领取空投List
@@ -89,12 +87,14 @@ export default {
       verificationCode: '', // 202024
       transferLoading: false,
       isPass: false,
-      lang: ''
+      lang: '',
+      airdropListLoading: false
     };
   },
 
   components: {
-    PopUp
+    PopUp,
+    Loading
   },
 
   watch: {
@@ -133,14 +133,10 @@ export default {
     }
   },
 
-  created() {
-    if (this.isMobile) {
-      localStorage.setItem("walletType", this.walletType);
-    }
-  },
   methods: {
     async getAirDropList(address, reload=false) {
       try {
+        this.airdropListLoading = true;
         const tempList = JSON.parse(localStorage.getItem('airdropList'));
         const currentAccount = getCurrentAccount(address || this.fromAddress);
         const data = {
@@ -168,16 +164,19 @@ export default {
           localStorage.setItem('airdropList', JSON.stringify([]));
           this.$message.warning(res.msg);
         }
+        this.airdropListLoading = false;
       } catch (e) {
+        console.log(e)
+        this.airdropListLoading = false;
         localStorage.setItem('airdropList', JSON.stringify([]));
       }
     },
     formatData(data) {
       if (!data || !Array.isArray(data)) return [];
-      return data.filter(item => item.status == 0).map(item => ({
+      return data.sort((a, b) => a.status - b.status).map(item => ({
         ...item,
         isPass: false
-      }))
+      }));
     },
     // 确认领取
     async confirmReceive() {
@@ -315,6 +314,7 @@ export default {
       return crossAddress
     },
     async receiveAirdrop(airdrop) {
+      if (airdrop.status !== 0) return false;
       this.currentAirdrop = airdrop;
       if (!airdrop.codeFlag) {
         this.isPass = true;
@@ -367,7 +367,6 @@ export default {
           if (this.address && !this.address.startsWith("0x")) {
             this.switchNetwork(this.address)
           }
-          // this.getBalance();
         }
       });
     },
@@ -805,5 +804,8 @@ $labelColor: #99a3c4;
     height: 100%;
     width: 100%;
   }
+}
+.disabled_btn {
+  background-color: #ABB1BA;
 }
 </style>

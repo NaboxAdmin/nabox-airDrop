@@ -7,7 +7,7 @@ export const currentNet = 'testnet';
 export const API_BURNING_ADDRESS_PUB = 'TNVTdTSPGwjgRMtHqjmg8yKeMLnpBpVN5ZuuY';
 
 //chainId、assetId、prefix
-export const MAIN_INFO = { chainId: 5, assetId: 1, prefix: 'TNVT',symbol:"NVT", decimal: 8, rpc: "http://149.129.130.13:17004/jsonrpc" };
+export const MAIN_INFO = { chainId: 5, assetId: 1, prefix: 'TNVT',symbol:"NVT", decimal: 8, rpc: "http://beta.public.nerve.network" };
 export const NULS_INFO = { chainId: 2, assetId: 1, prefix: 'tNULS',symbol:"NULS", decimal: 8, rpc: "http://beta.public1.nuls.io" };
 
 //ETH 网络信息 测试网:ropsten, 主网:homestead

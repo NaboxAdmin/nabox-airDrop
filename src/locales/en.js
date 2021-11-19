@@ -14,7 +14,9 @@ const cn = {
     tips10: "Connect Wallet",
     tips11: "Generate Address",
     tips12: "Free Airdrop",
-    tips13: "Failed to sync account"
+    tips13: "Failed to sync account",
+    tips14: "Nabox plug-in/App is not detected, click to install",
+    tips15: "Nabox plug-in/App is not detected"
   },
   airdrop: {
     airdrop1: "Amount",
@@ -22,7 +24,8 @@ const cn = {
     airdrop3: "Please enter the verification code",
     airdrop4: "Cancel",
     airdrop5: "Confirm",
-    airdrop6: "Generate Address"
+    airdrop6: "Generate Address",
+    airdrop7: "Claimed"
   },
   header: {
     header1: "Website",

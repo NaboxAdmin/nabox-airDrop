@@ -3,7 +3,6 @@
       <HeaderBar :address="fromAddress"
                  :current-account="currentAccount"
                  :show-connect="showConnect"
-                 :header-color="typeBoolean && '#6EB6A9' || '#ffffff'"
                  @disConnect="disConnect"
                  @derivedAddress="derivedAddress"
                  @connectMetamask="connectMetamask"
@@ -13,7 +12,10 @@
                  @poolClick="poolClick"
                  @airdropClick="airdropClick">
         <div class="connect-item" v-loading="loading" v-if="isDapp && (showSign || showConnect || !fromAddress)">
-          <div class="connect-btn" v-if="showConnect" @click="connectMetamask">{{ $t("tips.tips10") }}</div>
+          <div v-if="showConnect">
+            <div class="connect-btn" @click="connectMetamask">{{ $t("tips.tips10") }}</div>
+            <div v-if="!hashNabox" @click="toUrl" class="text-center text-primary size-32">{{ $t("tips.tips14") }}</div>
+          </div>
           <div class="sign-btn" v-else-if="!showConnect && showSign" @click="derivedAddress">{{ $t("tips.tips11") }}</div>
         </div>
         <keep-alive include="swap" v-else>
@@ -28,6 +30,7 @@ import {HeaderBar} from "../components";
 import {ETHNET, MAIN_INFO, NULS_INFO} from "@/config";
 import nerve from "nerve-sdk-js";
 import {supportChainList, getCurrentAccount} from "@/api/util";
+import {addressNetworkOrigin} from "../api/util";
 
 const ethers = require("ethers");
 
@@ -63,7 +66,7 @@ export default {
       address: '', // 合约地址
       provider: '',
       loading: false, // 加载
-      walletType: sessionStorage.getItem("walletType") || 'metamask', // 钱包类型（metamask）
+      walletType: sessionStorage.getItem("walletType") || "NaboxWallet", // 钱包类型（metamask）
       // isDapp: true,
       fromChainId: '',
       orderList: [], // 订单列表
@@ -88,11 +91,11 @@ export default {
     currentAccount() {
       return this.$store.getters.currentAccount
     },
-    typeBoolean() {
-      return window.location.hash.indexOf('vaults') > -1 || window.location.hash.indexOf('liquidity') > -1
+    hashNabox() {
+      return window['NaboxWallet'];
     },
-    hashType() {
-      return window.location.hash.split('/')[1];
+    isMobile() {
+      return /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
     }
   },
   watch: {
@@ -120,76 +123,30 @@ export default {
     }
   },
   methods: {
-    tabClick(i) {
-      switch (i) {
-        case 0:
-          this.currentIndex = 0;
-          if (window.location.hash === '#/swap') return false;
-          this.$router.push({ path: '/swap' });
-          break;
-        case 1:
-          this.currentIndex = 1;
-          if (window.location.hash === '#/transfer') return false;
-          this.$router.push({ path: '/transfer' });
-          break;
-        case 2:
-          this.currentIndex = 2;
-          if (window.location.hash === '#/liquidity') return false;
-          this.$router.push({ path: '/liquidity' });
-          break;
-        case 3:
-          this.currentIndex = 3;
-          if (window.location.hash === '#/vaults') return false;
-          this.$router.push({ path: '/vaults' });
-          break;
-      }
-    },
-    // 获取订单列表
-    async getOrderList(val) {
-      this.flag = true;
-      const params = {
-        address: val
-      }
-      let res = await this.$request({
-        url: '/swap/list',
-        data: params
-      });
-      if (res.code === 1000) {
-        this.orderList = res.data;
-      }
-    },
-    toOrderDetail(id) {
-      const orderId = id;
-      this.$router.push({ path: '/orderDetail', query: { orderId }})
+    toUrl() {
+      this.isMobile ? window.location.href = "https://nabox.io/" : window.open("https://nabox.io/");
     },
     initConnect() {
       if (!this.walletType) {
         this.loading = false;
         return;
       }
-      if (this.walletType === "metamask") {
-        if (window.ethereum) {
-          this.initMetamask();
+      if (this.walletType === "NaboxWallet" || this.walletType === "metamask") {
+        if (window[this.walletType]) {
+          this.initWallet();
         }
-      } else if (this.walletType === "walletConnect") {
-        // this.initWalletConnect();
       }
     },
     // 初始化metamask wallet provider address
-    async initMetamask() {
-      this.wallet = window.ethereum;
-      // console.log(this.wallet.selectedAddress, 'this.wallet.selectedAddress');
-      // console.log(this.wallet.chainId, 'this.wallet.chainId');
-      this.fromChainId = this.wallet.chainId
+    async initWallet() {
+      this.wallet = window[this.walletType];
+      this.fromChainId = this.wallet.chainId;
       this.address = this.wallet.selectedAddress;
-      // console.log(this.wallet.selectedAddress);
       if (!this.address) {
         await this.requestAccounts();
       }
       this.fromChainId = this.wallet.chainId;
-      // console.log(this.wallet.chainId, 'this.wallet');
-      this.provider = new ethers.providers.Web3Provider(window.ethereum);
-      // this.showConnect = false;
+      this.provider = new ethers.providers.Web3Provider(window[this.walletType]);
       this.$store.commit('changeShowConnect', false);
       this.listenAccountChange();
       this.listenNetworkChange();
@@ -238,20 +195,16 @@ export default {
     },
     // 连接metamask钱包
     async connectMetamask() {
-      if (!window.ethereum) {
-        this.$message({
-          message: this.$t("tips.tips1"),
-          type: "warning",
-          offset: 30,
-        });
+      if (!window['NaboxWallet']) {
+        this.$message({message: this.$t("tips.tips15"), type: "warning"});
       } else {
         try {
-          this.walletType = "metamask";
-          sessionStorage.setItem("walletType", "metamask");
-          await this.initMetamask();
+          this.walletType = "NaboxWallet";
+          sessionStorage.setItem("walletType", "NaboxWallet");
+          await this.initWallet();
         } catch (e) {
           this.$message({
-            message: e.message,
+            message: e.message.message || e.message,
             type: "warning",
             offset: 30,
           });
@@ -269,13 +222,16 @@ export default {
     async derivedAddress() {
       this.loading = true;
       try {
+        if (!window[this.walletType]) {
+          throw this.$t("tips.tips15");
+        }
         if (!this.address) {
           await this.requestAccounts();
         }
         let account, pub;
         if (!this.address.startsWith("0x")) {
           if (!window.nabox) {
-            throw "Nabox not found"
+            throw this.$t("tips.tips15");
           }
           pub = await window.nabox.getPub({
             address: this.address
@@ -353,22 +309,23 @@ export default {
           throw this.$t("tips.tips13")
         }
       } catch (e) {
+        console.log(e, 'e');
         this.address = "";
-        this.$message({ message: e, type: "warning" });
+        this.$message({ message: e.message || e, type: "warning" });
       }
       this.loading = false;
     },
     swapClick() {
       // this.showType = "Swap";
-      this.$router.push({ path: '/swap' })
+      this.$router.push({ path: '/swap' });
     },
     transferClick() {
       this.showType = "Transfer";
-      this.$router.push({ path: '/transfer' })
+      this.$router.push({ path: '/transfer' });
     },
     poolClick() {
       this.showType = "Pool";
-      this.$router.push({ path: '/liquidity' })
+      this.$router.push({ path: '/liquidity' });
     },
     vaultsClick() {
       this.showType = "Vaults";
@@ -400,13 +357,7 @@ export default {
       console.log(address, 'address ')
       // 连接插件时如果是nuls、nerve设置network为nuls/nerve
       if (!address.startsWith("0x")) {
-        let network
-        if (address.startsWith("tNULS") || address.startsWith("NULS")) {
-          network = "NULS"
-        } else {
-          network = "NERVE"
-        }
-        this.$store.commit("changeNetwork", network)
+        this.$store.commit("changeNetwork", "NERVE")
       }
     }
   },
@@ -519,6 +470,7 @@ export default {
   text-align: center;
   background-color: #6EB6A9;
   border-radius: 20px;
+  margin: 50px auto;
   margin-top: 100px;
 }
 .sign-btn {

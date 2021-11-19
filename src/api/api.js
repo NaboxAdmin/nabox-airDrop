@@ -23,6 +23,7 @@ export class NTransfer {
     this.chain = props.chain; //链网络
     this.type = props.type; //交易类型
     this.sdk = nSdk[this.chain] || nerve; // nerve nuls sdk
+    this.walletType = sessionStorage.getItem('walletType') || "NaboxWallet";
   }
 
   async getTxHex(data) {
@@ -31,11 +32,10 @@ export class NTransfer {
     const tAssemble = temptAssemble || this.sdk.transactionAssemble(inputs, outputs, htmlEncode(remarks), this.type, txData);
     // 调用metamask签名hash，然后拼接公钥完成交易签名
     const hash = "0x" + tAssemble.getHash().toString("hex");
-    let flat = await window.ethereum.request({
+    let flat = await window[this.walletType].request({
       method: "eth_sign",
       params: [signAddress, hash]
-    })
-    // console.log(flat, 66, signAddress)
+    });
     flat = flat.slice(2) // 去掉0x
     const r = flat.slice(0, 64);
     const s = flat.slice(64, 128);
