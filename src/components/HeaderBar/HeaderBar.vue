@@ -16,7 +16,7 @@
           <div class="d-flex" @click="showAccount=true">
             <span class="text-90 size-30 cursor-pointer mr-1 text-primary">{{ superLong(!isLiquidity && address || nerveAddress) }}</span>
           </div>
-          <div class="network-list size-28 d-flex direction-column" v-if="showDropList">
+          <div class="network-list size-28 d-flex direction-column" v-if="false">
             <span class="mt-2 cursor-pointer d-flex align-items-center"
                   v-for="(item, index) in l1ChainList"
                   @click="chainClick(item)"
