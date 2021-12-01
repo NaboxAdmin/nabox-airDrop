@@ -1,7 +1,8 @@
 <template>
   <div class="home" v-loading="isPass && transferLoading">
     <div class="m-15">
-      <div class="banner-cont" @click="toUrl">
+      <!--@click="toUrl" -->
+      <div class="banner-cont">
         <img v-if="lang==='cn'" src="../../assets/image/air_banner.jpg" alt="">
         <img v-if="lang==='en'" src="../../assets/image/air_banner.jpg" alt="">
       </div>
