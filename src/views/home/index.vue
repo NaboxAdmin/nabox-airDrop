@@ -2,8 +2,8 @@
   <div class="home" v-loading="isPass && transferLoading">
     <div class="m-15">
       <div class="banner-cont" @click="toUrl">
-        <img v-if="lang==='cn'" src="../../assets/image/banner.png" alt="">
-        <img v-if="lang==='en'" src="../../assets/image/banner_1.jpg" alt="">
+        <img v-if="lang==='cn'" src="../../assets/image/air_banner.jpg" alt="">
+        <img v-if="lang==='en'" src="../../assets/image/air_banner.jpg" alt="">
       </div>
       <div class="airdrop-cont">
         <template v-if="airdropListLoading">
@@ -15,7 +15,7 @@
               <div class="d-flex direction-column">
                 <div class="airdrop-item d-flex align-items-center">
                   <div class="airdrop-icon">
-                    <img :src="getPicture(item.symbol)" @error="pictureError" alt="">
+                    <img :src="item.icon || getPicture(item.symbol)" @error="pictureError" alt="">
                   </div>
                   <span class="font-bold size-30 text-51 ml-2">{{ item.airDropName || item.symbol }}</span>
                   <span class="size-13 text-99 ml-2">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
