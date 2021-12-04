@@ -68,10 +68,6 @@ import { NTransfer } from "../../api/api";
 import PopUp from "../../components/PopUp/PopUp";
 import Loading from "../../components/Loading/Loading";
 
-const ethers = require("ethers");
-const isMobile = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
-const MetaMaskProvider = "ethereum";
-
 export default {
   data() {
     return {
@@ -691,7 +687,7 @@ $labelColor: #99a3c4;
   }
 }
 .banner-cont {
-  height: 260px;
+  height: 320px;
   //background-color: purple;
   border-radius: 10px;
   margin-bottom: 30px;
@@ -708,10 +704,13 @@ $labelColor: #99a3c4;
   position: relative;
   background-color: #FFFFFF;
   border-radius: 10px;
-  min-height: calc(100vh - 440px);
+  padding-bottom: 100px;
+  min-height: calc(100vh - 600px);
+  overflow: auto;
   //max-height:  calc(100vh - 240px);
   @media screen and (min-width: 1000px){
-    min-height: calc(1560px - 440px);
+    min-height: calc(1560px - 600px);
+    overflow: auto;
   }
   .airdrop-list {
     padding: 30px;

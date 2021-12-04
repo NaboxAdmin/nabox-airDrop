@@ -97,7 +97,7 @@ export default {
           this.isMobile ? window.location.href = 'https://nabox.io/' : window.open('https://nabox.io/');
           break;
         case 'SwapBox':
-          this.isMobile ? window.location.href = 'https://swap.nabox.io/' : window.open('https://swap.nabox.io/');
+          this.isMobile ? window.location.href = 'https://swapbox.nabox.io/' : window.open('https://swapbox.nabox.io/');
           break;
       }
     },
