@@ -337,7 +337,7 @@ export default {
       this.isMobile ? window.location.href = 'https://nabox.io/' : window.open('https://nabox.io/');
     },
     toTelegram() {
-      this.isMobile ? window.location.href = 'https://t.me/Nabox_Wallet' : window.open('https://t.me/Nabox_Wallet');
+      this.isMobile ? window.location.href = 'https://t.me/naboxcommunity' : window.open('https://t.me/naboxcommunity');
     },
     getPicture(suffix) {
       let baseUrl = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/';
