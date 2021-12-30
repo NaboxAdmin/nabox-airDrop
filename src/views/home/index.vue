@@ -306,7 +306,7 @@ export default {
       });
       let crossAddress = '';
       if (res.code === 1000 && res.data) {
-        crossAddress = res.data.crossNerveAddress
+        crossAddress = res.data.airDropNerveAddress
       }
       return crossAddress
     },
