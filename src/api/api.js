@@ -3,7 +3,7 @@ import nerve from "nerve-sdk-js";
 import {ethers} from "ethers";
 import sdk from "nerve-sdk-js/lib/api/sdk";
 import {Plus, htmlEncode, timesDecimals, Minus} from "./util";
-import {request} from "./https";
+import { request, post } from "./https";
 import { ETHNET, MAIN_INFO } from "@/config"
 const Signature = require("elliptic/lib/elliptic/ec/signature");
 const txsignatures = require("nerve-sdk-js/lib/model/txsignatures");
@@ -333,17 +333,34 @@ export class NTransfer {
         assetId: info.assetsId,
         refresh: true
       };
-      // console.log(data);
-      const res = await request({url: "/wallet/address/asset", data: data});
-      // console.log(res);
-      if (res.code === 1000) {
-        return res.data.nonce;
+      const nonce = await this.getNerveAssetNonce(data);
+      if (nonce) {
+        return nonce;
       }
       return null;
     } catch (e) {
       console.error(e);
     }
   }
+
+  // 获取NERVE资产的nonce值
+  async getNerveAssetNonce(assetInfo) {
+    const { chainId, assetId, contractAddress, address } = assetInfo;
+    const tempParams = [{
+      chainId,
+      assetId,
+      contractAddress: contractAddress || ''
+    }];
+    const params = [MAIN_INFO.chainId, address, tempParams];
+    const url = MAIN_INFO.batchRPC;
+    const res = await post(url, 'getBalanceList', params);
+    if (res.result && res.result.length !== 0) {
+      return res.result[0].nonce;
+    } else {
+      return null;
+    }
+  }
+
   // 获取资产上面的nerve信息
   async getAssetNerveInfo(data) {
     //console.log(data, 888999)
