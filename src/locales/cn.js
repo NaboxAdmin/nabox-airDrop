@@ -25,7 +25,10 @@ const cn = {
     airdrop4: "取消",
     airdrop5: "确认",
     airdrop6: "生成地址",
-    airdrop7: "已领取"
+    airdrop7: "已领取",
+    airdrop8: "提示",
+    airdrop9: "我明白了",
+    airdrop10: "请到Nerve链查看你领取的资产。",
   },
   header: {
     header1: "官网",

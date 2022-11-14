@@ -18,7 +18,7 @@
                   <div class="airdrop-icon">
                     <img :src="item.icon || getPicture(item.symbol)" @error="pictureError" alt="">
                   </div>
-                  <span class="font-bold size-30 text-51 ml-2">{{ item.airDropName || item.symbol }}</span>
+                  <span class="w-200 font-bold size-30 text-51 ml-2 text-truncate">{{ item.airDropName || item.symbol }}</span>
                   <span class="size-13 text-99 ml-2">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
                 </div>
                 <div class="airdrop-info d-flex">
@@ -57,6 +57,15 @@
         </div>
       </div>
     </pop-up>
+    <pop-up :show.sync="showSuccess" :loading="transferLoading">
+      <div class="pop-cont">
+        <div class="text-51 font-bold size-32 text-center">{{ $t("airdrop.airdrop8") }}</div>
+        <div class="tips-cont size-28">{{ $t('airdrop.airdrop10') }}</div>
+        <div class="tip-btn_cont">
+          <div class="btn_item active_btn cursor-pointer" @click="showSuccess=false">{{ $t('airdrop.airdrop9') }}</div>
+        </div>
+      </div>
+    </pop-up>
   </div>
 </template>
 
@@ -85,7 +94,8 @@ export default {
       transferLoading: false,
       isPass: false,
       lang: '',
-      airdropListLoading: false
+      airdropListLoading: false,
+      showSuccess: false
     };
   },
 
@@ -172,6 +182,7 @@ export default {
       if (!data || !Array.isArray(data)) return [];
       return data.sort((a, b) => a.status - b.status).map(item => ({
         ...item,
+        usdPrice: this.numberFormat(item.usdPrice || 0, 8),
         isPass: false
       }));
     },
@@ -292,6 +303,7 @@ export default {
         this.$message({ message: this.$t(res.msg), type: "warning", duration: 2000 })
       }
       this.transferLoading = false;
+      this.showSuccess = true;
       this.reset();
       await this.getAirDropList('', true);
     },
@@ -394,6 +406,18 @@ export default {
         }
         this.$store.commit("changeNetwork", network)
       }
+    },
+    numberFormat(val, float, returnBoo = false) {
+      if (!Number(val)) {
+        if (returnBoo) {
+          return '';
+        }
+        return '0';
+      }
+      const numberVal = val.toString();
+      const n = float || 6;
+      if (n <= 0) return numberVal;
+      return numberVal.replace(/(\.\d+?)0*$/, '$1');
     }
   },
 };
@@ -501,7 +525,7 @@ $labelColor: #99a3c4;
         width: 130px;
       }
     }
-    
+
   }
   .account-select {
     .from,
@@ -792,6 +816,25 @@ $labelColor: #99a3c4;
       }
     }
   }
+  .tip-btn_cont {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .btn_item {
+      font-size: 26px;
+      height: 90px;
+      width: 100%;
+      line-height: 90px;
+      text-align: center;
+      color: #6eb6a9;
+      border-radius: 20px;
+      border: 1px solid #EBEEF8;
+      &.active_btn {
+        background-color: #6eb6a9;
+        color: #FFFFFF;
+      }
+    }
+  }
 }
 .m-15 {
   margin: 20px;
@@ -807,5 +850,11 @@ $labelColor: #99a3c4;
 }
 .disabled_btn {
   background-color: #ABB1BA;
+}
+.tips-cont {
+  padding: 20px 0;
+}
+.w-200 {
+  width: 450px;
 }
 </style>

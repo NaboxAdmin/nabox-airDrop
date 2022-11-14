@@ -25,7 +25,10 @@ const cn = {
     airdrop4: "Cancel",
     airdrop5: "Confirm",
     airdrop6: "Generate Address",
-    airdrop7: "Claimed"
+    airdrop7: "Claimed",
+    airdrop8: "Tips",
+    airdrop9: "I understand",
+    airdrop10: "Please go to the Nerve chain to check your asset.",
   },
   header: {
     header1: "Website",
