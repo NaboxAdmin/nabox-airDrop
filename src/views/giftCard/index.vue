@@ -33,7 +33,7 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
 import {getCurrentAccount} from "../../api/util";
-import {MAIN_INFO} from "../../../config/beta";
+import {MAIN_INFO} from "@/config";
 
 export default {
   name: "GiftCard",
