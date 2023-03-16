@@ -36,7 +36,6 @@
     justify-content: space-between;
     min-width: 200px;
     height: 62px;
-    background: #F0F7F7;
     border-radius: 31px;
     color: #5fbdaf;
     .icon-drop {
@@ -63,10 +62,19 @@
       }
     }
   }
+
+  .address-container {
+    padding: 14px 30px;
+    background-color: #21C980;
+    border-radius: 32px;
+    font-size: 24px;
+    color: #FFFFFF;
+  }
+
   .header-icon {
     height: 28px;
     width: 32px;
-    margin-left: 40px;
+    margin-left: 20px;
     margin-bottom: 5px;
     img {
       height: 100%;

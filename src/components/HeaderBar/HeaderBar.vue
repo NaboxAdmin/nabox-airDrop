@@ -2,19 +2,19 @@
   <div>
     <!-- :style="{'background-color': headerColor}"-->
     <div class="header-cont">
-      <div class="logo-cont">
+      <div @click="$route.path !== '/index' && $router.push('/')" class="logo-cont cursor-pointer">
         <img src="@/assets/image/ParaBox.svg" alt="">
       </div>
       <div class="address-cont d-flex align-items-center">
-        <div class="address-detail pl-2 pr-2" v-if="!showConnect && !showSign && address">
+        <div class="address-detail" v-if="!showConnect && !showSign && address">
           <div class="d-flex align-items-center cursor-pointer" @click.stop="showDropClick">
-            <span class="chain-icon">
-              <img :src="getPicture('NERVE')" @error="pictureError" alt="">
+            <span class="chain-icon mr-2">
+              <img :src="getPicture(this.fromNetwork)" @error="pictureError" alt="">
             </span>
           </div>
-          <div class="space-cont"/>
-          <div class="d-flex" @click="showAccount=true">
-            <span class="text-90 size-30 cursor-pointer mr-1 text-primary">{{ superLong(!isLiquidity && address || nerveAddress) }}</span>
+<!--          <div class="space-cont"/>-->
+          <div class="d-flex address-container" @click="showAccount=true">
+            <span class="size-24 cursor-pointer">{{ superLong(!isLiquidity && address || nerveAddress) }}</span>
           </div>
           <div class="network-list size-28 d-flex direction-column" v-if="false">
             <span class="mt-2 cursor-pointer d-flex align-items-center"
@@ -42,7 +42,7 @@
       <slot/>
       <Pop :show="showPop"/>
       <pop-up :prevent-boo="false" @maskClick="showAccount=false" :show="showAccount">
-        <div class="address-detail_pop">
+        <div @click.stop class="address-detail_pop">
           <div class="customer-p">
             <div class="icon-cont d-flex justify-content-end">
             <span class="cursor-pointer" @click="showAccount=false">
@@ -53,7 +53,7 @@
               <div class="account-info_pop">
                 <span class="size-32 flex-1">{{ superLong(address) }}</span>
                 <div>
-                  <span class="icon_pop ml-4 cursor-pointer" @click.stop="toBrowser('NERVE', address)">
+                  <span class="icon_pop ml-4 cursor-pointer" @click.stop="toBrowser(fromNetwork, address)">
                   <svg t="1626845948779" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2998" width="16" height="16"><path d="M971.034483 576.264828a52.965517 52.965517 0 0 0-52.965517 52.965517v271.183448a17.655172 17.655172 0 0 1-17.655173 17.655173h-776.827586a17.655172 17.655172 0 0 1-17.655173-17.655173v-776.827586a17.655172 17.655172 0 0 1 17.655173-17.655173h270.830345a52.965517 52.965517 0 0 0 0-105.931034H123.586207A123.586207 123.586207 0 0 0 0 123.586207v776.827586A123.586207 123.586207 0 0 0 123.586207 1024h776.827586a123.586207 123.586207 0 0 0 123.586207-123.586207v-271.183448a52.965517 52.965517 0 0 0-52.965517-52.965517z" fill="#656A7D" p-id="2999"></path><path d="M953.37931 0h-233.754482a52.965517 52.965517 0 0 0 0 105.931034h123.586206L462.212414 486.929655a52.965517 52.965517 0 0 0 37.428965 90.394483 53.318621 53.318621 0 0 0 37.428966-15.536552L918.068966 180.788966v123.586206a52.965517 52.965517 0 0 0 105.931034 0V70.62069a70.62069 70.62069 0 0 0-70.62069-70.62069z" fill="#656A7D" p-id="3000"></path></svg>
                 </span>
                   <span class="icon_pop ml-4 cursor-pointer" @click.stop="copy(address)">
@@ -119,13 +119,6 @@ export default {
     "$store.state.lang": {
       handler(val) {
         this.lang = val
-      },
-      immediate: true,
-      deep: true
-    },
-    "$store.state.isSwap": {
-      handler(val) {
-        this.isSwap = val
       },
       immediate: true,
       deep: true

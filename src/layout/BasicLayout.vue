@@ -5,12 +5,49 @@
                  :show-connect="showConnect"
                  @disConnect="disConnect"
                  @derivedAddress="derivedAddress"
-                 @connectMetamask="connectMetamask"
-                 @swapClick="swapClick"
-                 @transferClick="transferClick"
-                 @vaultsClick="vaultsClick"
-                 @poolClick="poolClick"
-                 @airdropClick="airdropClick">
+                 @connectMetamask="connectMetamask">
+        <div class="nav-bar" v-if="$route.path !== '/createAirdrop' && $route.path !== '/airdropHistory' && fromAddress">
+          <div class="nav-bar-list">
+            <div class="nav-bar-item"
+                 :class="[$route.path == '/index' && 'active-bar']"
+                 @click="navBarClick(1, '/index')"
+            >
+              {{ $t('airdrop.airdrop11') }}
+            </div>
+            <div class="nav-bar-item"
+                 :class="[$route.path == '/square' && 'active-bar']"
+                 @click="navBarClick(2, '/square')"
+            >
+              {{ $t('airdrop.airdrop12') }}
+            </div>
+            <div class="nav-bar-item"
+                 :class="[$route.path == '/gift' && 'active-bar']"
+                 @click="navBarClick(3, '/gift')"
+            >
+              {{ $t('airdrop.airdrop13') }}
+            </div>
+          </div>
+          <div class="cursor-pointer size-28 d-flex" @click="navBarClick(1, '/createAirdrop')">
+            <img src="@/assets/image/create.svg" class="mr-1" alt="">
+            <span class="text-21">{{ $t('airdrop.airdrop42') }}</span>
+          </div>
+        </div>
+        <div class="nav-bar" v-else-if="fromAddress && ($route.path === '/createAirdrop' || $route.path === '/airdropHistory')">
+          <div class="nav-bar-list">
+            <div class="nav-bar-item"
+                 :class="[$route.path == '/createAirdrop' && 'active-bar']"
+                 @click="navBarClick(1, '/createAirdrop')"
+            >
+              {{ $t('airdrop.airdrop23') }}
+            </div>
+            <div class="nav-bar-item"
+                 :class="[$route.path == '/airdropHistory' && 'active-bar']"
+                 @click="navBarClick(2, '/airdropHistory')"
+            >
+              {{ $t('airdrop.airdrop24') }}
+            </div>
+          </div>
+        </div>
         <div class="connect-item" v-loading="loading" v-if="isDapp && (showSign || showConnect || !fromAddress)">
           <div v-if="showConnect">
             <div class="connect-btn" @click="connectMetamask">{{ $t("tips.tips10") }}</div>
@@ -62,7 +99,7 @@ export default {
           disabled: false
         }
       ],
-      currentIndex: 0,
+      currentIndex: 1,
       address: '', // 合约地址
       provider: '',
       loading: false, // 加载
@@ -86,7 +123,7 @@ export default {
     fromAddress() {
       const currentAccount = getCurrentAccount(this.address);
       // this.$store.commit('changeFromAddress', currentAccount && !this.showSign ? currentAccount.address["NERVE"] : "")
-      return currentAccount && !this.showSign ? currentAccount.address[this.fromNetwork] : "";
+      return currentAccount && !this.showSign ? currentAccount.address[this.fromNetwork] || currentAccount.address['pluginAddress'] : "";
     },
     currentAccount() {
       return this.$store.getters.currentAccount
@@ -115,7 +152,7 @@ export default {
         if (!val) return;
         const chain = supportChainList.find(v => v[ETHNET] === val);
         if (chain) {
-          this.$store.commit("changeNetwork", 'NERVE');
+          this.$store.commit("changeNetwork", chain.chain);
         } else {
           this.$store.commit("changeNetwork", 'NERVE');
         }
@@ -315,43 +352,11 @@ export default {
       }
       this.loading = false;
     },
-    swapClick() {
-      // this.showType = "Swap";
-      this.$router.push({ path: '/swap' });
-    },
-    transferClick() {
-      this.showType = "Transfer";
-      this.$router.push({ path: '/transfer' });
-    },
-    poolClick() {
-      this.showType = "Pool";
-      this.$router.push({ path: '/liquidity' });
-    },
-    vaultsClick() {
-      this.showType = "Vaults";
-      this.$router.push({ path: '/vaults' });
-    },
-    airdropClick() {
-      this.showType = "Airdrop";
-      this.$router.push({ path: '/airdrop' });
-    },
-    crossOut() {
-      if (this.isDapp) {
-        this.showType = "Transfer";
-        this.nerveTo = false;
-      } else {
-        this.currentIndex = 1;
-        this.nerveTo = false;
-      }
-    },
-    crossIn() {
-      if (this.isDapp) {
-        this.showType = "Transfer";
-        this.nerveTo = true;
-      } else {
-        this.currentIndex = 1;
-        this.nerveTo = true;
-      }
+    navBarClick(index, path) {
+      console.log(this.$route.path, '123');
+      if (path === this.$route.path) return;
+      this.currentIndex = index;
+      this.$router.push({ path });
     },
     switchNetwork(address) {
       console.log(address, 'address ')
@@ -372,6 +377,39 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.nav-bar {
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .nav-bar-list {
+    position: relative;
+    display: flex;
+    color: #8D94AB;
+    font-size: 28px;
+    line-height: 40px;
+    .nav-bar-item {
+      cursor: pointer;
+      margin-right: 20px;
+      &.active-bar {
+        position: relative;
+        font-size: 30px;
+        color: #3A3C44;
+        &:after {
+          position: absolute;
+          content: '';
+          height: 4px;
+          border-radius: 2px;
+          width: 80%;
+          background-color: #21C980;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: -12px;
+        }
+      }
+    }
+  }
+}
 .main-cont {
   //width: 100%;
   background-color: #FFFFFF;
@@ -391,9 +429,9 @@ export default {
     }
   }
   .cont_shadow {
-    border: 2px solid #ebf0f3;
     height: 1560px;
-    box-shadow: 3px 3px 29px 3px rgba(178, 199, 217, 29%);
+    border: 1px solid #ebf0f3;
+    box-shadow: 0 3px 29px 0 #f2f3f5;
   }
 }
 .tab-cont {
@@ -484,5 +522,8 @@ export default {
   background-color: #6EB6A9;
   border-radius: 20px;
   margin-top: 100px;
+}
+.text-21 {
+  color: #21C980;
 }
 </style>

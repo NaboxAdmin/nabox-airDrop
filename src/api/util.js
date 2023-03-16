@@ -744,3 +744,139 @@ export async function getAssetNerveInfo(data) {
   }
   return result;
 }
+
+export function setChainConfig(chainConfig) {
+  const config = {};
+  if (chainConfig && chainConfig.length) {
+    chainConfig.map(v => {
+      const mainInfo = v.mainAsset;
+      let configs;
+      if (v.chainType === 3) {
+        configs = {
+          multiCallAddress: '', // TRON_MULTI_CALL_ADDRESS
+          crossAddress: v.configs.crossAddress
+        };
+      } else {
+        configs = v.configs;
+      }
+      config[v.chain] = {
+        chain: v.chain,
+        chainId: mainInfo ? mainInfo.chainId : '',
+        assetId: mainInfo ? mainInfo.assetId : '',
+        prefix: v.prefix,
+        symbol: mainInfo ? mainInfo.symbol : '',
+        decimals: mainInfo ? mainInfo.decimals : '',
+        assets: v.assets,
+        config: configs,
+        apiUrl: v.chainType === 3 ? v.psUrl : v.apiUrl,
+        chainType: v.chainType,
+        nativeId: v.nativeId
+      };
+    });
+    // chainType: 2 以太系
+    const supportChainList = chainConfig.map(item => {
+      if (item.chainType === 1) {
+        return {
+          ...item,
+          label: item.chain,
+          value: item.chain,
+          SwftChain: item.chain,
+          chainId: item.mainAsset && item.mainAsset.chainId || '',
+          assetId: item.mainAsset && item.mainAsset.assetId || '',
+          decimals: item.mainAsset && item.mainAsset.decimals || '',
+          hashLink: `${item.scanUrl}transaction/info?hash=`,
+          addressLink: `${item.scanUrl}address/info?address=`,
+          symbol: item.mainAsset.symbol || '',
+          sort: item.sort,
+          ropsten: `0x${Number(item.nativeId).toString(16)}`,
+          homestead: `0x${Number(item.nativeId).toString(16)}`,
+          nativeId: item.nativeId
+        };
+      } else if (item.chainType === 2) {
+        return {
+          label: item.chain,
+          value: item.chain,
+          chain: item.chain,
+          chainName: item.chain,
+          chainType: item.chainType,
+          icon: item.icon,
+          symbol: item.mainAsset && item.mainAsset.symbol || '',
+          ropsten: `0x${Number(item.nativeId).toString(16)}`,
+          homestead: `0x${Number(item.nativeId).toString(16)}`,
+          chainId: item.mainAsset && item.mainAsset && item.mainAsset.chainId || '',
+          assetId: item.mainAsset && item.mainAsset.assetId || '',
+          decimals: item.mainAsset && item.mainAsset.decimals || '',
+          rpcUrl: item.apiUrl,
+          nativeId: item.nativeId || '',
+          // rpcUrl: networkRpc[item.chain],
+          origin: item.scanUrl,
+          hashLink: `${item.scanUrl}tx/`,
+          addressLink: `${item.scanUrl}address/`,
+          sort: item.sort
+        };
+      } else if (item.chainType === 3) {
+        return {
+          label: item.chain,
+          value: item.chain,
+          chain: item.chain,
+          chainName: item.chain,
+          chainType: item.chainType,
+          icon: item.icon,
+          symbol: item.mainAsset && item.mainAsset.symbol || '',
+          ropsten: `0x${Number(item.nativeId).toString(16)}`,
+          homestead: `0x${Number(item.nativeId).toString(16)}`,
+          chainId: item.mainAsset && item.mainAsset && item.mainAsset.chainId || '',
+          assetId: item.mainAsset && item.mainAsset.assetId || '',
+          decimals: item.mainAsset && item.mainAsset.decimals || '',
+          rpcUrl: item.apiUrl,
+          nativeId: item.nativeId || '',
+          // rpcUrl: networkRpc[item.chain],
+          origin: item.scanUrl,
+          hashLink: `${item.scanUrl}transaction/`,
+          addressLink: `${item.scanUrl}address/`,
+          sort: item.sort
+        };
+      }
+    });
+    const sortSupportChainList = supportChainList.sort((a, b) => a.sort - b.sort);
+    sessionStorage.setItem('supportChainList', JSON.stringify(sortSupportChainList));
+  }
+  const chains = Object.keys(config);
+  const tradeHashMap = {};
+  chains.forEach(chain => {
+    tradeHashMap[chain] = [];
+  });
+  if (!localStorage.getItem('tradeHashMap')) { // 兼容处理防止改名
+    localStorage.setItem('tradeHashMap', JSON.stringify(tradeHashMap));
+  } else {
+    const tradeHashMap = JSON.parse(localStorage.getItem('tradeHashMap'));
+    const hashKeys = Object.keys(tradeHashMap);
+    const diffKeys = hashKeys.filter(key => {
+      return chains.indexOf(key) === -1;
+    });
+    if (diffKeys.length !== 0) {
+      for (const item of diffKeys) {
+        delete tradeHashMap[item];
+      }
+      localStorage.setItem('tradeHashMap', JSON.stringify(tradeHashMap));
+    }
+  }
+  if (localStorage.getItem('localSwapAssetMap')) {
+    localStorage.removeItem('localSwapAssetMap');
+  }
+  !localStorage.getItem('l2HashList') && localStorage.setItem('l2HashList', JSON.stringify([]));
+  sessionStorage.setItem('config', JSON.stringify(config));
+}
+
+export function numberFormat(val, float, returnBoo = false) {
+  if (!Number(val)) {
+    if (returnBoo) {
+      return '';
+    }
+    return '0';
+  }
+  const numberVal = Number(val);
+  const n = float || 6;
+  if (n <= 0) return Math.round(numberVal);
+  return (Math.round(numberVal * Math.pow(10, n)) / Math.pow(10, n)).toString();
+}

@@ -1,11 +1,15 @@
 import { superLong, divisionDecimals, timesDecimals, tofix } from "@/api/util";
 import moment from "moment";
-import {Division, Minus} from "../api/util";
-
+import {Division, Minus, numberFormat} from "../api/util";
+import Loading from '@/components/Loading/Loading';
+import PopUp from '@/components/PopUp/PopUp';
+import Spin from '@/components/Loading/Spin';
+import NoData from '@/components/NoData/NoData';
 export default {
     data() {
         return {}
     },
+    components: { Loading, NoData, PopUp, Spin },
     computed: {
         currentAccount() {
             return this.$store.getters.currentAccount;
@@ -50,7 +54,12 @@ export default {
         timeFormat(val) {
             if (!val) return '';
             const times = +new Date(val);
-            return moment(times).format('MM/DD HH:mm');
+            return moment(times).format('yyyy-MM-DD HH:mm');
+        },
+        timeFormatMM(val) {
+            if (!val) return '';
+            const times = +new Date(val);
+            return moment(times).format('yyyy-MM-DD');
         },
         numberFormat(val) {
             if (!Number(val)) return 0;
@@ -58,6 +67,14 @@ export default {
             const n = 6;
             if (n <= 0) return Math.round(numberVal);
             return  Math.round(numberVal * Math.pow(10, n)) / Math.pow(10, n);
+        },
+        numFormatFixSix(val) {
+            if (!val) return 0;
+            const tempNum = numberFormat(tofix(val.toString(), 6, -1), 6);
+            const int = tempNum.split('.')[0];
+            const float = tempNum.split('.')[1] || '';
+            const intPart = Number(int).toFixed(0); // 获取整数部分
+            return intPart.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') + (float ? '.' + float : '');
         },
         numberFormatLetter(val) {
           const k = Math.pow(10, 3);
@@ -103,6 +120,27 @@ export default {
             const n = float || 6;
             if (n <= 0) return Math.round(numberVal);
             return (Math.round(numberVal * Math.pow(10, n)) / Math.pow(10, n)).toString();
+        },
+        errorHandling(msg) {
+            const JSONMsg = JSON.stringify(msg);
+            console.log(JSONMsg, 'JSONMsg')
+            const errorMsg = ['insufficient funds', 'No enough', 'gas required exceeds', 'does not exist', 'Network Error', 'Network error', 'timeout of', 'fail code', '50'];
+            const errorMap = {
+                'Network Error': this.$t('tips.tips27'),
+                'Network error': this.$t('tips.tips27'),
+                'timeout of': this.$t('tips.tips27'),
+                '50': this.$t('tips.tips27'),
+                'fail code': this.$t('tips.tips27'),
+                'insufficient funds': this.$t('tips.tips28'),
+                'No enough': this.$t('tips.tips28'),
+                'gas required exceeds': this.$t('tips.tips29'),
+                'does not exist': this.$t('tips.tips29'),
+            };
+            const errorIndex = errorMsg.findIndex(item => JSONMsg.indexOf(item) !== -1);
+            if (errorIndex === -1) {
+                return JSONMsg.replace(/\"/g, '');
+            }
+            return errorMap[errorMsg[errorIndex]].toString().replace(/\"/g, '');
         }
     }
 }

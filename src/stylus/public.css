@@ -329,7 +329,7 @@
 }
 
 .text-truncate_one {
-  display: -webkit-box;
+  /*display: -webkit-box;*/
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
@@ -424,6 +424,18 @@
 
 .text-decoration {
   text-decoration: line-through;
+}
+
+.text-8d {
+  color: #8D94AB !important;
+}
+
+.text-e7 {
+  color: #E7BC37;
+}
+
+.text-green {
+  color: #21C980;
 }
 
 /* position */

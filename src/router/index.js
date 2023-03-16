@@ -19,6 +19,38 @@ const mainRoutes = [{
             meta: {
                 title:'Home'
             }
+        },
+        {
+            path:'/square',
+            name:'square',
+            component:() => import('../views/square'),
+            meta: {
+                title:'Square'
+            }
+        },
+        {
+            path:'/gift',
+            name:'gift',
+            component:() => import('../views/giftCard'),
+            meta: {
+                title:'Gift'
+            }
+        },
+        {
+            path:'/createAirdrop',
+            name:'createAirdrop',
+            component:() => import('../views/createAirdrop'),
+            meta: {
+                title:'CreateAirdrop'
+            }
+        },
+        {
+            path:'/airdropHistory',
+            name:'airdropHistory',
+            component:() => import('../views/createAirdrop/history'),
+            meta: {
+                title:'AirdropHistory'
+            }
         }
     ]
  }, {

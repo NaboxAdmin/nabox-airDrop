@@ -31,4 +31,24 @@ body {
     padding-bottom: constant(safe-area-inset-bottom);
   }
 }
+::-webkit-scrollbar {
+  background-color: #21C980;
+  border-radius: 20px;
+  width: 5px; // y轴滚动条宽度
+  height: 5px; // x轴滚动条高度
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 20px; // 滚动条的圆角
+  background: #21C980; // 滚动条的背景颜色
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 20px; // 滚动条的背景区域的圆角
+  background: #fff; // 滚动条的背景颜色
+}
+.el-message {
+  min-width: 700px !important;
+  max-width: 700px !important;
+}
 </style>

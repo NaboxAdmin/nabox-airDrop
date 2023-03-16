@@ -1,47 +1,50 @@
 <template>
   <div class="home" v-loading="isPass && transferLoading">
-    <div class="m-15">
+    <div>
       <!--@click="toUrl" -->
-      <div class="banner-cont">
+      <div class="banner-cont m-15">
         <img v-if="lang==='cn'" src="../../assets/image/air_banner.jpg" alt="">
         <img v-if="lang==='en'" src="../../assets/image/air_banner.jpg" alt="">
       </div>
       <div class="airdrop-cont">
-        <template v-if="airdropListLoading">
+        <div class="airdrop-cont-header">
+          <div class="airdrop-cont-header_item">{{ $t('airdrop.airdrop14') }}</div>
+          <div class="airdrop-cont-header_item">{{ $t('airdrop.airdrop15') }}</div>
+        </div>
+        <template v-if="airdropListLoading && airdropList.length === 0">
           <Loading />
         </template>
         <template v-else-if="airdropList.length > 0">
-          <div class="airdrop-list" v-for="item in airdropList" :key="item.id">
-            <div class="d-flex align-items-center space-between">
-              <div class="d-flex direction-column">
-                <div class="airdrop-item d-flex align-items-center">
-                  <div class="airdrop-icon">
-                    <img :src="item.icon || getPicture(item.symbol)" @error="pictureError" alt="">
-                  </div>
-                  <span class="w-200 font-bold size-30 text-51 ml-2 text-truncate">{{ item.airDropName || item.symbol }}</span>
-                  <span class="size-13 text-99 ml-2">{{ item.contractAddress && `(${superLong(item.contractAddress)})` || '' }}</span>
+          <div class="airdrop-list">
+            <div v-for="item in airdropList" class="airdrop-item">
+              <div class="item-info">
+                <div class="item-logo">
+                  <img :src="item.icon" alt="">
                 </div>
-                <div class="airdrop-info d-flex">
-                  <div>
-                    <div class="text-51 size-24">{{ $t("airdrop.airdrop1") }}</div>
-                    <div class="mt-1">
-                      <span class="size-30 font-500">{{ item.receiveAmount }}{{ item.symbol }}</span>
-                      <span class="size-24 text-99">≈${{ item.usdPrice }}</span>
-                    </div>
-                  </div>
+                <div class="item-coin-info">
+                  <span class="text-3a">{{ item.symbol }}({{ item.chain }})</span>
+                  <span class="text-8d">{{ superLong(item.contractAddress) }}</span>
                 </div>
               </div>
-              <div class="receive_btn size-13 cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">{{ item.status !== 0 && $t("airdrop.airdrop7") || $t("airdrop.airdrop2") }}</div>
+              <div class="item-option">
+                <div class="item-coin-cont">
+                  <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }}</span>
+                  <span class="text-8d">${{ item.usdPrice | numFormatFixSix }}</span>
+                </div>
+                <div class="receive_btn cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
+                  {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : $t('airdrop.airdrop7') }}
+                </div>
+              </div>
             </div>
           </div>
         </template>
-        <div class="d-flex align-items-center direction-column justify-content-center" v-else>
+        <div class="d-flex align-items-center direction-column justify-content-center" v-else-if="airdropList.length === 0">
           <span class="empty-img">
             <img src="@/assets/image/empoty_airdrop.svg" alt="">
           </span>
-          <span class="text-center pt-4 mt-2 size-32">{{ $t("tips.tips6") }}</span>
+          <span class="text-center pt-4 mt-2 size-28">{{ $t("tips.tips6") }}</span>
         </div>
-        <div class="size-28 text-primary text-center position-absolute_cont" @click="toTelegram">{{ $t("tips.tips12") }}</div>
+        <NoData :noMore="true" v-if="airdropList.length !== 0 && airdropList.length === totalCount"/>
       </div>
     </div>
     <pop-up :show.sync="showPop" :loading="transferLoading">
@@ -95,7 +98,9 @@ export default {
       isPass: false,
       lang: '',
       airdropListLoading: false,
-      showSuccess: false
+      showSuccess: false,
+      pageNumber: 1,
+      totalCount: -1
     };
   },
 
@@ -104,15 +109,21 @@ export default {
     Loading
   },
 
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+
   watch: {
     "$store.state.fromAddress": {
       immediate: true,
       deep: true,
       handler(val) {
-        // console.log(val, 'fromAddress')
         if (val) {
           this.getAirDropList(val);
-          // this.fromAddress = val;
         }
       }
     },
@@ -141,21 +152,32 @@ export default {
   },
 
   methods: {
+    handleScroll()  {
+      let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      let clientHeight = document.documentElement.clientHeight;
+      let scrollHeight = document.documentElement.scrollHeight;
+      if (scrollTop + clientHeight >= scrollHeight && this.airdropList.length < this.totalCount) { // 滚动到底部，逻辑代码
+        this.pageNumber = this.pageNumber + 1;
+        this.getAirDropList();
+      }
+    },
     async getAirDropList(address, reload=false) {
       try {
         this.airdropListLoading = true;
         const tempList = JSON.parse(localStorage.getItem('airdropList'));
         const currentAccount = getCurrentAccount(address || this.fromAddress);
         const data = {
-          pubKey: currentAccount && currentAccount.pub || ""
+          pubKey: currentAccount && currentAccount.pub || "",
+          page: this.pageNumber
         };
         const res = await this.$request({
           url: '/air/drop/list',
           data
         });
         if (res.code === 1000 && res.data) {
+          this.totalCount = res.data.totalCount;
           if (tempList && tempList.length > 0 && !reload) {
-            const tempDropList = this.formatData(res.data);
+            const tempDropList = this.formatData(this.airdropList.concat(res.data.list));
             this.airdropList = tempDropList.map((item, index) => {
               if (tempList[index] && tempList[index].isPass && tempList[index].code) {
                 return tempList[index];
@@ -164,7 +186,7 @@ export default {
               }
             });
           } else {
-            this.airdropList = this.formatData(res.data);
+            this.airdropList = this.formatData(this.airdropList.concat(res.data.list));
             localStorage.setItem('airdropList', JSON.stringify(this.airdropList));
           }
         } else {
@@ -189,10 +211,6 @@ export default {
     // 确认领取
     async confirmReceive() {
       try {
-        if (!this.verificationCode) {
-         this.errMsg = this.$t("tips.tips1");
-         return false;
-        }
         this.transferLoading = true;
         const data = {
           // address: this.fromAddress,
@@ -220,7 +238,7 @@ export default {
           await this.sendTransaction();
         } else {
           this.errMsg = this.$t("tips.tips2");
-          throw res.msg
+          throw res.data;
         }
       } catch (e) {
         console.log('error:' + e);
@@ -291,7 +309,9 @@ export default {
       const data = {
         txHash: hash,
         code: this.verificationCode || this.currentAirdrop.code || '',
-        id: this.currentAirdrop.id
+        id: this.currentAirdrop.id,
+        airDropId: this.currentAirdrop.dropId,
+        address: this.currentAccount && this.currentAccount['address']['NERVE'] || ''
       }
       const res = await this.$request({
         url: '/air/drop/receive',
@@ -299,13 +319,12 @@ export default {
       });
       if (res.code === 1000) {
         this.$message({ message: this.$t("tips.tips5"), type: "success", duration: 2000 })
+        this.showSuccess = true;
       } else {
         this.$message({ message: this.$t(res.msg), type: "warning", duration: 2000 })
       }
       this.transferLoading = false;
-      this.showSuccess = true;
       this.reset();
-      await this.getAirDropList('', true);
     },
     codeInput() {
       if (this.errMsg) this.errMsg = '';
@@ -422,7 +441,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 $BColor: #ebeef8;
 $labelColor: #99a3c4;
 .home {
@@ -728,51 +747,74 @@ $labelColor: #99a3c4;
   position: relative;
   background-color: #FFFFFF;
   border-radius: 10px;
-  padding-bottom: 100px;
+  //padding-bottom: 100px;
   min-height: calc(100vh - 600px);
   overflow: auto;
-  //max-height:  calc(100vh - 240px);
+  margin: 28px;
   @media screen and (min-width: 1000px){
     min-height: calc(1560px - 600px);
     overflow: auto;
   }
+  .airdrop-cont-header {
+    color: #8D94AB;
+    display: flex;
+    .airdrop-cont-header_item {
+      width: 50%;
+      line-height: 36px;
+      font-size: 26px;
+    }
+  }
   .airdrop-list {
-    padding: 30px;
-    border-bottom: 1px solid #E9EBF3;
-    //&:last-child {
-    //  border: none;
-    //}
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+      width: 0px !important;
+      height: 0px !important;
+    }
     .airdrop-item {
-      .airdrop-icon {
-        height: 60px;
-        width: 60px;
-        border-radius: 50%;
-        overflow: hidden;
-        img {
-          height: 100%;
-          width: 100%;
+      display: flex;
+      padding: 30px 0;
+      .item-info {
+        display: flex;
+        width: 50%;
+        .item-logo {
+          height: 68px;
+          width: 68px;
+          border-radius: 50%;
+          margin-right: 12px;
+          overflow: hidden;
+          img {
+            height: 100%;
+            width: 100%;
+          }
+        }
+        .item-coin-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          //line-height: 36px;
+        }
+      }
+      .item-option {
+        display: flex;
+        width: 50%;
+        justify-content: space-between;
+        .item-coin-cont {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+        }
+        .receive_btn {
+          height: 68px;
+          width: 120px;
+          line-height: 68px;
+          text-align: center;
+          color: #fff;
+          background-color: #21C980;
+          border-radius: 10px;
         }
       }
     }
-    .airdrop-info {
-      margin-top: 12px;
-    }
   }
-  .position-absolute_cont {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-.receive_btn {
-  height: 68px;
-  width: 120px;
-  line-height: 68px;
-  text-align: center;
-  color: #fff;
-  background-color: #6eb6a9;
-  border-radius: 10px;
 }
 .pop-cont {
   width: 620px;
@@ -849,7 +891,8 @@ $labelColor: #99a3c4;
   }
 }
 .disabled_btn {
-  background-color: #ABB1BA;
+  background-color: #ABB1BA !important;
+  cursor: not-allowed;
 }
 .tips-cont {
   padding: 20px 0;
