@@ -19,7 +19,7 @@
         :placeholder="$t('airdrop.airdrop27')">
     </el-date-picker>
     <div class="radio-cont">
-      <div class="d-flex align-items-center mr-3 mt-3 mb-3 cursor-pointer size-28" v-for="(item, index) in typeList" :key="index" @click="currentIndex = index; airdropAddress=''">
+      <div class="d-flex align-items-center mr-3 mt-3 mb-3 cursor-pointer size-28" v-for="(item, index) in typeList" :key="index" @click="currentIndex = index; airdropAddress=''; airdropAddressCount=''; errMsg=''">
         <div class="radio-item" :class="{active: index===currentIndex}">
           <span class="dot-item"></span>
         </div>
@@ -44,7 +44,7 @@
       <el-checkbox v-model="understand" style="margin-right:10px;zoom:130%" />
       <span class="size-28 text-3a">{{ $t('airdrop.airdrop31') }}</span>
     </div>
-    <Button v-if="!needAuth" :disabled="isDisabled" @click="createAirDrop">{{ $t('airdrop.airdrop2') }}</Button>
+    <Button v-if="!needAuth" :disabled="isDisabled" @click="createAirDrop">{{ $t('airdrop.airdrop23') }}</Button>
     <Button v-else @click="approveERC20">{{ $t('tips.tips24') }}</Button>
   </div>
 </template>
@@ -101,9 +101,9 @@ export default {
     },
     isDisabled() {
       if (this.currentIndex === 0) {
-        return !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || this.errMsg;
+        return !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
       } else {
-        return !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || this.errMsg;
+        return !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
       }
     }
   },
