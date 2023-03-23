@@ -145,18 +145,6 @@ export default {
         this.$store.commit('changeShowConnect', false);
         this.$store.commit('changeShowSign', !currentAccount);
       },
-    },
-    fromChainId: {
-      immediate: true,
-      handler(val) {
-        if (!val) return;
-        const chain = supportChainList.find(v => v[ETHNET] === val);
-        if (chain) {
-          this.$store.commit("changeNetwork", chain.chain);
-        } else {
-          this.$store.commit("changeNetwork", 'NERVE');
-        }
-      }
     }
   },
   methods: {
@@ -183,6 +171,13 @@ export default {
         await this.requestAccounts();
       }
       this.fromChainId = this.wallet.chainId;
+      const tempSupportChainList = supportChainList.length === 0 && sessionStorage.getItem('supportChainList') && JSON.parse(sessionStorage.getItem('supportChainList')) || supportChainList;
+      const chain = tempSupportChainList.find(v => v[ETHNET] === this.fromChainId);
+      if (!sessionStorage.getItem('network')) {
+        this.$store.commit('changeNetwork', chain && chain.value || 'NERVE');
+      } else {
+        this.$store.commit('changeNetwork', sessionStorage.getItem('network'));
+      }
       this.provider = new ethers.providers.Web3Provider(window[this.walletType]);
       this.$store.commit('changeShowConnect', false);
       this.listenAccountChange();

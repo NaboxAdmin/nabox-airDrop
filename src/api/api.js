@@ -129,8 +129,7 @@ export class NTransfer {
     const nonce = await this.getNonce(transferInfo);
     if (!nonce) throw localStorage.getItem('locale') === 'en' ? 'Failed to get the nonce value' : "获取nonce值失败";
     const config = JSON.parse(sessionStorage.getItem("config"));
-    // const mainAsset = config[this.chain];
-    const mainAsset = MAIN_INFO;
+    const mainAsset = config[this.chain];
     if (mainAsset.chainId === transferInfo.assetsChainId && mainAsset.assetId === transferInfo.assetsId) {
       // 转账资产为本链主资产, 将手续费和转账金额合成一个input
       const newAmount = Plus(transferInfo.amount, transferInfo.fee).toFixed();

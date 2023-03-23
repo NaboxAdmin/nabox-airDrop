@@ -1,5 +1,5 @@
 <template>
-  <div class="historys">
+  <div :class="{'mobile_class': !isMobile}" class="historys">
     <template v-if="recordLoading">
       <Loading/>
     </template>
@@ -215,5 +215,15 @@ $grayColor: #b5b9c8;
 }
 .text-21 {
   color: #21C980;
+}
+@media screen and (min-width: 1000px) {
+  .mobile_class {
+    height: 1305px;
+    overflow-y: auto;
+  }
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
 }
 </style>

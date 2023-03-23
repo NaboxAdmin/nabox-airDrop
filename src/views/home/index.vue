@@ -1,5 +1,5 @@
 <template>
-  <div class="home" v-loading="isPass && transferLoading">
+  <div class="home" :class="{'mobile_class': !isMobile}" v-loading="isPass && transferLoading">
     <div>
       <!--@click="toUrl" -->
       <div class="banner-cont m-15">
@@ -899,5 +899,15 @@ $labelColor: #99a3c4;
 }
 .w-200 {
   width: 450px;
+}
+@media screen and (min-width: 1000px) {
+  .mobile_class {
+    height: 1380px;
+    overflow-y: auto;
+  }
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
 }
 </style>

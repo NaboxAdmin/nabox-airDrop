@@ -1,5 +1,5 @@
 <template>
-  <div class="square-cont" v-loading="showLoading">
+  <div class="square-cont" :class="{'mobile_class': !isMobile}" v-loading="showLoading">
     <template v-if="showSquareLoading && redBagList.length === 0">
       <Loading/>
     </template>
@@ -36,8 +36,8 @@
 <!--            <span class="text-green">DID用户(等级1)</span>-->
 <!--          </div>-->
         </div>
-        <Button class="mt-4" :disabled="item.status !== 1" @click="receiveAirdrop(item)">
-          {{ item.status === 1 ? $t('airdrop.airdrop2') : item.status === 2 ? $t('tips.tips22') : $t('airdrop.airdrop7') }}
+        <Button class="mt-4" :disabled="item.status !== 1 || item.received === 1" @click="receiveAirdrop(item)">
+          {{ item.received === 1 ? $t('airdrop.airdrop7') : item.status === 1 ? $t('airdrop.airdrop2') : item.status === 2 ? $t('tips.tips22') : $t('airdrop.airdrop7') }}
         </Button>
       </div>
     </template>
@@ -248,6 +248,16 @@ export default {
   img {
     height: 100%;
     width: 100%;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .mobile_class {
+    height: 1305px;
+    overflow-y: auto;
+  }
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
   }
 }
 </style>

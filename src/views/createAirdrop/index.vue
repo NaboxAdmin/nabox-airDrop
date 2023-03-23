@@ -1,7 +1,7 @@
 <template>
   <div class="airdrop-cont" v-loading="showLoading">
     <Input v-model="airdropName" :placeholder="$t('airdrop.airdrop40')" class="mt-3 mb-3"/>
-    <el-select v-model="selectAsset" @change="changeAsset" :placeholder="$t('airdrop.airdrop25')">
+    <el-select v-model="selectAsset" @change="changeAsset" filterable :placeholder="$t('airdrop.airdrop25')">
       <el-option
           v-for="(item, index) in assetList"
           :key="index"
@@ -13,6 +13,7 @@
     <el-date-picker
         v-model="endTime"
         type="datetime"
+        popper-class="date-cont"
         :picker-options="pickerOptions"
         value-format="yyyy-MM-dd HH:mm:ss"
         placement="bottom-start"
@@ -457,6 +458,35 @@ export default {
     height: 1.09rem !important;
     border: 1px solid #D0D5DD;
     font-size: 0.373333rem;
+    &:focus {
+      border-color: #D0D5DD;
+    }
+  }
+}
+
+.el-select-dropdown__item.selected {
+  color: #21C980;
+}
+
+/deep/ .el-date-table__row .el-date-table td.today span {
+  color: red !important;
+}
+
+/deep/ .el-date-table td.current:not(.disabled) span {
+  color: red;
+}
+
+/deep/ .el-textarea__inner {
+  &:focus {
+    border-color: #D0D5DD
+  }
+}
+
+/deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  background-color: #21C980;
+  border-color: #21C980;
+  &:hover {
+    border-color: #21C980;
   }
 }
 
@@ -467,7 +497,7 @@ export default {
     .el-icon-arrow-down{
       //width: 40px;
       color: #C0C4CC;
-      transform: rotateZ(180deg);
+      transform: rotateZ(-180deg);
       transform-origin: center;
       vertical-align: baseline;
     }
@@ -523,5 +553,8 @@ export default {
 }
 .mt-100 {
   margin-top: 100px;
+}
+.date-cont .available.today {
+  background: red;
 }
 </style>
