@@ -31,8 +31,8 @@
                   <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }}</span>
                   <span class="text-8d">${{ item.usdPrice | numFormatFixSix }}</span>
                 </div>
-                <div class="receive_btn cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
-                  {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : $t('airdrop.airdrop7') }}
+                <div class="receive_btn cursor-pointer" :class="(item.status !== 0 || item.dropStatus === 2) && 'disabled_btn'" @click="receiveAirdrop(item)">
+                  {{ item.status === 2 && $t('airdrop.airdrop7') || item.dropStatus !== 2 && (item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : $t('airdrop.airdrop7')) || item.dropStatus === 2 && $t('airdrop.airdrop46') }}
                 </div>
               </div>
             </div>

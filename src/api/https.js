@@ -32,7 +32,7 @@ export function post(url, methodName, data = []) {
 
 export async function request(params) {
   const { url, method = "post", data } = params;
-  const baseUrl = config.BRIDGE_API_URL
+  const baseUrl = config.BRIDGE_API_URL;
   const language = localStorage.getItem("locale") === "cn" ? "CHS" : "EN";
   const newData = method === "post" ? {data: {language, ...data}} : {params: {language, ...data}};
   return new Promise((resolve, reject) => {

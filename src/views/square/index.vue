@@ -167,7 +167,7 @@ export default {
         if (res.result && res.result.hash) {
           await this.broadcastHash(res.result.hash)
         } else {
-          this.transferLoading = false;
+          this.showLoading = false;
           this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 })
         }
       } catch (e) {

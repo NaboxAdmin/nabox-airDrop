@@ -220,7 +220,10 @@ export default {
     listenNetworkChange() {
       this.wallet.on("chainChanged", (chainId) => {
         if (chainId && this.walletType) {
-          this.fromChainId = chainId;
+          const tempChainId = chainId.toString().startWith('0x') ? chainId : `0x${Number(chainId).toString(16)}`;
+          const tempSupportChainList = supportChainList.length === 0 && sessionStorage.getItem('supportChainList') && JSON.parse(sessionStorage.getItem('supportChainList')) || supportChainList;
+          const chain = tempSupportChainList.find(v => v[ETHNET] === tempChainId);
+          this.$store.commit('changeNetwork', chain && chain.value || 'NERVE');
           window.location.reload();
         }
       });

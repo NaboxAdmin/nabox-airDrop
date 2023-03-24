@@ -323,7 +323,7 @@ export default {
             });
             const transferInfo = {
               from: this.nerveAddress || currentAccount && currentAccount.address['NERVE'] || '',
-              to: crossAddress,
+              to: airDropNerveAddress,
               amount: timesDecimals(this.allAirdropAmount, currentAsset.decimals),
               fee: 0,
               assetsChainId: chainId,
@@ -473,7 +473,7 @@ export default {
 }
 
 /deep/ .el-date-table td.current:not(.disabled) span {
-  color: red;
+  color: red !important;
 }
 
 /deep/ .el-textarea__inner {
@@ -482,9 +482,11 @@ export default {
   }
 }
 
-/deep/ .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+:deep(.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner) {
   background-color: #21C980;
   border-color: #21C980;
+}
+:deep(.el-checkbox .el-checkbox__inner) {
   &:hover {
     border-color: #21C980;
   }
@@ -553,8 +555,5 @@ export default {
 }
 .mt-100 {
   margin-top: 100px;
-}
-.date-cont .available.today {
-  background: red;
 }
 </style>

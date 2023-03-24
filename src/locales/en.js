@@ -79,6 +79,7 @@ const en = {
     airdrop43: "Hurry to visit ",
     airdrop44: " make an exchange",
     airdrop45: "Receiving",
+    airdrop46: "Expired",
   },
   header: {
     header1: "Website",

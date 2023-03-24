@@ -79,6 +79,7 @@ const cn = {
     airdrop43: "赶紧访问",
     airdrop44: "进行兑换",
     airdrop45: "领取中",
+    airdrop46: "已过期",
   },
   header: {
     header1: "官网",
