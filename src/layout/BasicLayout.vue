@@ -103,7 +103,7 @@ export default {
       address: '', // 合约地址
       provider: '',
       loading: false, // 加载
-      walletType: sessionStorage.getItem("walletType") || "NaboxWallet", // 钱包类型（metamask）
+      walletType: localStorage.getItem("walletType") || "NaboxWallet", // 钱包类型（metamask）
       // isDapp: true,
       fromChainId: '',
       orderList: [], // 订单列表
@@ -165,6 +165,7 @@ export default {
     // 初始化metamask wallet provider address
     async initWallet() {
       this.wallet = window[this.walletType];
+      localStorage.setItem('walletType', 'NaboxWallet');
       this.fromChainId = this.wallet.chainId;
       this.address = this.wallet.selectedAddress;
       if (!this.address) {
@@ -231,7 +232,7 @@ export default {
       } else {
         try {
           this.walletType = "NaboxWallet";
-          sessionStorage.setItem("walletType", "NaboxWallet");
+          localStorage.setItem("walletType", "NaboxWallet");
           await this.initWallet();
         } catch (e) {
           this.$message({

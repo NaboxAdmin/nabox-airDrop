@@ -441,7 +441,7 @@ export class ETransfer {
 
   getProvider(chain) {
     let RPC_URL = {};
-    const walletType = localStorage.getItem('wallet');
+    const walletType = localStorage.getItem('walletType');
     const supportChainList = sessionStorage.getItem('supportChainList') && JSON.parse(sessionStorage.getItem('supportChainList')) || [];
     supportChainList.forEach(chain => {
       if (chain.chainType === 2) {
