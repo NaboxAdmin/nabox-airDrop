@@ -17,7 +17,6 @@ import { Loading } from 'vant';
 import { localChainConfig } from '@/config';
 import elLocale from 'element-ui/lib/locale'
 import './assets/scss/element-variables.scss';
-import './api/test';
 const development = process.env.NODE_ENV === "development"
 Vue.config.devtools = development;
 if (!development) {
