@@ -11,7 +11,7 @@ export default {
     placeholder: '',
     value:{
       type: String,
-      default: 0,
+      default: '',
       require: true
     }
   },
@@ -23,12 +23,12 @@ export default {
   watch: {
     value(newVal){
       this.currentValue = newVal;
+      this.$emit('input', this.currentValue);
     }
   },
   methods: {
     changeValue(e){
       this.currentValue = e.target.value;
-      console.log(this.currentValue, 'this.currentValue')
       this.$emit('input', this.currentValue);
     },
   }

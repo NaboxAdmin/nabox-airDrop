@@ -1,5 +1,5 @@
 <template>
-  <div class="home" :class="{'mobile_class': !isMobile}" v-loading="isPass && transferLoading">
+  <div class="home" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}" v-loading="isPass && transferLoading">
     <div>
       <!--@click="toUrl" -->
       <div class="banner-cont m-15">
@@ -31,8 +31,8 @@
                   <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }}</span>
                   <span class="text-8d">${{ item.usdPrice | numFormatFixSix }}</span>
                 </div>
-                <div class="receive_btn cursor-pointer" :class="(item.status !== 0 || item.dropStatus === 2) && 'disabled_btn'" @click="receiveAirdrop(item)">
-                  {{ item.status === 2 && $t('airdrop.airdrop7') || item.dropStatus !== 2 && (item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : $t('airdrop.airdrop7')) || item.dropStatus === 2 && $t('airdrop.airdrop46') }}
+                <div class="receive_btn cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
+                  {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : item.status === 2 ? $t('airdrop.airdrop7') : item.status === 4 ? $t('airdrop.airdrop46') : $t('airdrop.airdrop46') }}
                 </div>
               </div>
             </div>
@@ -152,6 +152,12 @@ export default {
   },
 
   methods: {
+    airdropScroll() {
+      if (this.$refs.scrollContainer.scrollTop + this.$refs.scrollContainer.clientHeight >= this.$refs.scrollContainer.scrollHeight && this.airdropList.length < this.totalCount) {
+        this.pageNumber = this.pageNumber + 1;
+        this.getAirDropList();
+      }
+    },
     handleScroll()  {
       let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
       let clientHeight = document.documentElement.clientHeight;
@@ -211,6 +217,7 @@ export default {
     // 确认领取
     async confirmReceive() {
       try {
+        if (this.currentAirdrop.status !== 0 || this.currentAirdrop.dropStatus === 2) return;
         this.transferLoading = true;
         const data = {
           // address: this.fromAddress,
@@ -318,8 +325,12 @@ export default {
         data
       });
       if (res.code === 1000) {
-        this.$message({ message: this.$t("tips.tips5"), type: "success", duration: 2000 })
+        this.$message({ message: this.$t("tips.tips5"), type: "success", duration: 2000 });
         this.showSuccess = true;
+        this.airdropList = this.airdropList.map(item => ({
+          ...item,
+          status: item.id === this.currentAirdrop.id && 1 || item.status
+        }));
       } else {
         this.$message({ message: this.$t(res.msg), type: "warning", duration: 2000 })
       }
@@ -384,28 +395,6 @@ export default {
       chainId = chainId + ""
       // 兼容Binggo
       return chainId.startsWith("0x") ? chainId : "0x" + Number(chainId).toString(16);
-    },
-    //监听账户改变
-    listenAccountChange() {
-      this.wallet.on("accountsChanged", (accounts) => {
-        console.log(accounts, "===accounts-changed===")
-        localStorage.removeItem('airdropList');
-        if (accounts.length && this.walletType) {
-          this.address = accounts[0];
-          if (this.address && !this.address.startsWith("0x")) {
-            this.switchNetwork(this.address)
-          }
-        }
-      });
-    },
-    //监听网络改变
-    listenNetworkChange() {
-      this.wallet.on("chainChanged", (chainId) => {
-        console.log(chainId, "===chainId-changed===")
-        if (chainId && this.walletType) {
-          this.fromChainId = this.parseChainId(chainId);
-        }
-      });
     },
     async syncAccount(pub) {
       const res = await this.$request({

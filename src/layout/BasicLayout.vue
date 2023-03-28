@@ -196,14 +196,10 @@ export default {
         console.log(accounts, "===accounts-changed===")
         if (accounts.length && this.walletType) {
           this.address = accounts[0];
-          if (this.address && !this.address.startsWith("0x")) {
-            this.switchNetwork(this.address)
-          }
           window.location.reload();
-          // this.getBalance();
         } else {
-          this.address = "";
-          this.$store.commit('changeShowConnect', true);
+          this.address = '';
+          // this.$store.commit('changeShowConnect', true);
         }
       });
     },
@@ -351,7 +347,6 @@ export default {
       this.loading = false;
     },
     navBarClick(index, path) {
-      console.log(this.$route.path, '123');
       if (path === this.$route.path) return;
       this.currentIndex = index;
       this.$router.push({ path });

@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="coin-count">
-        <span class="text-3a size-32">{{ giftItem.amount }}</span>
+        <span class="text-3a size-32">{{ giftItem.perAmount | numFormatFixSix }}</span>
         <span class="text-8d size-26">{{ giftItem.symbol }}</span>
       </div>
       <Button type="ghost" @click="receiveAirdrop(giftItem)">{{ $t('airdrop.airdrop2') }}</Button>
@@ -32,7 +32,7 @@
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
-import {getCurrentAccount} from "../../api/util";
+import {Division, getCurrentAccount} from "../../api/util";
 import {MAIN_INFO} from "@/config";
 
 export default {
@@ -60,7 +60,10 @@ export default {
           data: { code: this.giftCode }
         });
         if (res.code === 1000) {
-          this.giftItem = res.data;
+          this.giftItem = {
+            ...res.data,
+            perAmount: Division(res.data.amount || 0, res.data.addressCount || 0).toString() || 0
+          };
         } else {
           throw res.data;
         }

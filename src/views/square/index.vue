@@ -1,5 +1,5 @@
 <template>
-  <div class="square-cont" :class="{'mobile_class': !isMobile}" v-loading="showLoading">
+  <div ref="scrollContainer" @scroll="squareScroll" class="square-cont" :class="{'mobile_class': !isMobile}" v-loading="showLoading">
     <template v-if="showSquareLoading && redBagList.length === 0">
       <Loading/>
     </template>
@@ -25,19 +25,23 @@
         <div class="square-info size-26">
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop17') }}</span>
-            <span>{{ item.amount }}</span>
+            <span>{{ item.amount | numFormatFixSix }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop18') }}</span>
             <span>{{ item.remainAsset | numFormatFixSix }}</span>
+          </div>
+          <div class="d-flex align-items-center space-between mt-3">
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop47') }}</span>
+            <span>{{ item.perAmount | numFormatFixSix }}</span>
           </div>
 <!--          <div class="d-flex align-items-center space-between mt-3">-->
 <!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop19') }}</span>-->
 <!--            <span class="text-green">DID用户(等级1)</span>-->
 <!--          </div>-->
         </div>
-        <Button class="mt-4" :disabled="item.status !== 1 || item.received === 1" @click="receiveAirdrop(item)">
-          {{ item.received === 1 ? $t('airdrop.airdrop7') : item.status === 1 ? $t('airdrop.airdrop2') : item.status === 2 ? $t('tips.tips22') : $t('airdrop.airdrop7') }}
+        <Button class="mt-4" :disabled="item.receiveStatus !== 0" @click="receiveAirdrop(item)">
+          {{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('airdrop.airdrop7') }}
         </Button>
       </div>
     </template>
@@ -81,6 +85,12 @@ export default {
     window.removeEventListener('scroll', this.squareHandleScroll);
   },
   methods: {
+    squareScroll() {
+      if (this.$refs.scrollContainer.scrollTop + this.$refs.scrollContainer.clientHeight >= this.$refs.scrollContainer.scrollHeight && this.redBagList.length < this.totalCount) {
+        this.pageNumber = this.pageNumber + 1;
+        this.getSquareRedBagList();
+      }
+    },
     squareHandleScroll()  {
       let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
       let clientHeight = document.documentElement.clientHeight;
@@ -105,7 +115,8 @@ export default {
           this.totalCount = res.data.totalCount;
           const tempList = this.redBagList.concat(res.data.list).map(item => ({
             ...item,
-            remainAsset: Times(Division(item.amount || 0, item.addressCount || 0), Minus(item.addressCount || 0, item.receiveCount || 0)).toString()
+            remainAsset: Times(Division(item.amount || 0, item.addressCount || 0), Minus(item.addressCount || 0, item.receiveCount || 0)).toString(),
+            perAmount: Division(item.amount || 0, item.addressCount || 0).toString()
           }));
           this.redBagList = tempList.filter(item => item.status === 1 || item.status === 2)
         } else {
@@ -178,17 +189,28 @@ export default {
     },
     // 发送hash到后台
     async broadcastHash(hash) {
+      const currentAccount = getCurrentAccount(this.fromAddress);
       const data = {
         txHash: hash,
         code: '',
         airDropId: this.currentAirdrop.airDropId,
-        address: this.currentAccount && this.currentAccount['address']['NERVE'] || ''
+        address: this.currentAccount && this.currentAccount['address']['NERVE'] || currentAccount && currentAccount['address']['NERVE'] || ''
       }
       const res = await this.$request({
         url: '/air/drop/receive',
         data
       });
       if (res.code === 1000) {
+        this.redBagList = this.redBagList.map(item => {
+          if (item.airDropId === this.currentAirdrop.airDropId) {
+            return {
+              ...item,
+              receiveStatus: 1
+            }
+          }
+          return item;
+        });
+        console.log(this.redBagList, 'this.redBagList')
         this.$message({ message: this.$t("tips.tips5"), type: "success", duration: 2000 })
       } else {
         this.$message({ message: this.$t(res.data), type: "warning", duration: 2000 })
@@ -210,6 +232,7 @@ export default {
     },
     async receiveAirdrop(airdrop) {
       this.currentAirdrop = airdrop;
+      console.log(airdrop.id, 'airdrop')
       await this.sendTransaction();
     },
   }

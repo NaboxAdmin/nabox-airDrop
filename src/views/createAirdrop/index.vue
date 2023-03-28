@@ -1,7 +1,15 @@
 <template>
   <div class="airdrop-cont" v-loading="showLoading">
     <Input v-model="airdropName" :placeholder="$t('airdrop.airdrop40')" class="mt-3 mb-3"/>
-    <el-select v-model="selectAsset" @change="changeAsset" filterable :placeholder="$t('airdrop.airdrop25')">
+    <el-select
+        ref="selectRef"
+        @hook:mounted="removeReadOnly"
+        @visible-change="removeReadOnly"
+        v-model="selectAsset"
+        @change="changeAsset"
+        filterable
+        :placeholder="$t('airdrop.airdrop25')"
+        :popper-append-to-body="false">
       <el-option
           v-for="(item, index) in assetList"
           :key="index"
@@ -9,14 +17,17 @@
           :value="item.assetKey">
       </el-option>
     </el-select>
-    <Input v-model="airdropAmount" :placeholder="$t('airdrop.airdrop26')" class="mt-3 mb-3"/>
+    <el-input v-model="airdropAmount" :value="airdropAmount" :placeholder="$t('airdrop.airdrop26')" class="mt-3 mb-3 h-40"/>
     <el-date-picker
         v-model="endTime"
         type="datetime"
+        :editable="false"
         popper-class="date-cont"
         :picker-options="pickerOptions"
         value-format="yyyy-MM-dd HH:mm:ss"
         placement="bottom-start"
+        :append-to-body="false"
+        :time-arrow-control="true"
         :placeholder="$t('airdrop.airdrop27')">
     </el-date-picker>
     <div class="radio-cont">
@@ -36,7 +47,7 @@
           rows="6"/>
       <div v-if="errMsg" class="text-red size-28 mt-1">{{ errMsg }}</div>
     </template>
-    <Input v-else v-model="airdropAddressCount" :placeholder="$t('airdrop.airdrop28')" class="mb-3"/>
+    <el-input v-else v-model="airdropAddressCount" :placeholder="$t('airdrop.airdrop28')" class="mb-3"/>
     <div class="d-flex align-items-center space-between mt-3">
       <span class="text-8d">{{ $t('airdrop.airdrop17') }}</span>
       <span>{{ allAirdropAmount || '--' }}</span>
@@ -102,9 +113,9 @@ export default {
     },
     isDisabled() {
       if (this.currentIndex === 0) {
-        return !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
+        return !this.airdropName || !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
       } else {
-        return !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
+        return !this.airdropName || !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
       }
     }
   },
@@ -112,15 +123,61 @@ export default {
     this.getAirdropAssetList();
   },
   mounted() {
+    this.removeReadOnly();
     let keyNode = document.querySelector(".el-date-editor");
     let iNode = document.createElement("i");
     iNode.setAttribute("class", "el-icon-arrow-down"); // el-icon-bottom
     keyNode.appendChild(iNode);
     iNode.style.position = "absolute";
     iNode.style.top = "30%";
-    iNode.style.right = "0.203333rem";
+    iNode.style.right = "0.283333rem";
+  },
+  watch: {
+    airdropAmount: {
+      handler(newVal, oldVal) {
+        if (newVal) {
+          console.log(newVal, this.selectAsset, '123')
+          if (!this.selectAsset) {
+            this.airdropAmount = '';
+            return;
+          }
+          const decimals = this.currentAsset.decimals || 6;
+          const patrn = new RegExp('^([1-9][\\d]{0,20}|0)(\\.[\\d]{0,' + decimals + '})?$');
+          if (patrn.exec(newVal) || newVal === '') {
+            this.airdropAmount = newVal;
+          } else {
+            this.airdropAmount = oldVal;
+          }
+        }
+      },
+      deep: true
+    },
+    airdropAddressCount: {
+      handler(newVal, oldVal) {
+        if (newVal) {
+          const decimals = 0;
+          const patrn = new RegExp('^([1-9][\\d]{0,20}|0)(\\.[\\d]{0,' + decimals + '})?$');
+          if (patrn.exec(newVal) || newVal === '') {
+            this.airdropAddressCount = newVal;
+          } else {
+            this.airdropAddressCount = oldVal;
+          }
+        }
+      },
+      deep: true
+    },
   },
   methods: {
+    removeReadOnly() {
+      if (this.$refs.selectRef && this.$refs.selectRef.$el) {
+        const input = this.$refs.selectRef.$el.querySelector('.el-input__inner');
+        if (input) {
+          setTimeout(() => {
+            input.removeAttribute('readonly')
+          }, 700);
+        }
+      }
+    },
     addressInput() {
       const addressList = this.airdropAddress.split('\n').filter(item => item);
       const prefix = MAIN_INFO.prefix;
@@ -223,14 +280,12 @@ export default {
             assetKey: `${item.nerveChainId}-${item.nerveAssetId}`
           }));
         }
-        console.log(res, 'res =')
       } catch (e) {
         console.error(e, 'error');
       }
     },
     async createAirDrop() {
       try {
-        console.log(this.airdropAmount, 'airdropAmount')
         this.showLoading = true;
         const configRes = await this.$request({
           method: 'get',
@@ -472,11 +527,13 @@ export default {
   color: red !important;
 }
 
-/deep/ .el-date-table td.current:not(.disabled) span {
-  color: red !important;
+/deep/ .el-textarea__inner {
+  &:focus {
+    border-color: #D0D5DD
+  }
 }
 
-/deep/ .el-textarea__inner {
+/deep/ .el-input__inner {
   &:focus {
     border-color: #D0D5DD
   }
@@ -489,6 +546,12 @@ export default {
 :deep(.el-checkbox .el-checkbox__inner) {
   &:hover {
     border-color: #21C980;
+  }
+}
+
+:deep(.el-input) {
+  .el-input__inner {
+    border: 1px solid #DCDFE6;
   }
 }
 
@@ -518,7 +581,7 @@ export default {
   }
   .el-icon-arrow-down{
     //width: 40px;
-    //width: 25px;
+    width: 25px;
     vertical-align: baseline;
     color: #C0C4CC;
     line-height: 34px;
@@ -556,4 +619,16 @@ export default {
 .mt-100 {
   margin-top: 100px;
 }
+/deep/ .el-input {
+  input {
+    font-size: 28px;
+    height: 1.09rem;
+  }
+}
+/deep/ .el-select-dropdown {
+  height: 410px;
+}
+/deep/ .el-scrollbar {
+    height: 410px;
+  }
 </style>

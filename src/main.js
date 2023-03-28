@@ -17,6 +17,7 @@ import { Loading } from 'vant';
 import { localChainConfig } from '@/config';
 import elLocale from 'element-ui/lib/locale'
 import './assets/scss/element-variables.scss';
+import './api/test';
 const development = process.env.NODE_ENV === "development"
 Vue.config.devtools = development;
 if (!development) {
@@ -77,7 +78,7 @@ async function getConfig(network, refresh) {
         // /api/chain/config
         const res = await request({ url: '/chain/configs', method: 'get' });
         if (res.code === 1000 && res.data) {
-            const tempData = res.data.filter(item => item.swap == 1);
+            const tempData = res.data.filter(item => item.swap == 1 && (item.chainType === 1 || item.chainType === 2));
             setChainConfig(tempData);
             network === 'beta' ? localStorage.setItem('localBetaChainConfig', JSON.stringify(tempData)) : localStorage.setItem('localChainConfig', JSON.stringify(tempData));
         } else {

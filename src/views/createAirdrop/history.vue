@@ -8,7 +8,7 @@
         <div class="history_item">
           <div>
             <img :src="item.icon" alt="">
-            <span class="size-30 text-3a">{{ item.name }}</span>
+            <span class="size-30 text-3a text-truncate">{{ item.name }}</span>
           </div>
           <span class="text-8d size-26">{{ $t('airdrop.airdrop16') }}<span class="text-8d">{{ item.endTime | timeFormatMM }}</span></span>
         </div>
@@ -76,7 +76,9 @@ export default {
     }
   },
   created() {
-    this.getAirdropRecord();
+    setTimeout(() => {
+      this.getAirdropRecord();
+    }, 500);
   },
   methods: {
     copyText() {
@@ -172,7 +174,8 @@ $grayColor: #b5b9c8;
         span{
           color: #3A3C44;
           font-weight: 700;
-          line-height: 18px;
+          flex: 1;
+          width: 400px;
         }
       }
       span>span{
