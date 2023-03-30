@@ -214,7 +214,6 @@ export default {
           }
           return item;
         });
-        console.log(this.redBagList, 'this.redBagList')
         this.$message({ message: this.$t("tips.tips5"), type: "success", duration: 2000 })
       } else {
         this.$message({ message: this.$t(res.data), type: "warning", duration: 2000 })
