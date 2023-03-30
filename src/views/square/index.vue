@@ -35,6 +35,10 @@
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop47') }}</span>
             <span>{{ item.perAmount | numFormatFixSix }}</span>
           </div>
+          <div class="d-flex align-items-center space-between mt-3">
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop48') }}</span>
+            <span>{{ 'Nerve' }}</span>
+          </div>
 <!--          <div class="d-flex align-items-center space-between mt-3">-->
 <!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop19') }}</span>-->
 <!--            <span class="text-green">DID用户(等级1)</span>-->

@@ -80,6 +80,7 @@ const en = {
     airdrop45: "Receiving",
     airdrop46: "Expired",
     airdrop47: "Amount/Per",
+    airdrop48: "Receive Network",
   },
   header: {
     header1: "Website",
