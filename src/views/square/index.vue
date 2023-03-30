@@ -24,6 +24,10 @@
         </div>
         <div class="square-info size-26">
           <div class="d-flex align-items-center space-between mt-3">
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop40') }}</span>
+            <span>{{ item.name }}</span>
+          </div>
+          <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop17') }}</span>
             <span>{{ item.amount | numFormatFixSix }}</span>
           </div>
@@ -198,7 +202,7 @@ export default {
         txHash: hash,
         code: '',
         airDropId: this.currentAirdrop.airDropId,
-        address: this.currentAccount && this.currentAccount['address']['NERVE'] || currentAccount && currentAccount['address']['NERVE'] || ''
+        address: currentAccount && currentAccount['address'] && currentAccount['address']['NERVE'] || this.currentAccount && this.currentAccount['address'] && this.currentAccount['address']['NERVE'] || ''
       }
       const res = await this.$request({
         url: '/air/drop/receive',

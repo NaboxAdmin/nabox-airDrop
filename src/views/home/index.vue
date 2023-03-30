@@ -313,12 +313,13 @@ export default {
     },
     // 发送hash到后台
     async broadcastHash(hash) {
+      const currentAccount = getCurrentAccount(this.fromAddress);
       const data = {
         txHash: hash,
         code: this.verificationCode || this.currentAirdrop.code || '',
         id: this.currentAirdrop.id,
         airDropId: this.currentAirdrop.dropId,
-        address: this.currentAccount && this.currentAccount['address']['NERVE'] || ''
+        address: currentAccount && currentAccount['address'] && currentAccount['address']['NERVE'] || this.currentAccount && this.currentAccount['address'] && this.currentAccount['address']['NERVE'] || ''
       }
       const res = await this.$request({
         url: '/air/drop/receive',
