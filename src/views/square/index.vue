@@ -186,7 +186,7 @@ export default {
           this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 })
         }
       } catch (e) {
-        console.log(e, 'e')
+        console.error(e, 'e')
         this.showLoading = false;
         this.$message({ message: 'Network Error', type: "warning", duration: 2000 });
       }
