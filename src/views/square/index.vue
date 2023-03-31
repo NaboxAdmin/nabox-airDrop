@@ -12,36 +12,28 @@
             </div>
             <div class="header-name flex-1 size-30">{{ item.symbol }}</div>
             <div class="header-time d-flex direction-column">
-              <div class="text-right size-24 d-flex align-items-center justify-content-end">
-                <img src="@/assets/image/deadline.svg" class="mr-1" alt="">
-                <span class="text-e7">{{ $t('airdrop.airdrop16') }}</span>
-              </div>
-              <div class="text-8d size-28">
-                {{ item.endTime | timeFormat }}
+              <div class="size-32 text-3a text-truncate w-240">
+                {{ item.name }}
               </div>
             </div>
           </div>
         </div>
         <div class="square-info size-26">
           <div class="d-flex align-items-center space-between mt-3">
-            <span class="size-26 text-8d">{{ $t('airdrop.airdrop40') }}</span>
-            <span>{{ item.name }}</span>
-          </div>
-          <div class="d-flex align-items-center space-between mt-3">
-            <span class="size-26 text-8d">{{ $t('airdrop.airdrop17') }}</span>
-            <span>{{ item.amount | numFormatFixSix }}</span>
-          </div>
-          <div class="d-flex align-items-center space-between mt-3">
-            <span class="size-26 text-8d">{{ $t('airdrop.airdrop18') }}</span>
-            <span>{{ item.remainAsset | numFormatFixSix }}</span>
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop17') }}/{{ $t('airdrop.airdrop18') }}</span>
+            <span class="text-3a">{{ item.amount | numFormatFixSix }}/{{ item.remainAsset | numFormatFixSix }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop47') }}</span>
-            <span>{{ item.perAmount | numFormatFixSix }}</span>
+            <span class="text-3a">{{ item.perAmount | numFormatFixSix }}</span>
+          </div>
+          <div class="d-flex align-items-center space-between mt-3">
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
+            <span class="text-3a">{{ item.endTime | timeFormat }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop48') }}</span>
-            <span>{{ 'Nerve' }}</span>
+            <span class="text-3a">{{ 'Nerve' }}</span>
           </div>
 <!--          <div class="d-flex align-items-center space-between mt-3">-->
 <!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop19') }}</span>-->
@@ -51,6 +43,7 @@
         <Button class="mt-4" :disabled="item.receiveStatus !== 0" @click="receiveAirdrop(item)">
           {{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('airdrop.airdrop7') }}
         </Button>
+        <div @click="toBrowser(item.sendTxHash)" v-if="item.receiveStatus === 2 && item.sendTxHash" class="mt-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
       </div>
     </template>
     <div class="d-flex align-items-center direction-column justify-content-center" v-else-if="redBagList.length === 0">
@@ -66,7 +59,7 @@
 <script>
 import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
-import {Division, getCurrentAccount, Minus, Times} from "../../api/util";
+import {addressNetworkOrigin, Division, getCurrentAccount, hashLinkList, Minus, Times} from "../../api/util";
 import {MAIN_INFO} from "@/config";
 export default {
   name: "Square",
@@ -93,6 +86,9 @@ export default {
     window.removeEventListener('scroll', this.squareHandleScroll);
   },
   methods: {
+    toBrowser(hash) {
+      this.isMobile ? window.location.href = hashLinkList['NERVE'] + hash : window.open(hashLinkList['NERVE'] + hash);
+    },
     squareScroll() {
       if (this.$refs.scrollContainer.scrollTop + this.$refs.scrollContainer.clientHeight >= this.$refs.scrollContainer.scrollHeight && this.redBagList.length < this.totalCount) {
         this.pageNumber = this.pageNumber + 1;
@@ -289,5 +285,12 @@ export default {
     width: 0 !important;
     height: 0 !important;
   }
+}
+.w-240 {
+  text-align: right;
+  width: 350px;
+}
+.text-21 {
+  color: #21C980;
 }
 </style>

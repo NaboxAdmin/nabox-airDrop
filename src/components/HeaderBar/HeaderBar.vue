@@ -75,8 +75,7 @@
 <script>
 import Pop from "../Pop/Pop";
 import PopUp from "../PopUp/PopUp";
-import {ETHNET} from "@/config";
-import {copys, divisionDecimals, supportChainList, tofix, addressNetworkOrigin, hashLinkList} from "../../api/util";
+import {copys, supportChainList} from "../../api/util";
 
 const lang = localStorage.getItem("locale") || 'cn';
 
@@ -151,11 +150,19 @@ export default {
   computed: {
     isMobile() {
       return /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
-    }
+    },
+    addressNetworkOrigin() {
+      const addressNetworkOrigin = {};
+      const tempSupportChainList = supportChainList.length === 0 && sessionStorage.getItem('supportChainList') && JSON.parse(sessionStorage.getItem('supportChainList')) || supportChainList;
+      tempSupportChainList.forEach(chain => {
+        addressNetworkOrigin[chain.chain] = chain.addressLink;
+      });
+      return addressNetworkOrigin;
+    },
   },
   methods: {
     toBrowser(network, address) {
-      this.isMobile ? window.location.href = addressNetworkOrigin[network || this.fromNetwork] + address || this.address : window.open(addressNetworkOrigin[network || this.fromNetwork] + address || this.address);
+      this.isMobile ? window.location.href = this.addressNetworkOrigin[network || this.fromNetwork] + address || this.address : window.open(this.addressNetworkOrigin[network || this.fromNetwork] + address || this.address);
     },
     copy(val) {
       if (!val) return;
@@ -173,15 +180,6 @@ export default {
     },
     showClick() {
       this.showPop = !this.showPop;
-    },
-    // 跳转查看当前的交易详情
-    linkToUrl(hash, item) {
-      if (this.orderType===2 || this.orderType === 1) {
-        const chain = this.orderType === 2 ? 'NERVE' : this.currentChain;
-        this.isMobile ? window.location.href = `${hashLinkList[chain]}${hash}` : window.open(`${hashLinkList[chain]}${hash}`);
-      } else {
-        this.toOrderDetail(item);
-      }
     }
   },
   beforeDestroy() {

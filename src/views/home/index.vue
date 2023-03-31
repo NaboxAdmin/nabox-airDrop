@@ -22,14 +22,14 @@
                   <img :src="item.icon" alt="">
                 </div>
                 <div class="item-coin-info">
-                  <span class="text-3a">{{ item.symbol }}({{ item.chain }})</span>
-                  <span class="text-8d">{{ superLong(item.contractAddress) }}</span>
+                  <span class="text-3a size-26 text-truncate w-130">{{ item.airDropName }}</span>
+                  <span class="text-8d size-24">{{ item.contractAddress && superLong(item.contractAddress) || `${item.chainId}-${item.assetId}` }}</span>
                 </div>
               </div>
               <div class="item-option">
                 <div class="item-coin-cont">
-                  <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }}</span>
-                  <span class="text-8d">${{ item.usdPrice | numFormatFixSix }}</span>
+                  <span class="text-3a size-26">{{ item.receiveAmount | numFormatFixSix }}</span>
+                  <span class="text-8d size-24">${{ item.usdPrice | numFormatFixSix }}</span>
                 </div>
                 <div class="receive_btn cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
                   {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : item.status === 2 ? $t('airdrop.airdrop7') : item.status === 4 ? $t('airdrop.airdrop46') : $t('airdrop.airdrop46') }}
@@ -782,6 +782,9 @@ $labelColor: #99a3c4;
           flex-direction: column;
           justify-content: center;
           //line-height: 36px;
+          span {
+            line-height: 36px;
+          }
         }
       }
       .item-option {
@@ -792,6 +795,9 @@ $labelColor: #99a3c4;
           display: flex;
           justify-content: center;
           flex-direction: column;
+          span {
+            line-height: 36px;
+          }
         }
         .receive_btn {
           height: 68px;
@@ -899,5 +905,8 @@ $labelColor: #99a3c4;
     width: 0 !important;
     height: 0 !important;
   }
+}
+.w-130 {
+  width: 230px;
 }
 </style>

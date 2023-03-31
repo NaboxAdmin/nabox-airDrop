@@ -113,9 +113,9 @@ export default {
     },
     isDisabled() {
       if (this.currentIndex === 0) {
-        return !this.airdropName || !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
+        return !this.airdropName || !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !this.endTime || !!this.errMsg;
       } else {
-        return !this.airdropName || !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !!this.errMsg;
+        return !this.airdropName || !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !this.endTime || !!this.errMsg;
       }
     }
   },
@@ -396,7 +396,7 @@ export default {
           txRes = await this.broadcastHex(txHex);
         } else {
           const params = {
-            fromAddress: this.currentAccount['address'][this.fromNetwork] || this.currentAccount['address']['pluginAddress'],
+            fromAddress: currentAccount['address'][this.fromNetwork] || currentAccount['address']['pluginAddress'],
             decimals,
             contractAddress,
             numbers: this.allAirdropAmount,
