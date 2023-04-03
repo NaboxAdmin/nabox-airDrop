@@ -1,5 +1,5 @@
 <template>
-  <div ref="scrollContainer" @scroll="squareScroll" class="square-cont" :class="{'mobile_class': !isMobile}" v-loading="showLoading">
+  <div ref="scrollContainer" @scroll="squareScroll" class="square-cont" :class="{'mobile_class': !isMobile}">
     <template v-if="showSquareLoading && redBagList.length === 0">
       <Loading/>
     </template>
@@ -53,13 +53,16 @@
       <span class="text-center pt-4 mt-2 size-28">{{ $t("tips.tips26") }}</span>
     </div>
     <NoData :noMore="true" v-if="redBagList.length !== 0 && redBagList.length === totalCount"/>
+    <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
+      <Spin :isFullLoading="true"/>
+    </pop-up>
   </div>
 </template>
 
 <script>
 import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
-import {addressNetworkOrigin, Division, getCurrentAccount, hashLinkList, Minus, Times} from "../../api/util";
+import {Division, getCurrentAccount, hashLinkList, Minus, Times} from "../../api/util";
 import {MAIN_INFO} from "@/config";
 export default {
   name: "Square",
@@ -290,7 +293,7 @@ export default {
   text-align: right;
   width: 350px;
 }
-.text-21 {
-  color: #21C980;
+.el-loading-parent--relative {
+  position: unset !important;
 }
 </style>

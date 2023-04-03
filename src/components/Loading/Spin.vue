@@ -1,10 +1,16 @@
 <template>
-  <div class="spin-cont"/>
+  <div class="spin-cont" :class="[isFullLoading && 'large']"/>
 </template>
 
 <script>
 export default {
-  name: "Spin"
+  name: "Spin",
+  props: {
+    isFullLoading: {
+      type: Boolean,
+      default: false
+    }
+  }
 }
 </script>
 
@@ -17,6 +23,12 @@ export default {
   border: 8px solid #eee;
   border-top-color: #21C980;
   animation: spinAnimation 1.2s linear infinite;
+  &.large {
+    height: 50px;
+    width: 50px;
+    border: 6px solid #eee;
+    border-top-color: #21C980;
+  }
 }
 @keyframes spinAnimation {
   from {

@@ -49,6 +49,12 @@ export default {
     background-color: #FFFFFF;
     color: #21C980;
     box-shadow: none;
+    &:disabled {
+      background-color: transparent;
+      box-shadow: none;
+      color: #abb1ba;
+      cursor: not-allowed;
+    }
   }
   &:disabled {
     background-color: #abb1ba;

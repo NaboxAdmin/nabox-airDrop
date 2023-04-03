@@ -18,6 +18,9 @@
     opacity: 1;
     transition: all linear .2s;
   }
+  &.opacity {
+    background-color: rgba(255, 255, 255, .7);
+  }
   .show-main {
     z-index: 100;
     animation: showPop linear .2s;

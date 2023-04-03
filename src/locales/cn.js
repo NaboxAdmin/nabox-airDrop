@@ -68,7 +68,7 @@ const cn = {
     airdrop33: "复制兑换码",
     airdrop34: "请输入空投名称",
     airdrop35: "空投人数",
-    airdrop36: "空投方向",
+    airdrop36: "空投方式",
     airdrop37: "已领人数",
     airdrop38: "查看",
     airdrop39: "空投人数",
@@ -82,6 +82,9 @@ const cn = {
     airdrop47: "单人可领数量",
     airdrop48: "接收网络",
     airdrop49: "查看记录",
+    airdrop50: "进行中",
+    airdrop51: "已结束",
+    airdrop52: "确认中",
   },
   header: {
     header1: "官网",

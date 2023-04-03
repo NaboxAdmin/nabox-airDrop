@@ -1,5 +1,5 @@
 <template>
-  <div class="gift-cont" v-loading="showLoading">
+  <div class="gift-cont">
     <Input v-model="giftCode" :placeholder="$t('airdrop.airdrop21')"/>
     <Button @click="queryCode" :disabled="!giftCode" class="mt-3">{{ $t('airdrop.airdrop22') }}</Button>
     <template v-if="showQueryLoading">
@@ -23,8 +23,12 @@
         <span class="text-3a size-32">{{ giftItem.perAmount | numFormatFixSix }}</span>
         <span class="text-8d size-26">{{ giftItem.symbol }}</span>
       </div>
-      <Button type="ghost" @click="receiveAirdrop(giftItem)">{{ $t('airdrop.airdrop2') }}</Button>
+      <Button :disabled="giftItem.receiveStatus !== 0" type="ghost" @click="receiveAirdrop(giftItem)">{{ giftItem.receiveStatus === 0 ? $t('airdrop.airdrop2') : giftItem.receiveStatus === 1 ? $t('airdrop.airdrop45') : giftItem.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
+      <div @click="toBrowser(giftItem.sendTxHash)" v-if="giftItem.receiveStatus === 2 && giftItem.sendTxHash" class="mt-1 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
     </div>
+    <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
+      <Spin :isFullLoading="true"/>
+    </pop-up>
   </div>
 </template>
 
@@ -32,7 +36,7 @@
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
-import {Division, getCurrentAccount} from "../../api/util";
+import {Division, getCurrentAccount, hashLinkList} from "../../api/util";
 import {MAIN_INFO} from "@/config";
 
 export default {
@@ -51,6 +55,9 @@ export default {
 
   },
   methods: {
+    toBrowser(hash) {
+      this.isMobile ? window.location.href = hashLinkList['NERVE'] + hash : window.open(hashLinkList['NERVE'] + hash);
+    },
     async queryCode() {
       try {
         this.giftItem = {};
@@ -212,5 +219,8 @@ export default {
     align-items: center;
     justify-content: space-between;
   }
+}
+.el-loading-parent--relative {
+  position: unset !important;
 }
 </style>

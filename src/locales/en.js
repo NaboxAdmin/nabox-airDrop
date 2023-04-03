@@ -68,7 +68,7 @@ const en = {
     airdrop33: "Copy",
     airdrop34: "Please enter the airdrop name",
     airdrop35: "Number of airdrops",
-    airdrop36: "Direction",
+    airdrop36: "Type",
     airdrop37: "Received",
     airdrop38: "Check",
     airdrop39: "Airdrop Name",
@@ -82,6 +82,9 @@ const en = {
     airdrop47: "Amount/Per",
     airdrop48: "Receive Network",
     airdrop49: "View Records",
+    airdrop50: "Live",
+    airdrop51: "Ended",
+    airdrop52: "Confirming",
   },
   header: {
     header1: "Website",

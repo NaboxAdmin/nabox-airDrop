@@ -1,5 +1,5 @@
 <template>
-  <div class="home" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}" v-loading="isPass && transferLoading">
+  <div class="home" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}">
     <div>
       <!--@click="toUrl" -->
       <div class="banner-cont m-15">
@@ -68,6 +68,9 @@
           <div class="btn_item active_btn cursor-pointer" @click="showSuccess=false">{{ $t('airdrop.airdrop9') }}</div>
         </div>
       </div>
+    </pop-up>
+    <pop-up :show.sync="transferLoading"  v-loading="supportListShow" :opacity="true">
+      <Spin :isFullLoading="true"/>
     </pop-up>
   </div>
 </template>
@@ -534,57 +537,6 @@ $labelColor: #99a3c4;
         width: 130px;
       }
     }
-
-  }
-  .account-select {
-    .from,
-    .to {
-      width: 100%;
-      height: 54px;
-      font-size: 14px;
-      border-radius: 10px;
-      background-color: $BColor;
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      color: $labelColor;
-    }
-
-    .network {
-      // color: #515e7b;
-      margin: 0 15px 0 10px;
-      width: 66px;
-    }
-    .to {
-      margin-bottom: 30px;
-      .address {
-        position: absolute;
-        font-size: 14px;
-        left: 147px;
-        color: #515B7D;
-      }
-    }
-    .el-select {
-      width: 100%;
-      left: 10px;
-      z-index: 2;
-      .el-input__inner {
-        background: transparent;
-        border: none;
-        height: auto;
-        line-height: initial;
-        padding: 0;
-        color: #515B7D;
-        // font-size: 14px;
-      }
-      .el-input__suffix {
-        .el-input__icon {
-          line-height: initial;
-          font-size: 16px;
-          font-weight: 600;
-        }
-      }
-    }
   }
   .amount,
   .fee {
@@ -671,18 +623,6 @@ $labelColor: #99a3c4;
     margin-bottom: 30px;
     .fee-inner {
       font-size: 15px;
-    }
-  }
-  .msg-wrap {
-    margin-bottom: 30px;
-    position: relative;
-    .from-validate-msg,
-    .amount-validate-msg {
-      position: absolute;
-      color: #f56c6c;
-      font-size: 12px;
-      line-height: 1;
-      padding: 4px 0 0 5px;
     }
   }
 

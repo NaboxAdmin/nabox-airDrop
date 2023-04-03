@@ -6,16 +6,23 @@
     <template v-else-if="recordList.length !== 0">
       <div class="history" v-for="item in recordList" :key="item.id">
         <div class="history_item">
-          <div>
+          <div class="item-name">
             <img :src="item.icon" alt="">
             <span class="size-30 text-3a text-truncate">{{ item.name }}</span>
           </div>
-          <span class="text-8d size-26">{{ $t('airdrop.airdrop16') }}<span class="text-8d">{{ item.endTime | timeFormatMM }}</span></span>
+          <div class="d-flex direction-column">
+            <span :style="{color: item.status === 0 ? '#EC7E62' : item.status === 1 ? '#21C980' : item.status === 2 ? 'red' : 'red'}" class="text-right line-36">
+              {{ item.status === 0 ? $t('airdrop.airdrop52') : item.status === 1 ? $t('airdrop.airdrop50') : item.status === 2 ? $t('airdrop.airdrop51') : $t('tips.tips21') }}
+            </span>
+            <div class="line-36">
+              <span class="text-8d size-26">{{ $t('airdrop.airdrop16') }}<span class="text-8d">{{ item.endTime | timeFormatMM }}</span></span>
+            </div>
+          </div>
         </div>
         <div class="history_item">
           <span class="text-8d size-26">{{ $t('airdrop.airdrop17') }} <span>{{ item.amount | numFormatFixSix }} {{ item.symbol }}</span></span>
-          <span class="size-26" v-if="item.type === 1">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop11') }}</span></span>
-          <span class="size-26" v-if="item.type === 2">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop12') }}</span></span>
+          <span class="size-26 text-8d " v-if="item.type === 1">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop11') }}</span></span>
+          <span class="size-26 text-8d " v-if="item.type === 2">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop12') }}</span></span>
           <span v-if="item.type === 3" class="text-8d size-26">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop13') }} | </span><span style="color:#21c980" class="cursor-pointer" @click="onLook(item)">{{ $t('airdrop.airdrop38') }}</span></span>
         </div>
         <div class="history_item">
@@ -161,7 +168,7 @@ $grayColor: #b5b9c8;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-      div{
+      .item-name{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -228,5 +235,8 @@ $grayColor: #b5b9c8;
     width: 0 !important;
     height: 0 !important;
   }
+}
+.line-36 {
+  line-height: 36px;
 }
 </style>

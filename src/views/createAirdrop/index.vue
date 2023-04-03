@@ -1,5 +1,5 @@
 <template>
-  <div class="airdrop-cont" v-loading="showLoading">
+  <div class="airdrop-cont">
     <Input v-model="airdropName" :placeholder="$t('airdrop.airdrop40')" class="mt-3 mb-3"/>
     <el-select
         ref="selectRef"
@@ -58,6 +58,9 @@
     </div>
     <Button v-if="!needAuth" :disabled="isDisabled" @click="createAirDrop">{{ $t('airdrop.airdrop23') }}</Button>
     <Button v-else @click="approveERC20">{{ $t('tips.tips24') }}</Button>
+    <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
+      <Spin :isFullLoading="true"/>
+    </pop-up>
   </div>
 </template>
 
@@ -631,4 +634,7 @@ export default {
 /deep/ .el-scrollbar {
     height: 410px;
   }
+.el-loading-parent--relative {
+  position: unset !important;
+}
 </style>

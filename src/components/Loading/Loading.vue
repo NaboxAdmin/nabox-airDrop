@@ -1,5 +1,5 @@
 <template>
-  <div class="loading-cont">
+  <div class="loading-cont-item">
     <div class="loader">
       <div class="square" ></div>
       <div class="square"></div>

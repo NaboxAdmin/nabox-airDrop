@@ -4,9 +4,9 @@
   word-break: break-all;
 }
 
-.loading-cont {
-  height: 300px;
-}
+/*.loading-cont {*/
+/*  height: 300px;*/
+/*}*/
 
 .bg-white {
   background-color: #FFFFFF;
@@ -371,6 +371,10 @@
 
 .text-danger {
   color: #F7B500 !important
+}
+
+.text-21 {
+  color: #21C980;
 }
 
 .text-red {

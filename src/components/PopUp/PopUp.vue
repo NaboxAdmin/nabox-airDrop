@@ -3,7 +3,7 @@
        @touchmove="touchmoveEvent"
        @click.stop="$emit('maskClick')"
        v-loading="loading"
-       :class="[show && 'show_pop', !customClass && 'defaultClass']">
+       :class="[show && 'show_pop', !customClass && 'defaultClass', opacity && 'opacity']">
     <div :class="[show && 'show-main', customClass && 'customClass']">
       <slot></slot>
     </div>
@@ -27,6 +27,10 @@ export default {
       default: true
     },
     loading: {
+      type: Boolean,
+      default: false
+    },
+    opacity: {
       type: Boolean,
       default: false
     }
