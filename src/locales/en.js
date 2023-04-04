@@ -31,7 +31,7 @@ const en = {
     tips27: 'Network timed out, please try again later...',
     tips28: "Insufficient asset balance, pls check the asset balance",
     tips29: 'Insufficient gas fee, pls check the asset balance',
-    tips30: 'Address format error'
+    tips30: 'Address format error, please fill in NERVE/NULS/EVM Network address'
   },
   airdrop: {
     airdrop1: "Amount",
@@ -43,7 +43,7 @@ const en = {
     airdrop7: "Claimed",
     airdrop8: "Tips",
     airdrop9: "I understand",
-    airdrop10: "Please go to the Nerve chain to check your asset.",
+    airdrop10: "Please go to the NERVE chain to check your asset.",
     airdrop11: "Airdrop",
     airdrop12: "Square",
     airdrop13: "Gift Card",
@@ -62,7 +62,7 @@ const en = {
     airdrop26: "The number of airdrops for a single address",
     airdrop27: "Select deadline",
     airdrop28: "Number of airdrop addresses",
-    airdrop29: "Please fill in the Nerve/NULS/EVM address receiving the airdrop, one address per line, up to 500. If you need to airdrop more addresses in batches, please contact support@nabox.io",
+    airdrop29: "Please fill in the NERVE/NULS/EVM address receiving the airdrop, one address per line, up to 500. If you need to airdrop more addresses in batches, please contact support@nabox.io",
     airdrop31: "I understand that when creating an airdrop, the airdrop assets will be transferred to the airdrop address",
     airdrop32: "I created a gift card",
     airdrop33: "Copy",
