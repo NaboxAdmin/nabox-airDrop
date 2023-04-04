@@ -62,7 +62,7 @@ const cn = {
     airdrop26: "单个地址空投数量",
     airdrop27: "选择活动截至时间",
     airdrop28: "空投地址数量",
-    airdrop29: "请将接收空投的Nerve地址，一行一个地址，最多可填500个,若需要批量空投更多地址，请联系support@nabox.io",
+    airdrop29: "请将接收空投的Nerve/NULS/EVM地址，一行一个地址，最多可填500个,若需要批量空投更多地址，请联系support@nabox.io",
     airdrop31: "我清楚创建空投时，空投资产将立即转入执行空投的地址",
     airdrop32: "我创建了一个礼品卡",
     airdrop33: "复制兑换码",

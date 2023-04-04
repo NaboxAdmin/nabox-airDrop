@@ -62,7 +62,7 @@ const en = {
     airdrop26: "The number of airdrops for a single address",
     airdrop27: "Select deadline",
     airdrop28: "Number of airdrop addresses",
-    airdrop29: "Please fill in the Nerve address receiving the airdrop, one address per line, up to 500. If you need to airdrop more addresses in batches, please contact support@nabox.io",
+    airdrop29: "Please fill in the Nerve/NULS/EVM address receiving the airdrop, one address per line, up to 500. If you need to airdrop more addresses in batches, please contact support@nabox.io",
     airdrop31: "I understand that when creating an airdrop, the airdrop assets will be transferred to the airdrop address",
     airdrop32: "I created a gift card",
     airdrop33: "Copy",
