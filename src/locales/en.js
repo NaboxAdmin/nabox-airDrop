@@ -81,7 +81,7 @@ const en = {
     airdrop46: "Expired",
     airdrop47: "Amount/Per",
     airdrop48: "Receive Network",
-    airdrop49: "View Records",
+    airdrop49: "Record",
     airdrop50: "Live",
     airdrop51: "Ended",
     airdrop52: "Confirming",

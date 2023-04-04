@@ -1,5 +1,5 @@
 <template>
-  <div class="home m-15" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}">
+  <div class="home" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}">
     <div>
       <!--@click="toUrl" -->
       <div class="banner-cont">
@@ -443,6 +443,8 @@ $BColor: #ebeef8;
 $labelColor: #99a3c4;
 .home {
   background-color: #fff;
+  margin: 28px;
+  padding-bottom: 20px;
   //position: relative;
   .home-content {
     background-color: #fff;
@@ -842,7 +844,7 @@ $labelColor: #99a3c4;
 }
 @media screen and (min-width: 1000px) {
   .mobile_class {
-    height: 1380px;
+    height: 1305px;
     overflow-y: auto;
   }
   &::-webkit-scrollbar {
@@ -857,10 +859,12 @@ $labelColor: #99a3c4;
   width: 180px;
 }
 .check-btn {
-  height: 60px;
+  height: 68px;
+  width: 120px;
   cursor: pointer;
-  line-height: 60px;
-  padding: 0 6px;
+  line-height: 68px;
+  text-align: center;
+  //padding: 0 6px;
   background: rgba(33, 201, 128, 0.15);
   border-radius: 8px;
   color: #21C980;

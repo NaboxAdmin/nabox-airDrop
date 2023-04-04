@@ -11,7 +11,7 @@
             <span class="size-30 text-3a text-truncate">{{ item.name }}</span>
           </div>
           <div class="d-flex direction-column">
-            <span :style="{color: item.status === 0 ? '#EC7E62' : item.status === 1 ? '#21C980' : item.status === 2 ? 'red' : 'red'}" class="text-right line-36">
+            <span :style="{color: item.status === 0 ? '#EC7E62' : item.status === 1 ? '#21C980' : item.status === 2 ? 'red' : 'red'}" class="text-right size-26 line-36">
               {{ item.status === 0 ? $t('airdrop.airdrop52') : item.status === 1 ? $t('airdrop.airdrop50') : item.status === 2 ? $t('airdrop.airdrop51') : $t('tips.tips21') }}
             </span>
             <div class="line-36">
@@ -182,7 +182,7 @@ $grayColor: #b5b9c8;
           color: #3A3C44;
           font-weight: 700;
           flex: 1;
-          width: 400px;
+          width: 300px;
         }
       }
       span>span{

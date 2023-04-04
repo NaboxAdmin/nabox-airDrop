@@ -41,7 +41,7 @@
 <!--          </div>-->
         </div>
         <Button class="mt-4" :disabled="item.receiveStatus !== 0" @click="receiveAirdrop(item)">
-          {{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('airdrop.airdrop7') }}
+          {{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('airdrop.airdrop51') }}
         </Button>
         <div @click="toBrowser(item.sendTxHash)" v-if="item.receiveStatus === 2 && item.sendTxHash" class="mt-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
       </div>
@@ -82,7 +82,7 @@ export default {
     }, 500);
   },
   mounted() {
-    window.addEventListener('scroll', this.squareHandleScroll, true);
+    window.addEventListener('scroll', this.squareHandleScroll);
   },
 
   beforeDestroy() {
@@ -102,7 +102,7 @@ export default {
       let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
       let clientHeight = document.documentElement.clientHeight;
       let scrollHeight = document.documentElement.scrollHeight;
-      if (scrollTop + clientHeight >= scrollHeight && this.redBagList.length < this.totalCount && this.redBagList.length < this.totalCount) { // 滚动到底部，逻辑代码
+      if (scrollTop + clientHeight >= scrollHeight && this.redBagList.length < this.totalCount) { // 滚动到底部，逻辑代码
         this.pageNumber = this.pageNumber + 1;
         this.getSquareRedBagList();
       }

@@ -25,24 +25,27 @@
     </div>
     <div class="gift-record mt-3">
       <div class="text-3a size-28">{{ $t('airdrop.airdrop53') }}</div>
-      <div class="record-header size-26">
+      <div class="record-header pr-1 size-26">
         <span>{{ $t('airdrop.airdrop14') }}</span>
         <span>{{ $t('airdrop.airdrop54') }}</span>
         <span>{{ $t('airdrop.airdrop55') }}</span>
         <span>{{ $t('airdrop.airdrop56') }}</span>
       </div>
       <template>
-        <div v-if="showSquareLoading" class="mt-4 d-flex align-items-center direction-column justify-content-center">
-          <Spin/>
-          <span class="mt-2 size-24 text-21">{{ $t('airdrop.airdrop57') }}</span>
+        <div ref="scrollContainer" @scroll="airdropScroll" class="gift-scroll">
+          <div v-if="showSquareLoading && recordList.length === 0" class="mt-4 d-flex align-items-center direction-column justify-content-center">
+            <Spin/>
+            <span class="mt-2 size-24 text-21">{{ $t('airdrop.airdrop57') }}</span>
+          </div>
+          <div v-else-if="recordList.length !== 0" class="record-item text-3a" v-for="(item, index) in recordList" :key="`${item.id}-${index}`">
+            <span class="w-160 text-truncate">{{ item.symbol }}</span>
+            <span class="w-160 text-truncate">{{ item.perAmount | numFormatFixSix }}</span>
+            <span>{{ item.createTime }}</span>
+            <span @click="toBrowser(item.sendTxHash)">{{ $t('airdrop.airdrop38') }}</span>
+          </div>
+          <NoData v-else-if="recordList.length === 0"/>
+          <NoData :noMore="true" v-if="recordList.length !== 0 && recordList.length === totalCount"></NoData>
         </div>
-        <div v-else-if="recordList.length !== 0" class="record-item text-3a" v-for="(item, index) in recordList" :key="`${item.id}-${index}`">
-          <span class="w-160 text-truncate">{{ item.symbol }}</span>
-          <span class="w-160 text-truncate">{{ item.perAmount | numFormatFixSix }}</span>
-          <span>{{ item.createTime }}</span>
-          <span @click="toBrowser(item.sendTxHash)">{{ $t('airdrop.airdrop38') }}</span>
-        </div>
-        <NoData v-else></NoData>
       </template>
     </div>
     <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
@@ -62,7 +65,6 @@ export default {
   name: "GiftCard",
   data() {
     return {
-      redBagList: [],
       giftCode: '',
       giftItem: {},
       showQueryLoading: false,
@@ -80,6 +82,12 @@ export default {
     }, 500);
   },
   methods: {
+    airdropScroll() {
+      if (this.$refs.scrollContainer.scrollTop + this.$refs.scrollContainer.clientHeight >= this.$refs.scrollContainer.scrollHeight && this.recordList.length < this.totalCount) {
+        this.pageNumber = this.pageNumber + 1;
+        this.getGiftRecordList();
+      }
+    },
     toBrowser(hash) {
       this.isMobile ? window.location.href = hashLinkList['NERVE'] + hash : window.open(hashLinkList['NERVE'] + hash);
     },
@@ -101,9 +109,9 @@ export default {
             remainAsset: Times(Division(item.amount || 0, item.addressCount || 0), Minus(item.addressCount || 0, item.receiveCount || 0)).toString(),
             perAmount: Division(item.amount || 0, item.addressCount || 0).toString()
           }));
-          this.recordList = tempList.filter(item => item.status === 1 || item.status === 2)
+          this.recordList = tempList;
         } else {
-          this.recordList = this.redBagList.concat([]);
+          this.recordList = this.recordList.concat([]);
         }
         this.showSquareLoading = false;
       } catch (e) {
@@ -302,5 +310,10 @@ export default {
 }
 .w-160 {
   width: 160px;
+}
+.gift-scroll {
+  height: 400px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 </style>
