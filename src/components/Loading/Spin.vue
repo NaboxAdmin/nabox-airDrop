@@ -16,8 +16,8 @@ export default {
 
 <style scoped lang="scss">
 .spin-cont {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background-color: transparent;
   border: 8px solid #eee;

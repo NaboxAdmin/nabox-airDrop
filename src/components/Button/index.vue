@@ -1,6 +1,7 @@
 <template>
   <button @click="$emit('click')" :disabled="disabled" class="btn-cont" :class="[type === 'ghost' && 'ghost']">
     <slot/>
+    <Spin v-if="loading" class="ml-1"/>
   </button>
 </template>
 
@@ -18,6 +19,10 @@ export default {
     },
     disabled: {
       type: [Boolean, String],
+      default: false
+    },
+    loading: {
+      type: Boolean,
       default: false
     }
   }

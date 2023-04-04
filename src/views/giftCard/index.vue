@@ -1,10 +1,7 @@
 <template>
   <div class="gift-cont">
     <Input v-model="giftCode" :placeholder="$t('airdrop.airdrop21')"/>
-    <Button @click="queryCode" :disabled="!giftCode" class="mt-3">{{ $t('airdrop.airdrop22') }}</Button>
-    <template v-if="showQueryLoading">
-      <Loading/>
-    </template>
+    <Button @click="queryCode" :disabled="!giftCode" :loading="showQueryLoading" class="mt-3">{{ $t('airdrop.airdrop22') }}</Button>
     <div v-if="giftItem.id" class="gift-item">
       <div class="gift-header">
         <div class="coin-logo">
@@ -26,6 +23,28 @@
       <Button :disabled="giftItem.receiveStatus !== 0" type="ghost" @click="receiveAirdrop(giftItem)">{{ giftItem.receiveStatus === 0 ? $t('airdrop.airdrop2') : giftItem.receiveStatus === 1 ? $t('airdrop.airdrop45') : giftItem.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
       <div @click="toBrowser(giftItem.sendTxHash)" v-if="giftItem.receiveStatus === 2 && giftItem.sendTxHash" class="mt-1 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
     </div>
+    <div class="gift-record mt-3">
+      <div class="text-3a size-28">{{ $t('airdrop.airdrop53') }}</div>
+      <div class="record-header size-26">
+        <span>{{ $t('airdrop.airdrop14') }}</span>
+        <span>{{ $t('airdrop.airdrop54') }}</span>
+        <span>{{ $t('airdrop.airdrop55') }}</span>
+        <span>{{ $t('airdrop.airdrop56') }}</span>
+      </div>
+      <template>
+        <div v-if="showSquareLoading" class="mt-4 d-flex align-items-center direction-column justify-content-center">
+          <Spin/>
+          <span class="mt-2 size-24 text-21">{{ $t('airdrop.airdrop57') }}</span>
+        </div>
+        <div v-else-if="recordList.length !== 0" class="record-item text-3a" v-for="(item, index) in recordList" :key="`${item.id}-${index}`">
+          <span class="w-160 text-truncate">{{ item.symbol }}</span>
+          <span class="w-160 text-truncate">{{ item.perAmount | numFormatFixSix }}</span>
+          <span>{{ item.createTime }}</span>
+          <span @click="toBrowser(item.sendTxHash)">{{ $t('airdrop.airdrop38') }}</span>
+        </div>
+        <NoData v-else></NoData>
+      </template>
+    </div>
     <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
       <Spin :isFullLoading="true"/>
     </pop-up>
@@ -36,7 +55,7 @@
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
-import {Division, getCurrentAccount, hashLinkList} from "../../api/util";
+import {Division, getCurrentAccount, hashLinkList, Minus, Times} from "../../api/util";
 import {MAIN_INFO} from "@/config";
 
 export default {
@@ -47,16 +66,50 @@ export default {
       giftCode: '',
       giftItem: {},
       showQueryLoading: false,
-      showLoading: false
+      showLoading: false,
+      pageNumber: 1,
+      totalCount: 0,
+      recordList: [],
+      showSquareLoading: true
     };
   },
   components: { Input, Button },
   created() {
-
+    setTimeout(() => {
+      this.getGiftRecordList();
+    }, 500);
   },
   methods: {
     toBrowser(hash) {
       this.isMobile ? window.location.href = hashLinkList['NERVE'] + hash : window.open(hashLinkList['NERVE'] + hash);
+    },
+    async getGiftRecordList() {
+      try {
+        this.showSquareLoading = true;
+        const currentAccount = getCurrentAccount(this.fromAddress);
+        const res = await this.$request({
+          url: '/air/drop/gift/list',
+          data: {
+            page: this.pageNumber,
+            address: currentAccount && currentAccount['address']['NERVE']
+          }
+        });
+        if (res.code === 1000 && res.data) {
+          this.totalCount = res.data.totalCount;
+          const tempList = this.recordList.concat(res.data.list).map(item => ({
+            ...item,
+            remainAsset: Times(Division(item.amount || 0, item.addressCount || 0), Minus(item.addressCount || 0, item.receiveCount || 0)).toString(),
+            perAmount: Division(item.amount || 0, item.addressCount || 0).toString()
+          }));
+          this.recordList = tempList.filter(item => item.status === 1 || item.status === 2)
+        } else {
+          this.recordList = this.redBagList.concat([]);
+        }
+        this.showSquareLoading = false;
+      } catch (e) {
+        console.error(e, 'error');
+        this.showSquareLoading = true;
+      }
     },
     async queryCode() {
       try {
@@ -222,5 +275,32 @@ export default {
 }
 .el-loading-parent--relative {
   position: unset !important;
+}
+.record-header, .record-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #8D94AB;
+  font-size: 26px;
+  margin-top: 24px;
+  span:nth-child(1) {
+    flex: 1;
+  }
+  span:nth-child(2) {
+    flex: 1;
+  }
+  span:nth-child(3) {
+    flex: 2;
+  }
+}
+.record-item {
+  color: #3A3C44;
+  span:nth-child(4) {
+    color: #21C980;
+    cursor: pointer;
+  }
+}
+.w-160 {
+  width: 160px;
 }
 </style>

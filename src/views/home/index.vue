@@ -1,8 +1,8 @@
 <template>
-  <div class="home" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}">
+  <div class="home m-15" ref="scrollContainer" @scroll="airdropScroll" :class="{'mobile_class': !isMobile}">
     <div>
       <!--@click="toUrl" -->
-      <div class="banner-cont m-15">
+      <div class="banner-cont">
         <img v-if="lang==='cn'" src="../../assets/image/air_banner.jpg" alt="">
         <img v-if="lang==='en'" src="../../assets/image/air_banner.jpg" alt="">
       </div>
@@ -23,15 +23,16 @@
                 </div>
                 <div class="item-coin-info">
                   <span class="text-3a size-26 text-truncate w-130">{{ item.airDropName }}</span>
-                  <span class="text-8d size-24">{{ item.contractAddress && superLong(item.contractAddress) || `${item.chainId}-${item.assetId}` }}</span>
+                  <span class="text-8d size-24">{{ `${item.nerveChainId}-${item.nerveAssetId}` }}</span>
                 </div>
               </div>
               <div class="item-option">
                 <div class="item-coin-cont">
-                  <span class="text-3a size-26">{{ item.receiveAmount | numFormatFixSix }}</span>
-                  <span class="text-8d size-24">${{ item.usdPrice | numFormatFixSix }}</span>
+                  <span class="text-3a size-26 text-truncate w-80">{{ item.receiveAmount | numFormatFixSix }}</span>
+                  <span class="text-8d size-24 text-truncate w-80">${{ item.usdPrice | numFormatFixSix }}</span>
                 </div>
-                <div class="receive_btn cursor-pointer" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
+                <div @click="toBrowser(item.sendTxHash)" v-if="item.status === 2 && item.sendTxHash" class="check-btn">{{ $t('airdrop.airdrop49') }}</div>
+                <div v-else class="receive_btn cursor-pointer size-26" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
                   {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : item.status === 2 ? $t('airdrop.airdrop7') : item.status === 4 ? $t('airdrop.airdrop46') : $t('airdrop.airdrop46') }}
                 </div>
               </div>
@@ -78,7 +79,7 @@
 <script>
 import { MAIN_INFO } from "@/config";
 import nerve from "nerve-sdk-js";
-import { getCurrentAccount, superLong } from "../../api/util";
+import {getCurrentAccount, hashLinkList, superLong} from "../../api/util";
 import { NTransfer } from "../../api/api";
 import PopUp from "../../components/PopUp/PopUp";
 import Loading from "../../components/Loading/Loading";
@@ -155,6 +156,9 @@ export default {
   },
 
   methods: {
+    toBrowser(hash) {
+      this.isMobile ? window.location.href = hashLinkList['NERVE'] + hash : window.open(hashLinkList['NERVE'] + hash);
+    },
     airdropScroll() {
       if (this.$refs.scrollContainer.scrollTop + this.$refs.scrollContainer.clientHeight >= this.$refs.scrollContainer.scrollHeight && this.airdropList.length < this.totalCount) {
         this.pageNumber = this.pageNumber + 1;
@@ -680,7 +684,7 @@ $labelColor: #99a3c4;
   //padding-bottom: 100px;
   min-height: calc(100vh - 600px);
   overflow: auto;
-  margin: 28px;
+  //margin: 13px;
   @media screen and (min-width: 1000px){
     min-height: calc(1560px - 600px);
     overflow: auto;
@@ -815,7 +819,7 @@ $labelColor: #99a3c4;
   }
 }
 .m-15 {
-  margin: 20px;
+  margin: 28px;
 }
 .empty-img {
   margin-top: 200px;
@@ -848,5 +852,18 @@ $labelColor: #99a3c4;
 }
 .w-130 {
   width: 230px;
+}
+.w-80 {
+  width: 180px;
+}
+.check-btn {
+  height: 60px;
+  cursor: pointer;
+  line-height: 60px;
+  padding: 0 6px;
+  background: rgba(33, 201, 128, 0.15);
+  border-radius: 8px;
+  color: #21C980;
+  font-size: 26px;
 }
 </style>

@@ -31,7 +31,7 @@ const cn = {
     tips27: "网络超时，请稍后再试",
     tips28: "资产余额不足，请检查资产余额",
     tips29: '手续费不足，请检查资产余额',
-    tips30: '地址格式错误，请填写NERVE地址',
+    tips30: '地址格式错误',
   },
   airdrop: {
     airdrop1: "空投数量",
@@ -85,6 +85,11 @@ const cn = {
     airdrop50: "进行中",
     airdrop51: "已结束",
     airdrop52: "确认中",
+    airdrop53: "兑换记录",
+    airdrop54: "数量",
+    airdrop55: "时间",
+    airdrop56: "操作",
+    airdrop57: "加载中...",
   },
   header: {
     header1: "官网",

@@ -71,7 +71,7 @@ import Nerve from "./Nerve";
 import {ethers} from "ethers";
 import {divisionDecimals, getCurrentAccount, Plus, Times, timesDecimals} from "../../api/util";
 import {getContractCallData} from "../../api/nulsContractValidate";
-import { NULS_INFO, MAIN_INFO } from "../../config";
+import { NULS_INFO, MAIN_INFO, EVM_PREFIX } from "../../config";
 import {ETransfer, NTransfer} from "../../api/api";
 
 export default {
@@ -184,7 +184,8 @@ export default {
     addressInput() {
       const addressList = this.airdropAddress.split('\n').filter(item => item);
       const prefix = MAIN_INFO.prefix;
-      if (addressList.find(item => item.indexOf(prefix) === -1 || item.length < 20)) {
+      const nulsPrefix = NULS_INFO.prefix;
+      if (addressList.find(item => (item.indexOf(prefix) === -1 && item.indexOf(nulsPrefix) === -1 && item.indexOf(EVM_PREFIX) === -1) || item.length < 20)) {
         this.errMsg = this.$t('tips.tips30');
       } else {
         this.errMsg = '';

@@ -31,7 +31,7 @@ const en = {
     tips27: 'Network timed out, please try again later...',
     tips28: "Insufficient asset balance, pls check the asset balance",
     tips29: 'Insufficient gas fee, pls check the asset balance',
-    tips30: 'Address format error, please fill in NERVE Network address'
+    tips30: 'Address format error'
   },
   airdrop: {
     airdrop1: "Amount",
@@ -85,6 +85,11 @@ const en = {
     airdrop50: "Live",
     airdrop51: "Ended",
     airdrop52: "Confirming",
+    airdrop53: "Exchange Record",
+    airdrop54: "Amount",
+    airdrop55: "Time",
+    airdrop56: "Operate",
+    airdrop57: "Loading...",
   },
   header: {
     header1: "Website",

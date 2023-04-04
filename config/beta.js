@@ -9,6 +9,7 @@ export const API_BURNING_ADDRESS_PUB = 'TNVTdTSPGwjgRMtHqjmg8yKeMLnpBpVN5ZuuY';
 //chainId、assetId、prefix
 export const MAIN_INFO = { chainId: 5, assetId: 1, prefix: 'TNVT',symbol:"NVT", decimal: 8, rpc: "http://beta.public.nerve.network", batchRPC: 'http://beta.api.nerve.network/jsonrpc' };
 export const NULS_INFO = { chainId: 2, assetId: 1, prefix: 'tNULS',symbol:"NULS", decimal: 8, rpc: "http://beta.public1.nuls.io", batchRPC: ' http://beta.api.nuls.io/jsonrpc' };
+export const EVM_PREFIX = '0x';
 
 //ETH 网络信息 测试网:ropsten, 主网:homestead
 export const ETHNET = 'ropsten';

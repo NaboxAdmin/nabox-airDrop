@@ -21,7 +21,7 @@ export default {
 </script>
 
 <style scoped>
-.loading-cont {
+.loading-cont-item {
   position: relative;
   height: 50vh;
 }
