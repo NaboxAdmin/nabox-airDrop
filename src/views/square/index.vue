@@ -29,7 +29,7 @@
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
-            <span class="text-3a">{{ item.endTime | timeFormat }}</span>
+            <span class="text-3a">{{ item.endTime | timeFormat }}(UTC+8)</span>
           </div>
 <!--          <div class="d-flex align-items-center space-between mt-3">-->
 <!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop48') }}</span>-->

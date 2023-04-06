@@ -31,7 +31,7 @@
               </div>
               <div class="d-flex align-items-center space-between mt-3">
                 <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
-                <span class="text-3a">{{ item.endTime | timeFormat }}</span>
+                <span class="text-3a">{{ item.endTime | timeFormat }}(UTC+8)</span>
               </div>
             </div>
             <Button class="mt-4" :disabled="item.status !== 0" @click="receiveAirdrop(item)">
