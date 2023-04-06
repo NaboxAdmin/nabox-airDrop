@@ -7,36 +7,37 @@
         <img v-if="lang==='en'" src="../../assets/image/air_banner.jpg" alt="">
       </div>
       <div class="airdrop-cont">
-        <div class="airdrop-cont-header">
-          <div class="airdrop-cont-header_item">{{ $t('airdrop.airdrop14') }}</div>
-          <div class="airdrop-cont-header_item">{{ $t('airdrop.airdrop15') }}</div>
-        </div>
+<!--        <div class="airdrop-cont-header">-->
+<!--          <div class="airdrop-cont-header_item">{{ $t('airdrop.airdrop14') }}</div>-->
+<!--          <div class="airdrop-cont-header_item">{{ $t('airdrop.airdrop15') }}</div>-->
+<!--        </div>-->
         <template v-if="airdropListLoading && airdropList.length === 0">
           <Loading />
         </template>
-        <template v-else-if="airdropList.length > 0">
-          <div class="airdrop-list">
-            <div v-for="item in airdropList" class="airdrop-item">
-              <div class="item-info">
-                <div class="item-logo">
+        <template v-else-if="airdropList.length !== 0">
+          <div v-for="item in airdropList" :key="item.id" class="square-item">
+            <div class="square-header">
+              <div class="d-flex align-items-center">
+                <div class="header-logo mr-1">
                   <img :src="item.icon" alt="">
                 </div>
-                <div class="item-coin-info">
-                  <span class="text-3a size-26 text-truncate w-130">{{ item.airDropName }}</span>
-                  <span class="text-8d size-24">{{ `${item.nerveChainId}-${item.nerveAssetId}` }}</span>
-                </div>
-              </div>
-              <div class="item-option">
-                <div class="item-coin-cont">
-                  <span class="text-3a size-26 text-truncate w-80">{{ item.receiveAmount | numFormatFixSix }} {{item.symbol}}</span>
-                  <span class="text-8d size-24 text-truncate w-80">${{ item.usdPrice | numFormatFixSix }}</span>
-                </div>
-                <div @click="toBrowser(item.sendTxHash)" v-if="item.status === 2 && item.sendTxHash" class="check-btn">{{ $t('airdrop.airdrop49') }}</div>
-                <div v-else class="receive_btn cursor-pointer size-26" :class="item.status !== 0 && 'disabled_btn'" @click="receiveAirdrop(item)">
-                  {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : item.status === 2 ? $t('airdrop.airdrop7') : item.status === 4 ? $t('airdrop.airdrop46') : $t('airdrop.airdrop46') }}
-                </div>
+                <div class="header-name flex-1 size-30 text-truncate">{{ item.airDropName }}</div>
               </div>
             </div>
+            <div class="square-info size-26">
+              <div class="d-flex align-items-center space-between mt-3">
+                <span class="size-26 text-8d">{{ $t('airdrop.airdrop71') }}</span>
+                <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }} {{ item.symbol }}</span>
+              </div>
+              <div class="d-flex align-items-center space-between mt-3">
+                <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
+                <span class="text-3a">{{ item.endTime | timeFormat }}</span>
+              </div>
+            </div>
+            <Button class="mt-4" :disabled="item.status !== 0" @click="receiveAirdrop(item)">
+              {{ item.status === 0 ? $t('airdrop.airdrop2') : item.status === 1 ? $t('airdrop.airdrop45') : item.status === 2 ? $t('airdrop.airdrop7') : item.status === 4 ? $t('airdrop.airdrop46') : $t('airdrop.airdrop46') }}
+            </Button>
+            <div @click="toBrowser(item.sendTxHash)" v-if="item.status === 2 && item.sendTxHash" class="mt-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
           </div>
         </template>
         <div class="d-flex align-items-center direction-column justify-content-center" v-else-if="airdropList.length === 0">
@@ -81,6 +82,7 @@ import { MAIN_INFO } from "@/config";
 import nerve from "nerve-sdk-js";
 import {getCurrentAccount, hashLinkList, superLong} from "../../api/util";
 import { NTransfer } from "../../api/api";
+import Button from '@/components/Button';
 import PopUp from "../../components/PopUp/PopUp";
 import Loading from "../../components/Loading/Loading";
 
@@ -110,7 +112,8 @@ export default {
 
   components: {
     PopUp,
-    Loading
+    Loading,
+    Button
   },
 
   mounted() {
@@ -753,6 +756,26 @@ $labelColor: #99a3c4;
           color: #fff;
           background-color: #21C980;
           border-radius: 10px;
+        }
+      }
+    }
+  }
+  .square-item {
+    padding: 28px;
+    border-radius: 16px;
+    border: 1px solid #E6E8F1;
+    margin-bottom: 25px;
+    .square-header {
+      padding-bottom: 28px;
+      border-bottom: 1px solid #E6E8F1;
+      .header-logo {
+        height: 68px;
+        width: 68px;
+        border-radius: 50%;
+        overflow: hidden;
+        img {
+          height: 100%;
+          width: 100%;
         }
       }
     }

@@ -55,7 +55,7 @@
     </template>
     <el-input v-else v-model="airdropAddressCount" :placeholder="currentIndex === 0 ? $t('airdrop.airdrop28') : currentIndex === 1 ? $t('airdrop.airdrop68') : $t('airdrop.airdrop62')" class="mb-3"/>
     <div class="d-flex align-items-center space-between mt-3">
-      <span class="text-8d">{{ $t('airdrop.airdrop17') }}</span>
+      <span class="text-8d size-26">{{ $t('airdrop.airdrop17') }}</span>
       <span>{{ allAirdropAmount || '--' }}</span>
     </div>
     <div class="d-flex align-items-center mb-3 mt-100">

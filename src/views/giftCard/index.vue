@@ -1,6 +1,6 @@
 <template>
   <div class="gift-cont" ref="scrollContainer" @scroll="giftScroll" :class="{'mobile_class': !isMobile}">
-    <Input v-model="giftCode" :placeholder="$t('airdrop.airdrop21')"/>
+    <Input v-model.trim="giftCode" :placeholder="$t('airdrop.airdrop21')"/>
     <Button @click="queryCode" :disabled="!giftCode" :loading="showQueryLoading" class="mt-3">{{ $t('airdrop.airdrop22') }}</Button>
     <div v-if="giftItem.id" class="gift-item">
       <div class="gift-header">
@@ -8,20 +8,17 @@
           <img :src="giftItem.icon" alt="">
         </div>
         <span class="flex-1 text-3a size-30 text-truncate_one text-truncate">{{ giftItem.name }}</span>
-        <div class="d-flex align-items-center">
-          <div class="text-right size-24 d-flex mr-1 align-items-center justify-content-end">
-            <img src="@/assets/image/deadline.svg" class="mr-1" alt="">
-            <span class="text-e7">{{ $t('airdrop.airdrop16') }}</span>
-          </div>
-          <span class="text-8d size-28">{{ giftItem.endTime | timeFormat }}</span>
-        </div>
       </div>
-      <div class="coin-count">
-        <span class="text-3a size-32">{{ giftItem.perAmount | numFormatFixSix }}</span>
-        <span class="text-8d size-26">{{ giftItem.symbol }}</span>
+      <div class="coin-count mt-3">
+        <span class="text-8d size-26">{{ $t('airdrop.airdrop71') }}</span>
+        <span class="text-3a size-26">{{ giftItem.perAmount | numFormatFixSix }} {{ giftItem.symbol }}</span>
       </div>
-      <Button :disabled="giftItem.receiveStatus !== 0" type="ghost" @click="receiveAirdrop(giftItem)">{{ giftItem.receiveStatus === 0 ? $t('airdrop.airdrop2') : giftItem.receiveStatus === 1 ? $t('airdrop.airdrop45') : giftItem.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
-      <div @click="toBrowser(giftItem.sendTxHash)" v-if="giftItem.receiveStatus === 2 && giftItem.sendTxHash" class="mt-1 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
+      <div class="coin-count mt-3">
+        <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
+        <span class="text-3a size-26">{{ giftItem.endTime | timeFormat }}</span>
+      </div>
+      <Button class="mt-4" :disabled="giftItem.receiveStatus !== 0" @click="receiveAirdrop(giftItem)">{{ giftItem.receiveStatus === 0 ? $t('airdrop.airdrop2') : giftItem.receiveStatus === 1 ? $t('airdrop.airdrop45') : giftItem.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
+      <div @click="toBrowser(giftItem.sendTxHash)" v-if="giftItem.receiveStatus === 2 && giftItem.sendTxHash" class="mt-3 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
     </div>
     <div class="gift-record pb-2">
       <div class="text-3a size-28">{{ $t('airdrop.airdrop53') }}</div>
@@ -36,43 +33,21 @@
               <img :src="item.icon" alt="">
             </div>
             <span class="flex-1 text-3a size-30 text-truncate_one text-truncate">{{ item.name }}</span>
-            <div class="d-flex align-items-center">
-              <div class="text-right size-24 d-flex mr-1 align-items-center justify-content-end">
-                <img src="@/assets/image/deadline.svg" class="mr-1" alt="">
-                <span class="text-e7">{{ $t('airdrop.airdrop16') }}</span>
-              </div>
-              <span class="text-8d size-28">{{ item.endTime | timeFormat }}</span>
-            </div>
           </div>
-          <div class="coin-count">
-            <span class="text-3a size-32">{{ item.perAmount | numFormatFixSix }}</span>
-            <span class="text-8d size-26">{{ item.symbol }}</span>
+          <div class="coin-count mt-3">
+            <span class="text-8d size-26">{{ $t('airdrop.airdrop71') }}</span>
+            <span class="text-3a size-26">{{ item.perAmount | numFormatFixSix }} {{ item.symbol }}</span>
           </div>
-          <Button :disabled="item.receiveStatus !== 0" type="ghost" @click="receiveAirdrop(item)">{{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
-          <div @click="toBrowser(item.sendTxHash)" v-if="item.receiveStatus === 2 && item.sendTxHash" class="mt-1 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
+          <div class="coin-count mt-3">
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
+            <span class="text-3a size-26">{{ item.endTime | timeFormat }}</span>
+          </div>
+          <Button class="mt-4" :disabled="item.receiveStatus !== 0" @click="receiveAirdrop(item)">{{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
+          <div @click="toBrowser(item.sendTxHash)" v-if="item.receiveStatus === 2 && item.sendTxHash" class="mt-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
         </div>
       </template>
       <NoData v-else-if="recordList.length === 0"/>
       <NoData :noMore="true" v-if="recordList.length !== 0 && recordList.length === totalCount"></NoData>
-<!--      <div class="text-3a size-28">{{ $t('airdrop.airdrop53') }}</div>-->
-<!--      <div class="record-header pr-1 size-26">-->
-<!--        <span>{{ $t('airdrop.airdrop58') }}</span>-->
-<!--        <span>{{ $t('airdrop.airdrop54') }}</span>-->
-<!--        <span>{{ $t('airdrop.airdrop14') }}</span>-->
-<!--        <span>{{ $t('airdrop.airdrop55') }}</span>-->
-<!--      </div>-->
-<!--      <template>-->
-<!--        <div ref="scrollContainer" @scroll="airdropScroll" class="gift-scroll">-->
-
-<!--          <div v-else-if="recordList.length !== 0" class="record-item text-3a" v-for="(item, index) in recordList" :key="`${item.id}-${index}`">-->
-<!--            <span class="w-160 text-truncate">{{ item.name }}</span>-->
-<!--            <span class="w-160 text-truncate">{{ item.perAmount | numFormatFixSix }}</span>-->
-<!--            <span class="w-160 text-truncate">{{ item.symbol }}</span>-->
-<!--            <span @click="toBrowser(item.sendTxHash)">{{ item.createTime }}</span>-->
-<!--          </div>-->
-
-<!--        </div>-->
-<!--      </template>-->
     </div>
     <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
       <Spin :isFullLoading="true"/>
@@ -296,13 +271,15 @@ export default {
 }
 .gift-item {
   margin-top: 56px;
-  padding: 28px 28px 0 28px;
+  padding: 28px;
   border: 1px solid #E6E8F1;
   border-radius: 16px;
   .gift-header {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #E6E8F1;
     .coin-logo {
       height: 68px;
       width: 68px;
@@ -316,8 +293,7 @@ export default {
     }
   }
   .coin-count {
-    padding: 40px 0 44px 0;
-    border-bottom: 1px solid #E6E8F1;
+    //padding: 40px 0 44px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;

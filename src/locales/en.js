@@ -96,13 +96,14 @@ const en = {
     airdrop60: "The number of assets in a single gift card",
     airdrop61: "Select gift card deadline",
     airdrop62: "Gift card quantity",
-    airdrop64: "Please enter a gift card name",
+    airdrop64: "Gift card name",
 
     airdrop65: "Select red packet asset",
     airdrop66: "The number of assets in a single red packet",
     airdrop67: "Select red packet deadline",
     airdrop68: "Red packet quantity",
-    airdrop70: "Please enter a red packet name",
+    airdrop70: "Red packet name",
+    airdrop71: "Amount",
   },
   header: {
     header1: "Website",

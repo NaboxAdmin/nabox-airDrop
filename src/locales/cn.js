@@ -57,7 +57,7 @@ const cn = {
     airdrop21: "请输入兑换码",
     airdrop22: "查询",
     airdrop23: "创建",
-    airdrop24: "历史记录",
+    airdrop24: "创建记录",
     airdrop25: "选择空投资产",
     airdrop26: "单个地址空投数量",
     airdrop27: "选择空投活动截至时间",
@@ -105,6 +105,7 @@ const cn = {
     airdrop68: "红包数量",
     airdrop69: "我清楚创建红包时，空投资产将立即转入执行红包的地址",
     airdrop70: "请输入红包名称",
+    airdrop71: "领取数量",
   },
   header: {
     header1: "官网",
