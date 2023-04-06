@@ -1,6 +1,8 @@
 <template>
   <div class="airdrop-cont">
-    <Input v-model="airdropName" :placeholder="$t('airdrop.airdrop40')" class="mt-3 mb-3"/>
+    <Input v-model="airdropName"
+           :placeholder="currentIndex === 0 ? $t('airdrop.airdrop40') : currentIndex === 1 ? $t('airdrop.airdrop70') : $t('airdrop.airdrop64')"
+           class="mt-3 mb-3"/>
     <el-select
         ref="selectRef"
         @hook:mounted="removeReadOnly"
@@ -8,7 +10,7 @@
         v-model="selectAsset"
         @change="changeAsset"
         filterable
-        :placeholder="$t('airdrop.airdrop25')"
+        :placeholder="currentIndex === 0 ? $t('airdrop.airdrop25') : currentIndex === 1 ? $t('airdrop.airdrop65') : $t('airdrop.airdrop59')"
         :popper-append-to-body="false">
       <el-option
           v-for="(item, index) in assetList"
@@ -17,7 +19,11 @@
           :value="item.assetKey">
       </el-option>
     </el-select>
-    <el-input v-model="airdropAmount" :value="airdropAmount" :placeholder="$t('airdrop.airdrop26')" class="mt-3 mb-3 h-40"/>
+    <el-input
+        v-model="airdropAmount"
+        :value="airdropAmount"
+        :placeholder="currentIndex === 0 ? $t('airdrop.airdrop26') : currentIndex === 1 ? $t('airdrop.airdrop66') : $t('airdrop.airdrop60')"
+        class="mt-3 mb-3 h-40"/>
     <el-date-picker
         v-model="endTime"
         type="datetime"
@@ -28,7 +34,7 @@
         placement="bottom-start"
         :append-to-body="false"
         :time-arrow-control="true"
-        :placeholder="$t('airdrop.airdrop27')">
+        :placeholder="currentIndex === 0 ? $t('airdrop.airdrop27') : currentIndex === 1 ? $t('airdrop.airdrop67') : $t('airdrop.airdrop61')">
     </el-date-picker>
     <div class="radio-cont">
       <div class="d-flex align-items-center mr-3 mt-3 mb-3 cursor-pointer size-28" v-for="(item, index) in typeList" :key="index" @click="currentIndex = index; airdropAddress=''; airdropAddressCount=''; errMsg=''">
@@ -47,7 +53,7 @@
           rows="6"/>
       <div v-if="errMsg" class="text-red size-28 mt-1">{{ errMsg }}</div>
     </template>
-    <el-input v-else v-model="airdropAddressCount" :placeholder="$t('airdrop.airdrop28')" class="mb-3"/>
+    <el-input v-else v-model="airdropAddressCount" :placeholder="currentIndex === 0 ? $t('airdrop.airdrop28') : currentIndex === 1 ? $t('airdrop.airdrop68') : $t('airdrop.airdrop62')" class="mb-3"/>
     <div class="d-flex align-items-center space-between mt-3">
       <span class="text-8d">{{ $t('airdrop.airdrop17') }}</span>
       <span>{{ allAirdropAmount || '--' }}</span>

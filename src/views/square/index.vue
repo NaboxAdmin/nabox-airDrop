@@ -10,31 +10,31 @@
             <div class="header-logo mr-1">
               <img :src="item.icon" alt="">
             </div>
-            <div class="header-name flex-1 size-30">{{ item.symbol }}</div>
-            <div class="header-time d-flex direction-column">
-              <div class="size-32 text-3a text-truncate w-240">
-                {{ item.name }}
-              </div>
-            </div>
+            <div class="header-name flex-1 size-30 text-truncate">{{ item.name }}</div>
+<!--            <div class="header-time d-flex direction-column">-->
+<!--              <div class="size-32 text-3a text-truncate w-240">-->
+<!--                {{ item.name }}-->
+<!--              </div>-->
+<!--            </div>-->
           </div>
         </div>
         <div class="square-info size-26">
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop17') }}/{{ $t('airdrop.airdrop18') }}</span>
-            <span class="text-3a">{{ item.amount | numFormatFixSix }}/{{ item.remainAsset | numFormatFixSix }}</span>
+            <span class="text-3a">{{ item.amount | numFormatFixSix }}/{{ item.remainAsset | numFormatFixSix }} {{ item.symbol }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop47') }}</span>
-            <span class="text-3a">{{ item.perAmount | numFormatFixSix }}</span>
+            <span class="text-3a">{{ item.perAmount | numFormatFixSix }} {{ item.symbol }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
             <span class="text-3a">{{ item.endTime | timeFormat }}</span>
           </div>
-          <div class="d-flex align-items-center space-between mt-3">
-            <span class="size-26 text-8d">{{ $t('airdrop.airdrop48') }}</span>
-            <span class="text-3a">{{ 'Nerve' }}</span>
-          </div>
+<!--          <div class="d-flex align-items-center space-between mt-3">-->
+<!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop48') }}</span>-->
+<!--            <span class="text-3a">{{ 'Nerve' }}</span>-->
+<!--          </div>-->
 <!--          <div class="d-flex align-items-center space-between mt-3">-->
 <!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop19') }}</span>-->
 <!--            <span class="text-green">DID用户(等级1)</span>-->

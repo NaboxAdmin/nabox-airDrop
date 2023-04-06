@@ -50,7 +50,7 @@ export default {
     box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
     &::placeholder {
       font-size: 28px;
-      color: #C9CEDF;
+      color: #C0C4CC;
     }
   }
 }

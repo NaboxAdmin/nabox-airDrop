@@ -28,7 +28,7 @@
               </div>
               <div class="item-option">
                 <div class="item-coin-cont">
-                  <span class="text-3a size-26 text-truncate w-80">{{ item.receiveAmount | numFormatFixSix }}</span>
+                  <span class="text-3a size-26 text-truncate w-80">{{ item.receiveAmount | numFormatFixSix }} {{item.symbol}}</span>
                   <span class="text-8d size-24 text-truncate w-80">${{ item.usdPrice | numFormatFixSix }}</span>
                 </div>
                 <div @click="toBrowser(item.sendTxHash)" v-if="item.status === 2 && item.sendTxHash" class="check-btn">{{ $t('airdrop.airdrop49') }}</div>

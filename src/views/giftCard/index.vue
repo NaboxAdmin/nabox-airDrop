@@ -1,5 +1,5 @@
 <template>
-  <div class="gift-cont">
+  <div class="gift-cont" ref="scrollContainer" @scroll="giftScroll" :class="{'mobile_class': !isMobile}">
     <Input v-model="giftCode" :placeholder="$t('airdrop.airdrop21')"/>
     <Button @click="queryCode" :disabled="!giftCode" :loading="showQueryLoading" class="mt-3">{{ $t('airdrop.airdrop22') }}</Button>
     <div v-if="giftItem.id" class="gift-item">
@@ -23,30 +23,56 @@
       <Button :disabled="giftItem.receiveStatus !== 0" type="ghost" @click="receiveAirdrop(giftItem)">{{ giftItem.receiveStatus === 0 ? $t('airdrop.airdrop2') : giftItem.receiveStatus === 1 ? $t('airdrop.airdrop45') : giftItem.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
       <div @click="toBrowser(giftItem.sendTxHash)" v-if="giftItem.receiveStatus === 2 && giftItem.sendTxHash" class="mt-1 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
     </div>
-    <div class="gift-record mt-3">
+    <div class="gift-record pb-2">
       <div class="text-3a size-28">{{ $t('airdrop.airdrop53') }}</div>
-      <div class="record-header pr-1 size-26">
-        <span>{{ $t('airdrop.airdrop14') }}</span>
-        <span>{{ $t('airdrop.airdrop54') }}</span>
-        <span>{{ $t('airdrop.airdrop55') }}</span>
-        <span>{{ $t('airdrop.airdrop56') }}</span>
+      <div v-if="showSquareLoading && recordList.length === 0" class="mt-4 d-flex align-items-center direction-column justify-content-center">
+        <Spin/>
+        <span class="mt-2 size-24 text-21">{{ $t('airdrop.airdrop57') }}</span>
       </div>
-      <template>
-        <div ref="scrollContainer" @scroll="airdropScroll" class="gift-scroll">
-          <div v-if="showSquareLoading && recordList.length === 0" class="mt-4 d-flex align-items-center direction-column justify-content-center">
-            <Spin/>
-            <span class="mt-2 size-24 text-21">{{ $t('airdrop.airdrop57') }}</span>
+      <template v-else-if="recordList.length !== 0">
+        <div v-for="(item, index) in recordList" :key="`${item.id}-${index}`" class="gift-item">
+          <div class="gift-header">
+            <div class="coin-logo">
+              <img :src="item.icon" alt="">
+            </div>
+            <span class="flex-1 text-3a size-30 text-truncate_one text-truncate">{{ item.name }}</span>
+            <div class="d-flex align-items-center">
+              <div class="text-right size-24 d-flex mr-1 align-items-center justify-content-end">
+                <img src="@/assets/image/deadline.svg" class="mr-1" alt="">
+                <span class="text-e7">{{ $t('airdrop.airdrop16') }}</span>
+              </div>
+              <span class="text-8d size-28">{{ item.endTime | timeFormat }}</span>
+            </div>
           </div>
-          <div v-else-if="recordList.length !== 0" class="record-item text-3a" v-for="(item, index) in recordList" :key="`${item.id}-${index}`">
-            <span class="w-160 text-truncate">{{ item.symbol }}</span>
-            <span class="w-160 text-truncate">{{ item.perAmount | numFormatFixSix }}</span>
-            <span>{{ item.createTime }}</span>
-            <span @click="toBrowser(item.sendTxHash)">{{ $t('airdrop.airdrop38') }}</span>
+          <div class="coin-count">
+            <span class="text-3a size-32">{{ item.perAmount | numFormatFixSix }}</span>
+            <span class="text-8d size-26">{{ item.symbol }}</span>
           </div>
-          <NoData v-else-if="recordList.length === 0"/>
-          <NoData :noMore="true" v-if="recordList.length !== 0 && recordList.length === totalCount"></NoData>
+          <Button :disabled="item.receiveStatus !== 0" type="ghost" @click="receiveAirdrop(item)">{{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
+          <div @click="toBrowser(item.sendTxHash)" v-if="item.receiveStatus === 2 && item.sendTxHash" class="mt-1 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
         </div>
       </template>
+      <NoData v-else-if="recordList.length === 0"/>
+      <NoData :noMore="true" v-if="recordList.length !== 0 && recordList.length === totalCount"></NoData>
+<!--      <div class="text-3a size-28">{{ $t('airdrop.airdrop53') }}</div>-->
+<!--      <div class="record-header pr-1 size-26">-->
+<!--        <span>{{ $t('airdrop.airdrop58') }}</span>-->
+<!--        <span>{{ $t('airdrop.airdrop54') }}</span>-->
+<!--        <span>{{ $t('airdrop.airdrop14') }}</span>-->
+<!--        <span>{{ $t('airdrop.airdrop55') }}</span>-->
+<!--      </div>-->
+<!--      <template>-->
+<!--        <div ref="scrollContainer" @scroll="airdropScroll" class="gift-scroll">-->
+
+<!--          <div v-else-if="recordList.length !== 0" class="record-item text-3a" v-for="(item, index) in recordList" :key="`${item.id}-${index}`">-->
+<!--            <span class="w-160 text-truncate">{{ item.name }}</span>-->
+<!--            <span class="w-160 text-truncate">{{ item.perAmount | numFormatFixSix }}</span>-->
+<!--            <span class="w-160 text-truncate">{{ item.symbol }}</span>-->
+<!--            <span @click="toBrowser(item.sendTxHash)">{{ item.createTime }}</span>-->
+<!--          </div>-->
+
+<!--        </div>-->
+<!--      </template>-->
     </div>
     <pop-up :show.sync="showLoading" v-loading="showLoading" :opacity="true">
       <Spin :isFullLoading="true"/>
@@ -76,14 +102,30 @@ export default {
     };
   },
   components: { Input, Button },
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
   created() {
     setTimeout(() => {
       this.getGiftRecordList();
     }, 500);
   },
   methods: {
-    airdropScroll() {
+    giftScroll() {
       if (this.$refs.scrollContainer.scrollTop + this.$refs.scrollContainer.clientHeight >= this.$refs.scrollContainer.scrollHeight && this.recordList.length < this.totalCount) {
+        this.pageNumber = this.pageNumber + 1;
+        this.getGiftRecordList();
+      }
+    },
+    handleScroll()  {
+      let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      let clientHeight = document.documentElement.clientHeight;
+      let scrollHeight = document.documentElement.scrollHeight;
+      if (scrollTop + clientHeight >= scrollHeight && this.recordList.length < this.totalCount) { // 滚动到底部，逻辑代码
         this.pageNumber = this.pageNumber + 1;
         this.getGiftRecordList();
       }
@@ -298,8 +340,14 @@ export default {
     flex: 1;
   }
   span:nth-child(3) {
+    flex: 1;
+  }
+  span:nth-child(4) {
     flex: 2;
   }
+}
+.record-header {
+  padding: 10px 0;
 }
 .record-item {
   color: #3A3C44;
@@ -315,5 +363,18 @@ export default {
   height: 400px;
   overflow-y: auto;
   padding-right: 6px;
+}
+@media screen and (min-width: 1000px) {
+  .mobile_class {
+    height: 1305px;
+    overflow-y: auto;
+  }
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
+}
+.gift-record {
+  margin-top: 50px;
 }
 </style>
