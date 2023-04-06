@@ -636,6 +636,11 @@ export default {
     height: 1.09rem;
   }
 }
+/deep/ .el-textarea {
+  .el-textarea__inner {
+    font-size: 28px;
+  }
+}
 /deep/ .el-select-dropdown {
   height: 410px;
 }
