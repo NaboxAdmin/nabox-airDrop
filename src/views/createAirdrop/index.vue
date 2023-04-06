@@ -562,6 +562,7 @@ export default {
 :deep(.el-input) {
   .el-input__inner {
     border: 1px solid #DCDFE6;
+    padding: 0 20px;
   }
 }
 
