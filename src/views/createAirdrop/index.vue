@@ -200,6 +200,8 @@ export default {
       const nulsPrefix = NULS_INFO.prefix;
       if (addressList.find(item => (item.indexOf(prefix) === -1 && item.indexOf(nulsPrefix) === -1 && item.indexOf(EVM_PREFIX) === -1) || item.length < 20)) {
         this.errMsg = this.$t('tips.tips30');
+      } else if (Minus(addressList.length, 500) > 0) {
+        this.errMsg = this.$t('airdrop.airdrop72');
       } else {
         this.errMsg = '';
       }
