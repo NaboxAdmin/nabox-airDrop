@@ -48,6 +48,7 @@
             </div>
           </div>
         </div>
+        <div class="nav-bar_position"></div>
         <div class="connect-item" v-loading="loading" v-if="isDapp && (showSign || showConnect || !fromAddress)">
           <div v-if="showConnect">
             <div class="connect-btn" @click="connectMetamask">{{ $t("tips.tips10") }}</div>
@@ -372,9 +373,15 @@ export default {
 
 <style scoped lang="scss">
 .nav-bar {
-  padding: 10px 28px;
+  padding: 20px 28px;
   display: flex;
   align-items: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  top: 118px;
+  background-color: #FFFFFF;
   justify-content: space-between;
   .nav-bar-list {
     position: relative;
@@ -403,6 +410,16 @@ export default {
       }
     }
   }
+}
+@media screen and (min-width: 1000px) {
+  .nav-bar {
+    max-width: 740px;
+    margin: 0 auto;
+  }
+}
+.nav-bar_position {
+  height: 77px;
+  background-color: #FFFFFF;
 }
 .main-cont {
   //width: 100%;

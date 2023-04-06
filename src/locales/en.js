@@ -104,6 +104,7 @@ const en = {
     airdrop68: "Red packet quantity",
     airdrop70: "Red packet name",
     airdrop71: "Amount",
+    airdrop72: "Quantity must be less than 500",
   },
   header: {
     header1: "Website",

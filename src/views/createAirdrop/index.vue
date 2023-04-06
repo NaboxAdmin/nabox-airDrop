@@ -51,9 +51,15 @@
           :placeholder="$t('airdrop.airdrop29')"
           v-model="airdropAddress"
           rows="6"/>
-      <div v-if="errMsg" class="text-red size-28 mt-1">{{ errMsg }}</div>
+      <div v-if="errMsg" class="text-red size-26 mt-1">{{ errMsg }}</div>
     </template>
-    <el-input v-else v-model="airdropAddressCount" :placeholder="currentIndex === 0 ? $t('airdrop.airdrop28') : currentIndex === 1 ? $t('airdrop.airdrop68') : $t('airdrop.airdrop62')" class="mb-3"/>
+    <div v-else class="mb-3">
+      <el-input
+          @input="addressCountInput"
+          v-model="airdropAddressCount"
+          :placeholder="currentIndex === 0 ? $t('airdrop.airdrop28') : currentIndex === 1 ? $t('airdrop.airdrop68') : $t('airdrop.airdrop62')"/>
+      <div v-if="countErrMsg" class="text-red size-26 mt-1">{{ countErrMsg }}</div>
+    </div>
     <div class="d-flex align-items-center space-between mt-3">
       <span class="text-8d size-26">{{ $t('airdrop.airdrop17') }}</span>
       <span>{{ allAirdropAmount || '--' }}</span>
@@ -75,7 +81,7 @@ import Input from "@/components/Input";
 import Button from "../../components/Button";
 import Nerve from "./Nerve";
 import {ethers} from "ethers";
-import {divisionDecimals, getCurrentAccount, Plus, Times, timesDecimals} from "../../api/util";
+import {divisionDecimals, getCurrentAccount, Minus, Plus, Times, timesDecimals} from "../../api/util";
 import {getContractCallData} from "../../api/nulsContractValidate";
 import { NULS_INFO, MAIN_INFO, EVM_PREFIX } from "../../config";
 import {ETransfer, NTransfer} from "../../api/api";
@@ -104,7 +110,8 @@ export default {
       NULSContractGas: {},
       NULSContractTxData: {},
       needAuth: false,
-      errMsg: ''
+      errMsg: '',
+      countErrMsg: ''
     }
   },
   components: {Button, Input },
@@ -122,9 +129,9 @@ export default {
     },
     isDisabled() {
       if (this.currentIndex === 0) {
-        return !this.airdropName || !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !this.endTime || !!this.errMsg;
+        return !this.airdropName || !this.understand || !this.airdropAddress || !this.selectAsset || !this.airdropAmount || !this.endTime || !!this.errMsg || !!this.countErrMsg;
       } else {
-        return !this.airdropName || !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !this.endTime || !!this.errMsg;
+        return !this.airdropName || !this.understand || !this.airdropAddressCount || !this.selectAsset || !this.airdropAmount || !this.endTime || !!this.errMsg ||  !!this.countErrMsg;
       }
     }
   },
@@ -195,6 +202,13 @@ export default {
         this.errMsg = this.$t('tips.tips30');
       } else {
         this.errMsg = '';
+      }
+    },
+    addressCountInput() {
+      if (Minus(this.airdropAddressCount, 500) > 0) {
+        this.countErrMsg = this.$t('airdrop.airdrop72');
+      } else {
+        this.countErrMsg = '';
       }
     },
     async changeAsset(assetKey) {

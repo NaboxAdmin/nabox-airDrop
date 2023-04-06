@@ -20,12 +20,12 @@
         </div>
         <div class="square-info size-26">
           <div class="d-flex align-items-center space-between mt-3">
-            <span class="size-26 text-8d">{{ $t('airdrop.airdrop17') }}/{{ $t('airdrop.airdrop18') }}</span>
-            <span class="text-3a">{{ item.amount | numFormatFixSix }}/{{ item.remainAsset | numFormatFixSix }} {{ item.symbol }}</span>
+            <span class="size-26 text-8d">{{ $t('airdrop.airdrop18') }}/{{ $t('airdrop.airdrop17') }}</span>
+            <span class="text-3a">{{ item.remainAsset | numFormatFixSix }}/{{ item.amount | numFormatFixSix }}{{ item.symbol }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop47') }}</span>
-            <span class="text-3a">{{ item.perAmount | numFormatFixSix }} {{ item.symbol }}</span>
+            <span class="text-3a">{{ item.perAmount | numFormatFixSix }}{{ item.symbol }}</span>
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>

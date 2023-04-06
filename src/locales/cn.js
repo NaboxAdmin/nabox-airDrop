@@ -106,6 +106,7 @@ const cn = {
     airdrop69: "我清楚创建红包时，空投资产将立即转入执行红包的地址",
     airdrop70: "请输入红包名称",
     airdrop71: "领取数量",
+    airdrop72: "数量需小于500",
   },
   header: {
     header1: "官网",
