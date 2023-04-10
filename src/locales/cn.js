@@ -76,7 +76,7 @@ const cn = {
     airdrop41: "兑换码",
     airdrop42: "创建",
     airdrop43: "立即访问",
-    airdrop44: "进行兑换",
+    airdrop44: "输入兑换码领取",
     airdrop45: "领取中",
     airdrop46: "已过期",
     airdrop47: "单人可领数量",
@@ -107,6 +107,9 @@ const cn = {
     airdrop70: "请输入红包名称",
     airdrop71: "领取数量",
     airdrop72: "数量需小于500",
+    airdrop73: "退回剩余资产",
+    airdrop74: "退回中",
+    airdrop75: "暂不支持当前选择的链",
   },
   header: {
     header1: "官网",

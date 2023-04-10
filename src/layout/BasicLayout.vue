@@ -329,10 +329,15 @@ export default {
           accountList.push(account);
         }
         const syncRes = await this.syncAccount(pub, account.address);
+        console.log(syncRes, accountList, 'syncRes')
         if (syncRes) {
           localStorage.setItem("accountList", JSON.stringify(accountList));
           // 重新计算fromAddress
           const address = this.address;
+          const currentAccount = getCurrentAccount(this.address);
+          if (!currentAccount) {
+            this.$message.warning(this.$t('airdrop.airdrop75'));
+          }
           // this.switchNetwork(address);
           this.address = "";
           setTimeout(()=> {

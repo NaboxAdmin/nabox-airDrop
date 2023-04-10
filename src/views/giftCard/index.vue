@@ -15,7 +15,7 @@
       </div>
       <div class="coin-count mt-3">
         <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
-        <span class="text-3a size-26">{{ giftItem.endTime | timeFormat }}(UTC+8)</span>
+        <span class="text-3a size-26">{{ giftItem.endTime }}(UTC+8)</span>
       </div>
       <Button class="mt-4" :disabled="giftItem.receiveStatus !== 0" @click="receiveAirdrop(giftItem)">{{ giftItem.receiveStatus === 0 ? $t('airdrop.airdrop2') : giftItem.receiveStatus === 1 ? $t('airdrop.airdrop45') : giftItem.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
       <div @click="toBrowser(giftItem.sendTxHash)" v-if="giftItem.receiveStatus === 2 && giftItem.sendTxHash" class="mt-3 mb-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
@@ -40,7 +40,7 @@
           </div>
           <div class="coin-count mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
-            <span class="text-3a size-26">{{ item.endTime | timeFormat }}(UTC+8)</span>
+            <span class="text-3a size-26">{{ item.endTime }}(UTC+8)</span>
           </div>
           <Button class="mt-4" :disabled="item.receiveStatus !== 0" @click="receiveAirdrop(item)">{{ item.receiveStatus === 0 ? $t('airdrop.airdrop2') : item.receiveStatus === 1 ? $t('airdrop.airdrop45') : item.receiveStatus === 2 ? $t('airdrop.airdrop7') : $t('tips.tips22') }}</Button>
           <div @click="toBrowser(item.sendTxHash)" v-if="item.receiveStatus === 2 && item.sendTxHash" class="mt-3 text-21 size-28 cursor-pointer text-center">{{ $t('airdrop.airdrop49') }}</div>
@@ -121,12 +121,12 @@ export default {
         });
         if (res.code === 1000 && res.data) {
           this.totalCount = res.data.totalCount;
-          const tempList = this.recordList.concat(res.data.list).map(item => ({
+          this.recordList = this.recordList.concat(res.data.list).map(item => ({
             ...item,
             remainAsset: Times(Division(item.amount || 0, item.addressCount || 0), Minus(item.addressCount || 0, item.receiveCount || 0)).toString(),
-            perAmount: Division(item.amount || 0, item.addressCount || 0).toString()
+            perAmount: Division(item.amount || 0, item.addressCount || 0).toString(),
+            endTime: this.formatTime(item.endTime)
           }));
-          this.recordList = tempList;
         } else {
           this.recordList = this.recordList.concat([]);
         }
@@ -147,7 +147,8 @@ export default {
         if (res.code === 1000) {
           this.giftItem = {
             ...res.data,
-            perAmount: Division(res.data.amount || 0, res.data.addressCount || 0).toString() || 0
+            perAmount: Division(res.data.amount || 0, res.data.addressCount || 0).toString() || 0,
+            endTime: this.formatTime(res.data.endTime)
           };
         } else {
           throw res.data;

@@ -29,7 +29,7 @@
           </div>
           <div class="d-flex align-items-center space-between mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
-            <span class="text-3a">{{ item.endTime | timeFormat }}(UTC+8)</span>
+            <span class="text-3a">{{ item.endTime }}(UTC+8)</span>
           </div>
 <!--          <div class="d-flex align-items-center space-between mt-3">-->
 <!--            <span class="size-26 text-8d">{{ $t('airdrop.airdrop48') }}</span>-->
@@ -64,6 +64,7 @@ import Button from '@/components/Button';
 import {NTransfer} from "../../api/api";
 import {Division, getCurrentAccount, hashLinkList, Minus, Times} from "../../api/util";
 import {MAIN_INFO} from "@/config";
+
 export default {
   name: "Square",
   components: { Button },
@@ -120,12 +121,13 @@ export default {
         });
         if (res.code === 1000 && res.data) {
           this.totalCount = res.data.totalCount;
-          const tempList = this.redBagList.concat(res.data.list).map(item => ({
+          // this.redBagList = tempList.filter(item => item.status === 1 || item.status === 2)
+          this.redBagList = this.redBagList.concat(res.data.list).map(item => ({
             ...item,
             remainAsset: Times(Division(item.amount || 0, item.addressCount || 0), Minus(item.addressCount || 0, item.receiveCount || 0)).toString(),
-            perAmount: Division(item.amount || 0, item.addressCount || 0).toString()
+            perAmount: Division(item.amount || 0, item.addressCount || 0).toString(),
+            endTime: this.formatTime(item.endTime)
           }));
-          this.redBagList = tempList.filter(item => item.status === 1 || item.status === 2)
         } else {
           this.redBagList = this.redBagList.concat([]);
         }

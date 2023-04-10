@@ -10,14 +10,19 @@
             <img :src="item.icon" alt="">
             <span class="size-30 text-3a text-truncate">{{ item.name }}</span>
           </div>
-          <div class="d-flex direction-column">
+          <template>
+            <div v-if="item.status===2 && item.sendBackStatus !== 2">
+              <div class="size-26 d-flex align-items-center">{{ $t('airdrop.airdrop51') }} | <span class="ml-1 text-21 cursor-pointer d-flex align-items-center" @click="withdrawClick(item)">{{ item.sendBackStatus === 1 ? $t('airdrop.airdrop74') : $t('airdrop.airdrop73') }} <Spin v-if="loading && item.id===currentId" class="ml-1"/></span></div>
+            </div>
+            <div v-else class="d-flex direction-column">
             <span :style="{color: item.status === 0 ? '#EC7E62' : item.status === 1 ? '#21C980' : item.status === 2 ? 'red' : 'red'}" class="text-right size-26 line-36">
               {{ item.status === 0 ? $t('airdrop.airdrop52') : item.status === 1 ? $t('airdrop.airdrop50') : item.status === 2 ? $t('airdrop.airdrop51') : $t('tips.tips21') }}
             </span>
-            <div class="line-36">
-              <span class="text-8d size-26">{{ $t('airdrop.airdrop16') }}<span class="text-8d">{{ item.endTime | timeFormatMM }}</span></span>
+              <div class="line-36">
+                <span class="text-8d size-26">{{ $t('airdrop.airdrop16') }}<span class="text-8d">{{ item.endTime }}</span></span>
+              </div>
             </div>
-          </div>
+          </template>
         </div>
         <div class="history_item">
           <span class="text-8d size-26">{{ $t('airdrop.airdrop17') }} <span>{{ item.amount | numFormatFixSix }}{{ item.symbol }}</span></span>
@@ -79,7 +84,9 @@ export default {
       codeList: [],
       recordLoading: true,
       tips: '',
-      showQueryLoading: false
+      showQueryLoading: false,
+      loading: false,
+      currentId: ''
     }
   },
   created() {
@@ -89,10 +96,39 @@ export default {
   },
   methods: {
     copyText() {
-      const codeText = this.codeList.map(item => item.code).join(' ');
-      // const text = `${this.$t('airdrop.airdrop32')}\n${this.$t('airdrop.airdrop43')}https://parabox.nabox.io${this.$t('airdrop.airdrop44')}\n${codeText}`
-      copys(codeText);
+      const codeText = this.codeList.map(item => item.code).join('\n');
+      const text = `${this.$t('airdrop.airdrop32')}\n${this.$t('airdrop.airdrop43')}https://parabox.nabox.io${this.$t('airdrop.airdrop44')}\n${codeText}`
+      copys(text);
       this.$toast(this.$t("tips.tips8"));
+    },
+    async withdrawClick(recordItem) {
+      try {
+        this.currentId = recordItem.id;
+        if (this.loading) return;
+        this.loading = true;
+        const res = await this.$request({
+          url: '/air/drop/send/back',
+          data: { id: recordItem.id }
+        });
+        if (res.code === 1000) {
+          this.$message.success(this.$t('tips.tips16'));
+          this.recordList = this.recordList.map(item => {
+            if (item.id === this.currentId) {
+              return {
+                ...item,
+                sendBackStatus: 1
+              }
+            }
+            return item;
+          })
+        } else {
+          this.$message.warning(res.data);
+        }
+        this.loading = false;
+      } catch (e) {
+        console.error(e, 'error');
+        this.loading = false
+      }
     },
     // 查看按钮事件
     async onLook(item){
@@ -135,7 +171,8 @@ export default {
         if (res.code === 1000) {
           this.recordList = res.data.map(item => ({
             ...item,
-            totalCount: `${Times(item.amount, item.addressCount).toString()}` // ${item.symbol}
+            totalCount: `${Times(item.amount, item.addressCount).toString()}`, // ${item.symbol}
+            endTime: this.formatTime(item.endTime, true, true)
           }));
         } else {
           this.recordList = [];

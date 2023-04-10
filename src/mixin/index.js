@@ -35,7 +35,6 @@ export default {
         isMobile() {
             return /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
         },
-
     },
     filters: {
       numFormat(val) {
@@ -104,13 +103,17 @@ export default {
         superLong(str, len = 5) {
             return superLong(str, len)
         },
-        formatTime(time) {
-            const date = new Date(time.replace(/-/g, '/')); // 兼容iOS
+        formatTime(time, isTime = true, formatMM) {
+            const date = new Date(isTime ? time.replace(/-/g, '/') : time); // 兼容iOS
+            const years = date.getFullYear();
             const months = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
             const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
             const hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
             const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-            return `${months}/${day} ${hours}:${minutes}`
+            if (formatMM) {
+                return `${years}-${months}-${day}`;
+            }
+            return `${years}-${months}-${day} ${hours}:${minutes}`;
         },
         numberFormat(val, float, returnBoo=false) {
             if (!Number(val)) {

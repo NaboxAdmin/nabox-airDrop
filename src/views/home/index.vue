@@ -31,7 +31,7 @@
               </div>
               <div class="d-flex align-items-center space-between mt-3">
                 <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
-                <span class="text-3a">{{ item.endTime | timeFormat }}(UTC+8)</span>
+                <span class="text-3a">{{ item.endTime }}(UTC+8)</span>
               </div>
             </div>
             <Button class="mt-4" :disabled="item.status !== 0" @click="receiveAirdrop(item)">
@@ -193,7 +193,11 @@ export default {
         if (res.code === 1000 && res.data) {
           this.totalCount = res.data.totalCount;
           if (tempList && tempList.length > 0 && !reload) {
-            const tempDropList = this.formatData(this.airdropList.concat(res.data.list));
+            const tempData = res.data.list.map(item => ({
+              ...item,
+              endTime: this.formatTime(item.endTime)
+            }));
+            const tempDropList = this.formatData(this.airdropList.concat(tempData));
             this.airdropList = tempDropList.map((item, index) => {
               if (tempList[index] && tempList[index].isPass && tempList[index].code) {
                 return tempList[index];
@@ -202,7 +206,11 @@ export default {
               }
             });
           } else {
-            this.airdropList = this.formatData(this.airdropList.concat(res.data.list));
+            const tempData = res.data.list.map(item => ({
+              ...item,
+              endTime: this.formatTime(item.endTime)
+            }));
+            this.airdropList = this.formatData(this.airdropList.concat(tempData));
             localStorage.setItem('airdropList', JSON.stringify(this.airdropList));
           }
         } else {
