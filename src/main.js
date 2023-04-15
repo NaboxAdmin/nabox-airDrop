@@ -38,7 +38,7 @@ if (typeof window._naboxAccount === 'string') {
     tempData = window._naboxAccount;
 }
 if (tempData && tempData.language) {
-    locale = tempData.language === 'EN' ? 'en' : 'cn';
+    locale = tempData.language === 'CHS' ? 'cn' : 'en';
 } else {
     locale = localStorage.getItem('locale') ? localStorage.getItem('locale') : store.state.lang;
 }
