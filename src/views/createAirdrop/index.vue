@@ -313,6 +313,35 @@ export default {
     async createAirDrop() {
       try {
         this.showLoading = true;
+        const addressList = this.airdropAddress.split('\n').filter(item => item);
+        const addressCount = addressList.length;
+        const currentAsset = this.assetList.find(item => item.assetKey === this.selectAsset);
+        const currentAccount = getCurrentAccount(this.fromAddress);
+        const { chain, chainId, assetId, contractAddress, decimals, symbol } = currentAsset;
+        const data = {
+          name: this.airdropName,
+          type: this.currentIndex + 1,
+          pubKey: currentAccount.pub,
+          chain,
+          chainId,
+          assetId,
+          contractAddress,
+          endTime: this.endTime,
+          amount: this.allAirdropAmount,
+          txHash: '',
+          addressCount: addressList.length || this.airdropAddressCount,
+          addressList,
+          codeFlag: this.currentIndex === 2
+        };
+        console.log(data, '==data==');
+        const airDropRes = await this.$request({
+          url: '/air/drop/add',
+          data
+        });
+        console.log(airDropRes, '==airDropRes==');
+        if (airDropRes.code !== 1000) {
+          throw airDropRes.msg;
+        }
         const configRes = await this.$request({
           method: 'get',
           url: '/api/common/config'
@@ -324,13 +353,8 @@ export default {
         } else {
           airDropNerveAddress = localStorage.getItem('airDropNerveAddress');
         }
-        const addressList = this.airdropAddress.split('\n').filter(item => item);
-        const addressCount = addressList.length;
-        const currentAsset = this.assetList.find(item => item.assetKey === this.selectAsset);
-        const { chain, chainId, assetId, contractAddress, decimals, symbol } = currentAsset;
         const config = JSON.parse(sessionStorage.getItem('config'));
         const multySignAddress = config[this.fromNetwork]['config']['crossAddress'] || '';
-        const currentAccount = getCurrentAccount(this.fromAddress);
         const mainAssetInfo = config[this.fromNetwork];
         let txRes;
         if (this.fromNetwork === 'NULS' || this.fromNetwork === 'NERVE') {
@@ -434,25 +458,12 @@ export default {
           txRes = await nerve.sendNerveBridgeTransaction(params);
         }
         if (txRes && txRes.hash) {
-          const data = {
-            name: this.airdropName,
-            type: this.currentIndex + 1,
-            pubKey: currentAccount.pub,
-            chain,
-            chainId,
-            assetId,
-            contractAddress,
-            txHash: txRes && txRes.hash || txHash,
-            endTime: this.endTime,
-            amount: this.allAirdropAmount,
-            addressCount: addressList.length || this.airdropAddressCount,
-            addressList,
-            codeFlag: this.currentIndex === 2
-          };
-          console.log(data, '123params');
           const res = await this.$request({
-            url: '/air/drop/add',
-            data
+            url: '/air/drop/update/hash',
+            data: {
+              id: airDropRes.data.id,
+              txHash: txRes && txRes.hash,
+            }
           });
           if (res.code === 1000) {
             this.$message.success(this.$t('tips.tips16'));
