@@ -111,7 +111,8 @@ export default {
       NULSContractTxData: {},
       needAuth: false,
       errMsg: '',
-      countErrMsg: ''
+      countErrMsg: '',
+      assetAvailable: 0
     }
   },
   components: {Button, Input },
@@ -216,6 +217,14 @@ export default {
     async changeAsset(assetKey) {
       this.currentAsset = this.assetList.find(item => item.assetKey === assetKey);
       await this.checkCrossInAuthStatus();
+      if (this.fromNetwork === 'NERVE') {
+        this.assetAvailable = await this.getNerveAssetBalance(this.currentAsset);
+      } else if (this.fromNetwork === 'NULS') {
+        this.assetAvailable = await this.getNulsAssetBalance(this.currentAsset);
+      } else {
+        this.assetAvailable = await this.getHeterogeneousAssetBalance(this.currentAsset);
+      }
+      console.log(this.currentAsset, this.assetAvailable, 'this.currentAsset')
     },
     async checkCrossInAuthStatus() {
       const config = JSON.parse(sessionStorage.getItem('config'));
@@ -313,6 +322,9 @@ export default {
     async createAirDrop() {
       try {
         this.showLoading = true;
+        if (Minus(this.allAirdropAmount, this.assetAvailable) > 0) {
+          throw this.$t('tips.tips28');
+        }
         const addressList = this.airdropAddress.split('\n').filter(item => item);
         const addressCount = addressList.length;
         const currentAsset = this.assetList.find(item => item.assetKey === this.selectAsset);
@@ -329,7 +341,7 @@ export default {
           endTime: this.endTime,
           amount: this.allAirdropAmount,
           txHash: '',
-          addressCount: addressList.length || this.airdropAddressCount,
+          addressCount: addressCount || this.airdropAddressCount,
           addressList,
           codeFlag: this.currentIndex === 2
         };
@@ -488,7 +500,8 @@ export default {
           return res.result;
         } else {
           this.showLoading = false;
-          this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 });
+          // this.$message({ message: this.$t("tips.tips4"), type: "warning", duration: 2000 });
+          this.$message({ message: `${res.error.code}:${res.error.data}` || res.error.data, type: "warning", duration: 2000 });
           return {
             hash: null
           };
@@ -496,7 +509,7 @@ export default {
       } catch (e) {
         console.log(e, 'e')
         this.showLoading = false;
-        this.$message({ message: 'Network Error', type: "warning", duration: 2000 });
+        this.$message({ message: this.errorHandling(e.message || e), type: "warning", duration: 2000 });
       }
     },
     // nuls合约资产跨链 计算手续费&其他信息

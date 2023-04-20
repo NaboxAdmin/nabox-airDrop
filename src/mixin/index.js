@@ -5,6 +5,9 @@ import Loading from '@/components/Loading/Loading';
 import PopUp from '@/components/PopUp/PopUp';
 import Spin from '@/components/Loading/Spin';
 import NoData from '@/components/NoData/NoData';
+import { MAIN_INFO, NULS_INFO } from '@/config';
+import {ETransfer} from "../api/api";
+
 export default {
     data() {
         return {}
@@ -114,6 +117,50 @@ export default {
                 return `${years}-${months}-${day}`;
             }
             return `${years}-${months}-${day} ${hours}:${minutes}`;
+        },
+        async getNerveAssetBalance(assetInfo) {
+            if (!this.currentAccount) return 0;
+            const { chainId, assetId, contractAddress, decimals } = assetInfo;
+            const tempParams = [{
+                chainId,
+                assetId,
+                contractAddress
+            }];
+            const params = [MAIN_INFO.chainId, this.currentAccount['address']['NERVE'], tempParams];
+            const url = MAIN_INFO.batchRPC;
+            const res = await this.$post(url, 'getBalanceList', params);
+            if (res.result && res.result.length !== 0) {
+                const tempAsset = res.result[0];
+                return divisionDecimals(tempAsset.balance, decimals);
+            } else {
+                return 0;
+            }
+        },
+        async getHeterogeneousAssetBalance(assetInfo) {
+            const transfer = new ETransfer();
+            const { contractAddress, decimals } = assetInfo;
+            if (assetInfo.contractAddress) {
+                return await transfer.getERC20Balance(contractAddress, decimals, this.fromAddress);
+            } else {
+                return await transfer.getEthBalance(this.fromAddress);
+            }
+        },
+        async getNulsAssetBalance(assetInfo) {
+            const { chainId, assetId, contractAddress, decimals } = assetInfo;
+            const tempParams = [{
+                chainId,
+                assetId,
+                contractAddress
+            }];
+            const params = [NULS_INFO.chainId, this.currentAccount['address']['NULS'], tempParams];
+            const url = NULS_INFO.batchRPC;
+            const res = await this.$post(url, 'getBalanceList', params);
+            if (res.result && res.result.length !== 0) {
+                const tempAsset = res.result[0];
+                return divisionDecimals(tempAsset.balance, decimals);
+            } else {
+                return 0;
+            }
         },
         numberFormat(val, float, returnBoo=false) {
             if (!Number(val)) {
