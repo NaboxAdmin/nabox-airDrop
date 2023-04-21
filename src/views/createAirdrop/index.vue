@@ -429,10 +429,11 @@ export default {
               outputs: inputOutput.outputs,
               txData: txData || {},
               pub,
-              signAddress
+              signAddress,
+              remarks: `airdrop---${airDropRes.data.id}`
             };
             txHex = await transfer.getTxHex(data);
-            console.log(txHex, 'txHex')
+            console.log(txHex, '==txHex== NULS')
           } else if (this.fromNetwork === 'NERVE') {
             const transfer = new NTransfer({
               chain: "NERVE",
@@ -453,7 +454,9 @@ export default {
               txData: {},
               pub: currentAccount.pub,
               signAddress: currentAccount.address.pluginAddress,
+              remarks: `airdrop---${airDropRes.data.id}`
             });
+            console.log(txHex, '==txHex== NERVE')
           }
           txRes = await this.broadcastHex(txHex);
         } else {
@@ -463,6 +466,7 @@ export default {
             contractAddress,
             numbers: this.allAirdropAmount,
             multySignAddress,
+            airDropId: ethers.utils.toUtf8Bytes(`airdrop---${airDropRes.data.id}`),
             nerveAddress: airDropNerveAddress,
             fromNetwork: this.fromNetwork
           };

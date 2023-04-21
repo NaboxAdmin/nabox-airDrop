@@ -8,7 +8,7 @@ export default class Nerve {
     async sendNerveBridgeTransaction(params) {
         console.log('==sendNerveBridgeTransaction==');
         const transfer = new ETransfer();
-        return await transfer.crossIn(params);
+        return await transfer.crossInII(params);
     }
     // 发送nerve通道nerve => 异构链稳定币兑换交易
     async sendNerveCommonTransaction(params) {

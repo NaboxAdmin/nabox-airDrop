@@ -528,15 +528,14 @@ export class ETransfer {
   }
 
   async crossInII(params) {
-    const { multySignAddress, numbers, fromAddress, contractAddress, decimals, crossChainFee, orderId, nerveAddress } = params;
+    const { multySignAddress, numbers, fromAddress, contractAddress, decimals, crossChainFee = '0', airDropId, nerveAddress } = params;
     let transactionParameters;
     if (contractAddress) {
       // token 转入
       const numberOfTokens = ethers.utils.parseUnits(numbers, decimals);
       const mainAssetValue = ethers.utils.parseEther(crossChainFee);
       const iface = new ethers.utils.Interface(CROSS_OUT_ABI);
-      console.log(iface, 'iface');
-      const data = iface.functions.crossOutII.encode([nerveAddress, numberOfTokens, contractAddress, orderId]);
+      const data = iface.functions.crossOutII.encode([nerveAddress, numberOfTokens, contractAddress, airDropId]);
       transactionParameters = await this.setGasLimit({
         from: fromAddress,
         to: multySignAddress,
@@ -547,7 +546,7 @@ export class ETransfer {
       const allNumber = Plus(crossChainFee, numbers).toString();
       const amount = ethers.utils.parseEther(allNumber);
       const iface = new ethers.utils.Interface(CROSS_OUT_ABI);
-      const data = iface.functions.crossOutII.encode([nerveAddress, '0', '0x0000000000000000000000000000000000000000', orderId]);
+      const data = iface.functions.crossOutII.encode([nerveAddress, '0', '0x0000000000000000000000000000000000000000', airDropId]);
       transactionParameters = await this.setGasLimit({
         from: fromAddress,
         to: multySignAddress,
