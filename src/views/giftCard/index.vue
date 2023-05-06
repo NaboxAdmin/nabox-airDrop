@@ -11,7 +11,7 @@
       </div>
       <div class="coin-count mt-3">
         <span class="text-8d size-26">{{ $t('airdrop.airdrop71') }}</span>
-        <span class="text-3a size-26">{{ giftItem.perAmount | numFormatFixSix }}{{ giftItem.symbol }}</span>
+        <span class="text-3a size-26">{{ giftItem.perAmount | numFormatFixSix }} {{ giftItem.symbol }}</span>
       </div>
       <div class="coin-count mt-3">
         <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>
@@ -36,7 +36,7 @@
           </div>
           <div class="coin-count mt-3">
             <span class="text-8d size-26">{{ $t('airdrop.airdrop71') }}</span>
-            <span class="text-3a size-26">{{ item.perAmount | numFormatFixSix }}{{ item.symbol }}</span>
+            <span class="text-3a size-26">{{ item.perAmount | numFormatFixSix }} {{ item.symbol }}</span>
           </div>
           <div class="coin-count mt-3">
             <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>

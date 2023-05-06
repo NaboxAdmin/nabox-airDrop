@@ -27,7 +27,7 @@
             <div class="square-info size-26">
               <div class="d-flex align-items-center space-between mt-3">
                 <span class="size-26 text-8d">{{ $t('airdrop.airdrop71') }}</span>
-                <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }}{{ item.symbol }}</span>
+                <span class="text-3a">{{ item.receiveAmount | numFormatFixSix }} {{ item.symbol }}</span>
               </div>
               <div class="d-flex align-items-center space-between mt-3">
                 <span class="size-26 text-8d">{{ $t('airdrop.airdrop16') }}</span>

@@ -25,7 +25,7 @@
           </template>
         </div>
         <div class="history_item">
-          <span class="text-8d size-26">{{ $t('airdrop.airdrop17') }} <span>{{ item.amount | numFormatFixSix }}{{ item.symbol }}</span></span>
+          <span class="text-8d size-26">{{ $t('airdrop.airdrop17') }} <span>{{ item.amount | numFormatFixSix }} {{ item.symbol }}</span></span>
           <span class="size-26 text-8d " v-if="item.type === 1">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop11') }}</span></span>
           <span class="size-26 text-8d " v-if="item.type === 2">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop12') }}</span></span>
           <span v-if="item.type === 3" class="text-8d size-26">{{ $t('airdrop.airdrop36') }} <span>{{ $t('airdrop.airdrop13') }} | </span><span style="color:#21c980" class="cursor-pointer" @click="onLook(item)">{{ $t('airdrop.airdrop38') }}</span></span>
