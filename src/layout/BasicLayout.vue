@@ -359,7 +359,6 @@ export default {
       this.$router.push({ path });
     },
     switchNetwork(address) {
-      console.log(address, 'address ')
       // 连接插件时如果是nuls、nerve设置network为nuls/nerve
       if (!address.startsWith("0x")) {
         this.$store.commit("changeNetwork", "NERVE")
@@ -384,7 +383,7 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 3;
   top: 118px;
   background-color: #FFFFFF;
   justify-content: space-between;
@@ -522,8 +521,9 @@ export default {
   font-size: 30px;
   color: #FFFFFF;
   text-align: center;
-  background-color: #6EB6A9;
+  background-color: #21C980;
   border-radius: 20px;
+  cursor: pointer;
   margin: 50px auto;
   margin-top: 100px;
 }
@@ -535,7 +535,7 @@ export default {
   font-size: 30px;
   color: #FFFFFF;
   text-align: center;
-  background-color: #6EB6A9;
+  background-color: #21C980;
   border-radius: 20px;
   margin-top: 100px;
 }

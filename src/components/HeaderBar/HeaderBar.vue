@@ -12,21 +12,22 @@
               <img :src="getPicture(this.fromNetwork)" @error="pictureError" alt="">
             </span>
           </div>
+          <div v-if="showDropList" class="network-list size-28 d-flex direction-column">
+              <span
+                  v-for="(item, index) in l1ChainList"
+                  :class="{'active_chain': item.chain === currentChain}"
+                  :key="index"
+                  class="mt-2 cursor-pointer d-flex align-items-center"
+                  @click="chainClick(item)">
+                <span class="chain-icon mr-2">
+                  <img :src="item.icon" alt="" @error="pictureError">
+                </span>
+                {{ item.chain }}
+              </span>
+          </div>
 <!--          <div class="space-cont"/>-->
           <div class="d-flex address-container" @click="showAccount=true">
             <span class="size-24 cursor-pointer">{{ superLong(!isLiquidity && address || nerveAddress) }}</span>
-          </div>
-          <div class="network-list size-28 d-flex direction-column" v-if="false">
-            <span class="mt-2 cursor-pointer d-flex align-items-center"
-                  v-for="(item, index) in l1ChainList"
-                  @click="chainClick(item)"
-                  :class="{'active_chain': item.chainName === currentChain}"
-                  :key="index">
-              <span class="chain-icon mr-2">
-                <img :src="getPicture(item.chainName)" @error="pictureError" alt="">
-              </span>
-              {{ item.chainName }}
-            </span>
           </div>
         </div>
         <template>
@@ -76,6 +77,7 @@
 import Pop from "../Pop/Pop";
 import PopUp from "../PopUp/PopUp";
 import {copys, supportChainList} from "../../api/util";
+import {ETHNET} from "../../config";
 
 const lang = localStorage.getItem("locale") || 'cn';
 
@@ -159,6 +161,28 @@ export default {
       });
       return addressNetworkOrigin;
     },
+    l1ChainList() {
+      const tempSupportChainList = supportChainList.length === 0 && sessionStorage.getItem('supportChainList') && JSON.parse(sessionStorage.getItem('supportChainList')) || supportChainList;
+      return tempSupportChainList.map(chain => ({
+        chainId: chain[ETHNET],
+        rpcUrls: chain.rpcUrl ? [chain.rpcUrl] : [],
+        icon: chain.icon,
+        chainName: chain.value,
+        chain: chain.chain,
+        nativeCurrency: {
+          name: chain.value,
+          symbol: chain.symbol,
+          decimals: chain.decimals
+        },
+        blockExplorerUrls: [chain.origin],
+        chainType: chain.chainType
+      }));
+    },
+  },
+  mounted() {
+    window.addEventListener('click', () => {
+      if (this.showDropList) this.showDropList = false;
+    }, false);
   },
   methods: {
     toBrowser(network, address) {
@@ -170,7 +194,57 @@ export default {
       this.$toast(this.$t("tips.tips8"))
     },
     showDropClick() {
-      !this.isLiquidity && (this.showDropList = !this.showDropList);
+      this.showDropList = !this.showDropList;
+    },
+    async chainClick(chain) {
+      try {
+        const walletType = localStorage.getItem('walletType') || 'ethereum';
+        const tempChain = {
+          ...chain
+        };
+        if (this.currentChain === tempChain.chainName) return;
+        if (tempChain.chainName === 'NULS' || tempChain.chainName === 'NERVE' || tempChain.chainId === window[walletType].chainId) {
+          if (walletType === 'tronWeb') {
+            this.showTips = true;
+            return;
+          }
+          this.currentChain = chain.chain;
+          this.$store.commit('changeNetwork', chain.chain);
+          this.$emit('changeChainId', tempChain.chain === 'NERVE' && '0x-2' || '0x-1');
+          window.location.reload();
+        } else if (tempChain.chainType === 2) {
+          if (walletType === 'tronWeb') {
+            this.showTips = true;
+            return;
+          }
+          delete tempChain['icon'];
+          delete tempChain['chainType'];
+          delete tempChain['chain'];
+          if (tempChain.chainName !== 'Ethereum') {
+            window[walletType] && await window[walletType].request({
+              method: 'wallet_addEthereumChain',
+              params: [tempChain]
+            });
+          } else {
+            window[walletType] && await window[walletType].request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: tempChain.chainId }]
+            });
+          }
+        } else if (tempChain.chainType === 3) {
+          if (walletType !== 'tronWeb') {
+            this.showTips = true;
+            return;
+          }
+          this.showTips = true;
+        }
+      } catch (e) {
+        this.$message({
+          message: e.message || e,
+          offset: 30,
+          type: 'warning'
+        });
+      }
     },
     // 断开连接
     disConnect() {

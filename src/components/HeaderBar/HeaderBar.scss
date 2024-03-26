@@ -48,7 +48,7 @@
     .network-list {
       position: absolute;
       background-color: #FFFFFF;
-      min-width: 150px;
+      min-width: 200px;
       color: #333333;
       font-weight: bold;
       border-radius: 10px;
@@ -56,9 +56,11 @@
       top: 80px;
       left: 20px;
       z-index: 999;
+      height: 535px;
+      overflow-y: scroll;
       box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
       .active_chain {
-        color: #54b9aa;
+        color: #21C980;
       }
     }
   }
@@ -197,6 +199,7 @@
   width: 45px;
   border-radius: 50%;
   overflow: hidden;
+  flex-shrink: 0;
   img {
     height: 100%;
     width: 100%;
