@@ -15,7 +15,7 @@ export const EVM_PREFIX = '0x';
 export const ETHNET = 'ropsten';
 
 // export const BRIDGE_API_URL = "/nabox-api";
-export const BRIDGE_API_URL = IS_DEV ? "/nabox-api" : "http://39.98.226.51:19001/nabox-api";
+export const BRIDGE_API_URL = IS_DEV ? "/nabox-api" : "http://47.236.243.122:19001/nabox-api";
 // export const BRIDGE_API_URL = "http://nabox_api.zhoulijun.top/nabox-api";
 
 export const localChainConfig = [
