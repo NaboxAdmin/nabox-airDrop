@@ -162,7 +162,7 @@ export default {
     async getAirdropRecord() {
       try {
         const config = JSON.parse(sessionStorage.getItem("config"));
-        const MAIN_INFO = config.NULS;
+        const MAIN_INFO = config[this.fromNetwork];
         const data = {
           pubKey: this.currentAccount && this.currentAccount.pub || "",
           chainId: MAIN_INFO.chainId
