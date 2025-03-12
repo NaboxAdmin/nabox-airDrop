@@ -203,7 +203,8 @@ export default {
         txHash: hash,
         code: '',
         airDropId: this.currentAirdrop.airDropId,
-        address: currentAccount && currentAccount['address'] && currentAccount['address']['NERVE'] || this.currentAccount && this.currentAccount['address'] && this.currentAccount['address']['NERVE'] || ''
+        address: currentAccount && currentAccount['address'] && currentAccount['address']['NERVE'] || this.currentAccount && this.currentAccount['address'] && this.currentAccount['address']['NERVE'] || '',
+        pubKey: currentAccount.pub || this.currentAccount.pub
       }
       const res = await this.$request({
         url: '/air/drop/receive',
@@ -229,7 +230,7 @@ export default {
     // 获取转账地址
     async getCrossAddress() {
       const res = await this.$request({
-        url: '/api/common/config',
+        url: '/config/nabox',
         method: 'get'
       });
       let crossAddress = '';

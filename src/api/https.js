@@ -1,9 +1,6 @@
 import axios from 'axios'
 import * as config from './../config.js'
-import {chainID} from './util'
 
-// axios.defaults.timeout = config.API_TIME;
-// axios.defaults.baseURL = config.API_URL;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**
@@ -31,8 +28,8 @@ export function post(url, methodName, data = []) {
 }
 
 export async function request(params) {
-  const { url, method = "post", data } = params;
-  const baseUrl = config.BRIDGE_API_URL;
+  const { url, method = "post", data, customUrl } = params;
+  const baseUrl = customUrl ? customUrl : config.BRIDGE_API_URL;
   const language = localStorage.getItem("locale") === "cn" ? "CHS" : "EN";
   const newData = method === "post" ? {data: {language, ...data}} : {params: {language, ...data}};
   return new Promise((resolve, reject) => {

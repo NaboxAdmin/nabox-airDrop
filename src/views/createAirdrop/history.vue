@@ -161,8 +161,11 @@ export default {
     },
     async getAirdropRecord() {
       try {
+        const config = JSON.parse(sessionStorage.getItem("config"));
+        const MAIN_INFO = config.NULS;
         const data = {
-          pubKey: this.currentAccount && this.currentAccount.pub || ""
+          pubKey: this.currentAccount && this.currentAccount.pub || "",
+          chainId: MAIN_INFO.chainId
         };
         const res = await this.$request({
           url: '/air/drop/wallet/list',

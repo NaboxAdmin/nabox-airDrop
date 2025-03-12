@@ -245,11 +245,7 @@ export default {
       }
     },
     async syncAccount(pub) {
-      const res = await this.$request({
-        url: "/wallet/sync",
-        data: { pubKey: pub },
-      });
-      return res.code === 1000;
+      return true;
     },
     //通过调用metamask签名，派生多链地址
     async derivedAddress() {

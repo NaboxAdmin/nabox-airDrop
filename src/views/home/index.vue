@@ -337,7 +337,8 @@ export default {
         code: this.verificationCode || this.currentAirdrop.code || '',
         id: this.currentAirdrop.id,
         airDropId: this.currentAirdrop.dropId,
-        address: currentAccount && currentAccount['address'] && currentAccount['address']['NERVE'] || this.currentAccount && this.currentAccount['address'] && this.currentAccount['address']['NERVE'] || ''
+        address: currentAccount && currentAccount['address'] && currentAccount['address']['NERVE'] || this.currentAccount && this.currentAccount['address'] && this.currentAccount['address']['NERVE'] || '',
+        pubKey: currentAccount.pub || this.currentAccount.pub
       }
       const res = await this.$request({
         url: '/air/drop/receive',
@@ -362,7 +363,7 @@ export default {
     // 获取转账地址
     async getCrossAddress() {
       const res = await this.$request({
-        url: '/api/common/config',
+        url: '/config/nabox',
         method: 'get'
       });
       let crossAddress = '';
@@ -414,13 +415,6 @@ export default {
       chainId = chainId + ""
       // 兼容Binggo
       return chainId.startsWith("0x") ? chainId : "0x" + Number(chainId).toString(16);
-    },
-    async syncAccount(pub) {
-      const res = await this.$request({
-        url: "/wallet/sync",
-        data: { pubKey: pub },
-      });
-      return res.code === 1000;
     },
     switchNetwork(address) {
       // 连接插件时如果是nuls、nerve设置network为nuls/nerve
@@ -841,11 +835,11 @@ $labelColor: #99a3c4;
       width: 100%;
       line-height: 90px;
       text-align: center;
-      color: #6eb6a9;
+      color: #21C980;
       border-radius: 20px;
       border: 1px solid #EBEEF8;
       &.active_btn {
-        background-color: #6eb6a9;
+        background-color: #21C980;
         color: #FFFFFF;
       }
     }

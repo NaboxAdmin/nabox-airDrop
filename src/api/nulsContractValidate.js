@@ -1,4 +1,4 @@
-import { request } from "./https";
+import {post, request} from "./https";
 import { Times, timesDecimals, Plus, Division } from "./util";
 import sdk from "nerve-sdk-js/lib/api/sdk";
 import utils from "nuls-sdk-js/lib/utils/utils";
@@ -46,18 +46,8 @@ export async function getContractCallData(from, to, price, contractAddress, meth
  * @param args
  */
 async function validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
-  //console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
   try {
-    const params = {
-      chain: "NULS", address: sender, value, gasLimit, gasPrice: price, contractAddress, methodName, methodDesc, args
-    };
-    const res = await request({url: "/contract/validate/call", data: params});
-    //console.log(res);
-    if (res.code === 1000) {
       return await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, price)
-    } else {
-      return {success: false, msg: res.msg};
-    }
   } catch (e) {
     return {success: false, msg: e};
   }
@@ -75,19 +65,12 @@ async function validateContractCall(sender, value, gasLimit, price, contractAddr
  */
 async function imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, price) {
   try {
-    const params = {chain: "NULS", address: sender, value, contractAddress, methodName, methodDesc, args};
-    const res = await request({url: "/contract/imputed/call/gas", data: params});
-    //console.log(res);
-    if (res.code === 1000) {
-      const contractConstructorArgsTypes = await getContractMethodArgsTypes(contractAddress, methodName);
-      if (!contractConstructorArgsTypes.success) {
-        return {success: false, msg: contractConstructorArgsTypes.data};
-      }
-      const newArgs = utils.twoDimensionalArray(args, contractConstructorArgsTypes.data);
-
-      const config = JSON.parse(sessionStorage.getItem("config"));
-      //console.log(config);
-      const MAIN_INFO = config.NULS;
+    const config = JSON.parse(sessionStorage.getItem("config"));
+    const MAIN_INFO = config.NULS;
+    const apiUrl = MAIN_INFO.apiUrl;
+    const res = await _imputedContractCallGas(MAIN_INFO.chainId, sender, value, contractAddress, methodName, methodDesc, args, '', apiUrl);
+    if (res.success) {
+      const newArgs = utils.twoDimensionalArray(args, res.data.argsType);
       const data = {
         fee: Number(Plus(Division(Times(res.data.gasLimit, price), 10000000), 0.001)),
         gas: res.data.gasLimit,
@@ -111,6 +94,44 @@ async function imputedContractCallGas(sender, value, contractAddress, methodName
   } catch (e) {
     return {success: false, msg: e};
   }
+}
+
+function extractMessageAfterKeyword(input) {
+  const keyword = "contract error - ";
+  const index = input.indexOf(keyword);
+
+  if (index !== -1) {
+    return input.substring(index + keyword.length).trim(); // 截取并去掉前后空格
+  }
+  return input; // 如果没有找到关键词，返回原数据
+}
+
+async function _imputedContractCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray, apiUrl) {
+  let parms = [chainId, sender, value, contractAddress, methodName, methodDesc, args];
+  if (multyAssetArray) {
+    parms.push(multyAssetArray);
+  }
+  return await post(apiUrl, 'imputedContractCallGas', parms)
+      .then((response) => {
+        if (response.result) {
+          if (response.result.errorMsg) {
+            response.result.msg = extractMessageAfterKeyword(response.result.errorMsg);
+            response.result.success = false;
+            response.result.code = 'err_0014';
+            return {success: false, data: response.result};
+          }
+          return {success: true, data: response.result};
+        } else {
+          const error = response.error;
+          if (error && error.message) {
+            response.error.msg = extractMessageAfterKeyword(error.message);
+          }
+          return {success: false, data: response.error};
+        }
+      })
+      .catch((error) => {
+        return {success: false, data: error};
+      });
 }
 
 // 获取合约指定函数的参数类型

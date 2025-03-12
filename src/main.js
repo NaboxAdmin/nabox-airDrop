@@ -17,6 +17,8 @@ import { Loading } from 'vant';
 import { localChainConfig } from '@/config';
 import elLocale from 'element-ui/lib/locale'
 import './assets/scss/element-variables.scss';
+import {currentNet} from "@/config";
+
 const development = process.env.NODE_ENV === "development"
 Vue.config.devtools = development;
 if (!development) {
@@ -75,7 +77,7 @@ async function getConfig(network, refresh) {
             render: h => h(App)
         }).$mount('#app');
         // /api/chain/config
-        const res = await request({ url: '/chain/configs', method: 'get' });
+        const res = await request({ url: '/chain/configs', customUrl: currentNet === 'testnet' ? 'http://47.237.129.42:19001/nabox-api' : 'https://api.v2.nabox.io/nabox-api', method: 'get' });
         if (res.code === 1000 && res.data) {
             const tempData = res.data.filter(item => item.swap == 1 && (item.chainType === 1 || item.chainType === 2));
             setChainConfig(tempData);

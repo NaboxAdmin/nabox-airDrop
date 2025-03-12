@@ -331,7 +331,6 @@ export class NTransfer {
         assetId: info.assetsId,
         refresh: true
       };
-      console.log(data, 'data')
       const nonce = this.chain === 'NERVE' ? await this.getNerveAssetNonce(data) : await this.getNulsAssetNonce(data);
       if (nonce) {
         return nonce;

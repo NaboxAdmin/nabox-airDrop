@@ -224,7 +224,6 @@ export default {
       } else {
         this.assetAvailable = await this.getHeterogeneousAssetBalance(this.currentAsset);
       }
-      console.log(this.currentAsset, this.assetAvailable, 'this.currentAsset')
     },
     async checkCrossInAuthStatus() {
       const config = JSON.parse(sessionStorage.getItem('config'));
@@ -295,11 +294,11 @@ export default {
     async getAirdropAssetList() {
       try {
         const params = {
-          fromChain: this.fromNetwork,
-          toChain: 'NERVE',
+          chain: this.fromNetwork,
+          // toChain: 'NERVE',
         };
         const res = await this.$request({
-          url: '/bridge/cross/asset',
+          url: '/config/nabox/cross/assets', // '/bridge/cross/asset',
           data: params
         });
         if (res.code === 1000) {
@@ -356,7 +355,7 @@ export default {
         }
         const configRes = await this.$request({
           method: 'get',
-          url: '/api/common/config'
+          url: '/config/nabox'
         });
         let airDropNerveAddress;
         if (configRes.code === 1000) {
@@ -419,9 +418,7 @@ export default {
               tempTransferInfo = crossInfo;
             }
             const { pub, signAddress } = transferInfo;
-            console.log(transferInfo, 'transferInfo')
             const transfer = new NTransfer({ chain, type });
-            console.log(tempTransferInfo, 'tempTransferInfo')
             const inputOutput = await transfer.inputsOrOutputs(tempTransferInfo);
             // return false;
             const data = {
