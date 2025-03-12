@@ -330,6 +330,7 @@ export default {
         const currentAccount = getCurrentAccount(this.fromAddress);
         const { chain, chainId, assetId, contractAddress, decimals, symbol } = currentAsset;
         const data = {
+          address: currentAccount && currentAccount['address'][this.fromNetwork] || currentAccount && currentAccount['address']['pluginAddress'],
           name: this.airdropName,
           type: this.currentIndex + 1,
           pubKey: currentAccount.pub,
