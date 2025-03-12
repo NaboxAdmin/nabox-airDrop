@@ -65,5 +65,8 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "resolutions": {
+    "secp256k1": "4.0.1"
+  }
 }
