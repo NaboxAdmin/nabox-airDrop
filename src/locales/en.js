@@ -17,7 +17,7 @@ const en = {
     tips13: "Failed to sync account",
     tips14: "Nabox plug-in/App is not detected, click to install",
     tips15: "Nabox plug-in/App is not detected",
-    tips16: "Transaction is confirming",
+    tips16: "Transaction is confirming, Assets will be returned to the NERVE Network",
     tips17: "No Data",
     tips18: "No More",
     tips19: "Transaction is confirming",

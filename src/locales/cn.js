@@ -17,7 +17,7 @@ const cn = {
     tips13: "同步账户失败",
     tips14: "未检测到Nabox插件/App，点击安装",
     tips15: "未检测到Nabox插件/App",
-    tips16: "交易确认中",
+    tips16: "交易确认中，资产将退回到NERVE链",
     tips17: "暂无数据",
     tips18: "没有更多了",
     tips19: "交易确认中",
