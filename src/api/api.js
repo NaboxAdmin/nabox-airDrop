@@ -196,8 +196,6 @@ export class NTransfer {
           assetsChainId: CROSS_INFO.chainId,
           assetsId: CROSS_INFO.assetId
         });
-        console.log("nonce*************");
-        console.log(nonce);
         if (!nonce) {
           return {
             success: false,
@@ -220,7 +218,6 @@ export class NTransfer {
   // 调用合约交易
   async callContractTransaction(transferInfo) {
     // console.log("callContractTransaction:");
-    console.log(transferInfo, 'transferInfo');
     const nonce = await this.getNonce(transferInfo);
     // const defaultFee = timesDecimals(0.001, 8);
     const defaultFee = 0;
@@ -637,7 +634,6 @@ export class ETransfer {
   }
 
   async sendTransaction(tx) {
-    console.log(this.provider, 'this.provider')
     const wallet = this.provider.getSigner();
     return await wallet.sendTransaction(tx);
   }

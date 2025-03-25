@@ -667,7 +667,7 @@ export function setChainConfig(chainConfig) {
           crossAddress: v.configs.crossAddress
         };
       } else {
-        configs = v.configs;
+        configs = v.configJson || {};
       }
       config[v.chain] = {
         chain: v.chain,
@@ -697,7 +697,6 @@ export function setChainConfig(chainConfig) {
           hashLink: `${item.scanUrl}transaction/info?hash=`,
           addressLink: `${item.scanUrl}address/info?address=`,
           symbol: item.mainAsset.symbol || '',
-          sort: item.sort,
           ropsten: `0x${Number(item.nativeId).toString(16)}`,
           homestead: `0x${Number(item.nativeId).toString(16)}`,
           nativeId: item.nativeId
@@ -721,28 +720,6 @@ export function setChainConfig(chainConfig) {
           // rpcUrl: networkRpc[item.chain],
           origin: item.scanUrl,
           hashLink: `${item.scanUrl}tx/`,
-          addressLink: `${item.scanUrl}address/`,
-          sort: item.sort
-        };
-      } else if (item.chainType === 3) {
-        return {
-          label: item.chain,
-          value: item.chain,
-          chain: item.chain,
-          chainName: item.chain,
-          chainType: item.chainType,
-          icon: item.icon,
-          symbol: item.mainAsset && item.mainAsset.symbol || '',
-          ropsten: `0x${Number(item.nativeId).toString(16)}`,
-          homestead: `0x${Number(item.nativeId).toString(16)}`,
-          chainId: item.mainAsset && item.mainAsset && item.mainAsset.chainId || '',
-          assetId: item.mainAsset && item.mainAsset.assetId || '',
-          decimals: item.mainAsset && item.mainAsset.decimals || '',
-          rpcUrl: item.apiUrl,
-          nativeId: item.nativeId || '',
-          // rpcUrl: networkRpc[item.chain],
-          origin: item.scanUrl,
-          hashLink: `${item.scanUrl}transaction/`,
           addressLink: `${item.scanUrl}address/`,
           sort: item.sort
         };

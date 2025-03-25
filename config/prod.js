@@ -16,7 +16,7 @@ export const EVM_PREFIX = '0x';
 //ETH 网络信息 测试网:ropsten, 主网:homestead
 export const ETHNET = 'homestead';
 
-export const BRIDGE_API_URL = IS_DEV ? "/api" : "https://id.nabox.io/did/api"; // Prod
+export const BRIDGE_API_URL = IS_DEV ? "https://id.nabox.io/did/api" : "https://id.nabox.io/did/api"; // Prod
 // export const BRIDGE_API_URL = "/nabox-api";
 
 export const localChainConfig = [

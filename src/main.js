@@ -76,10 +76,10 @@ async function getConfig(network, refresh) {
             store,
             render: h => h(App)
         }).$mount('#app');
-        // /api/chain/config
-        const res = await request({ url: '/chain/configs', customUrl: currentNet === 'testnet' ? 'http://47.237.129.42:19001/nabox-api' : 'https://api.v2.nabox.io/nabox-api', method: 'get' });
+        // /api/chain/config  customUrl: currentNet === 'testnet' ? 'http://47.237.129.42:19001/nabox-api' : 'https://api.v2.nabox.io/nabox-api',
+        const res = await request({ url: '/config/chains', method: 'get' });
         if (res.code === 1000 && res.data) {
-            const tempData = res.data.filter(item => item.swap == 1 && (item.chainType === 1 || item.chainType === 2));
+            const tempData = res.data.filter(item => (item.chainType === 1 || item.chainType === 2));
             setChainConfig(tempData);
             network === 'beta' ? localStorage.setItem('localBetaChainConfig', JSON.stringify(tempData)) : localStorage.setItem('localChainConfig', JSON.stringify(tempData));
         } else {

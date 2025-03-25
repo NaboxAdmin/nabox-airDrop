@@ -241,7 +241,6 @@ export default {
     },
     async receiveAirdrop(airdrop) {
       this.currentAirdrop = airdrop;
-      console.log(airdrop.id, 'airdrop')
       await this.sendTransaction();
     },
   }

@@ -97,6 +97,9 @@ export default {
     },
     methods: {
         getPicture(suffix) {
+            const chainConfig = sessionStorage.getItem('localChainConfig') || [];
+            const currentChain = chainConfig.find(chain => chain.chain === suffix);
+            if (currentChain && currentChain.icon) return currentChain.icon;
             let baseUrl = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/';
             return `${baseUrl}${suffix}.png`
         },

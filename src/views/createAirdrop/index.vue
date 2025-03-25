@@ -153,7 +153,6 @@ export default {
     airdropAmount: {
       handler(newVal, oldVal) {
         if (newVal) {
-          console.log(newVal, this.selectAsset, '123')
           if (!this.selectAsset) {
             this.airdropAmount = '';
             return;
@@ -480,7 +479,7 @@ export default {
             }
           });
           if (res.code === 1000) {
-            this.$message.success(this.$t('tips.tips16'));
+            this.$message.success(this.$t('tips.tips19'));
             this.resetData();
           } else {
             throw res.msg;

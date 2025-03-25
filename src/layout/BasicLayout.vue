@@ -195,7 +195,6 @@ export default {
     //监听账户改变
     listenAccountChange() {
       this.wallet.on("accountsChanged", (accounts) => {
-        console.log(accounts, "===accounts-changed===")
         if (accounts.length && this.walletType) {
           this.address = accounts[0];
           window.location.reload();
@@ -325,7 +324,6 @@ export default {
           accountList.push(account);
         }
         const syncRes = await this.syncAccount(pub, account.address);
-        console.log(syncRes, accountList, 'syncRes')
         if (syncRes) {
           localStorage.setItem("accountList", JSON.stringify(accountList));
           // 重新计算fromAddress

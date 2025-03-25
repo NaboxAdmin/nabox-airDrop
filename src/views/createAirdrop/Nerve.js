@@ -95,7 +95,6 @@ export default class Nerve {
                 currentAccount,
                 toNetwork
             };
-            console.log(data, '213123data');
             inputsOutputs = await this.handleNulsCross(data);
         }
         const txHex = await transfer.getTxHex({
@@ -213,7 +212,6 @@ export default class Nerve {
                 });
             }
         }
-        console.log(inputs, outputs);
         return { inputs, outputs };
     }
     // 特殊处理nuls跨链, 合约资产前面已经处理了， 转到nerve中转地址
