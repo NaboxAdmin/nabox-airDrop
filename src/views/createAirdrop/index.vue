@@ -409,7 +409,7 @@ export default {
                 toContractValue: 10000000,
                 to: currentAsset.contractAddress,
                 txData: this.NULSContractTxData,
-                fee: timesDecimals(0.01, MAIN_INFO.decimal)
+                fee: timesDecimals(100, MAIN_INFO.decimal)
               };
               txData = this.NULSContractTxData;
             } else {

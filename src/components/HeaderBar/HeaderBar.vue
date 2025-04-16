@@ -22,7 +22,7 @@
                 <span class="chain-icon mr-2">
                   <img :src="item.icon" alt="" @error="pictureError">
                 </span>
-                {{ item.chain }}
+                {{ item.chainName }}
               </span>
           </div>
 <!--          <div class="space-cont"/>-->
@@ -167,7 +167,7 @@ export default {
         chainId: chain[ETHNET],
         rpcUrls: chain.rpcUrl ? [chain.rpcUrl] : [],
         icon: chain.icon,
-        chainName: chain.value,
+        chainName: chain.chainName,
         chain: chain.chain,
         nativeCurrency: {
           name: chain.value,
@@ -203,7 +203,7 @@ export default {
           ...chain
         };
         if (this.currentChain === tempChain.chainName) return;
-        if (tempChain.chainName === 'NULS' || tempChain.chainName === 'NERVE' || tempChain.chainId === window[walletType].chainId) {
+        if (tempChain.chain === 'NULS' || tempChain.chain === 'NERVE' || tempChain.chainId === window[walletType].chainId) {
           if (walletType === 'tronWeb') {
             this.showTips = true;
             return;
