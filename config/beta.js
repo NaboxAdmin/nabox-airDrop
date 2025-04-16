@@ -8,7 +8,7 @@ export const API_BURNING_ADDRESS_PUB = 'TNVTdTSPGwjgRMtHqjmg8yKeMLnpBpVN5ZuuY';
 
 //chainId、assetId、prefix
 export const MAIN_INFO = { chainId: 5, assetId: 1, prefix: 'TNVT',symbol:"NVT", decimal: 8, rpc: "https://beta.api.nerve.network/jsonrpc", batchRPC: 'https://beta.api.nerve.network/jsonrpc' };
-export const NULS_INFO = { chainId: 2, assetId: 1, prefix: 'tNULS',symbol:"NULS", decimal: 8, rpc: "https://beta.api.nuls.io/jsonrpc", batchRPC: 'https://beta.api.nuls.io/jsonrpc' };
+export const NULS_INFO = { chainId: 2, assetId: 1, prefix: 'tNULS',symbol:"NAI", decimal: 4, rpc: "https://beta.api.nuls.io/jsonrpc", batchRPC: 'https://beta.api.nuls.io/jsonrpc' };
 export const EVM_PREFIX = '0x';
 
 //ETH 网络信息 测试网:ropsten, 主网:homestead
