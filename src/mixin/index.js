@@ -1,6 +1,6 @@
 import { superLong, divisionDecimals, timesDecimals, tofix } from "@/api/util";
 import moment from "moment";
-import {Division, Minus, numberFormat} from "../api/util";
+import {Division, isBeta, Minus, numberFormat} from "../api/util";
 import Loading from '@/components/Loading/Loading';
 import PopUp from '@/components/PopUp/PopUp';
 import Spin from '@/components/Loading/Spin';
@@ -97,7 +97,7 @@ export default {
     },
     methods: {
         getPicture(suffix) {
-            const chainConfig = sessionStorage.getItem('localChainConfig') || [];
+            const chainConfig = (isBeta ? localStorage.getItem('localBetaChainConfig') && JSON.parse(localStorage.getItem('localBetaChainConfig')) : localStorage.getItem('localChainConfig') && JSON.parse(localStorage.getItem('localChainConfig'))) || [];
             const currentChain = chainConfig.find(chain => chain.chain === suffix);
             if (currentChain && currentChain.icon) return currentChain.icon;
             let baseUrl = 'https://nuls-cf.oss-us-west-1.aliyuncs.com/icon/';
